@@ -1,42 +1,166 @@
 #root {
+  width: 100%;
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
   text-align: center;
+  background: #f5f6f8;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
 .card {
-  padding: 2em;
+  padding: 1.5em;
+  margin: 1rem auto;
+  max-width: 90%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
 }
 
 .read-the-docs {
   color: #888;
+}
+
+/* Responsive Design */
+@media (min-width: 768px) {
+  #root {
+    padding: 2rem;
+  }
+
+  .logo {
+    height: 6em;
+  }
+
+  .card {
+    padding: 2em;
+    max-width: 80%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .card {
+    max-width: 60%;
+  }
+}
+
+.login-container {
+  min-height: 70vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+}
+
+.login-box {
+  width: 100%;
+  max-width: 24rem;
+  text-align: center;
+  border-radius: 0.375rem;
+}
+
+.login-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.login-card {
+  width: 100%;
+  padding: 1.5rem;
+  background-color: white;
+  border: 1px solid #cece;
+}
+.login-box-input {
+  border: 1px solid gray;
+}
+.login-box-field {
+  color: black;
+}
+.login-button-login-register {
+    width: 48%;
+    padding: 0.75rem;
+    background-color: #e5dddd;
+    color: black;
+    border: none;
+    border-radius: 0.375rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.go-button {
+  border: 1px solid transparent;
+  font-size: 1.125rem;
+}
+
+.go-button-icon {
+  margin-right: 0.5rem;
+}
+
+.footer {
+  border-top: 1px solid #e2e8f0;
+  margin-top: 4rem;
+  padding: 2rem 1rem;
+  text-align: center;
+  color: #a0aec0;
+}
+
+.logo-with-text {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logo-box {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #2d3748;
+}
+
+.navbar {
+  background-color: #f7fafc;
+  border-bottom: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding: 0.5rem 1rem;
+  backdrop-filter: blur(10px);
+  border-radius: 10px;
+}
+
+.navbar-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .navbar-content {
+    flex-direction: row;
+    gap: 0;
+  }
+}
+
+.user-menu-icon {
+  margin-right: 0.5rem;
 }

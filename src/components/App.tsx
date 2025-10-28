@@ -1,15 +1,19 @@
 import '../styles/App.css'
-import {Heading} from "@chakra-ui/react";
-
+import {BodyContent} from "./sections/BodyContent.tsx";
+import {Footer} from "./layout/Footer.tsx";
+import {Login} from "./sections/Login.tsx";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 function App() {
-
   return (
-      <div className="App">
-          <h1>Hello world!</h1>
-          <Heading>
-              Hello, Chakra UI with Vite and React!
-          </Heading>
-      </div>
+      <Router>
+          <div className="App">
+              <Routes>
+                  <Route path="/" element={<BodyContent />} />
+                  <Route path="/login" element={<Login />} />
+              </Routes>
+              <Footer />
+          </div>
+      </Router>
   )
 }
 
