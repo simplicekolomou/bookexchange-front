@@ -64,20 +64,11 @@
   border-radius: 0.375rem;
 }
 
-.login-buttons {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
-  justify-content: center;
-  padding: 1rem;
-}
-
 .login-card {
   width: 100%;
   padding: 1.5rem;
   background-color: white;
-  border: 1px solid #cece;
+  border: 1px solid #cecece;
 }
 .login-box-input {
   border: 1px solid gray;
@@ -86,24 +77,26 @@
   color: black;
 }
 .login-button-login-register {
-    width: 48%;
-    padding: 0.75rem;
-    background-color: #e5dddd;
-    color: black;
-    border: none;
-    border-radius: 0.375rem;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s;
+  width: 100%;
+  padding: 0.75rem;
+  border: none;
+  font-size: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
-.go-button {
-  border: 1px solid transparent;
-  font-size: 1.125rem;
+.login-button-login-register button {
+  flex: 1;
+  width: 100%;
+  color: black;
+  background: #cecece;
 }
 
-.go-button-icon {
-  margin-right: 0.5rem;
+.login-button-login-register button:first-child {
+  background: #eae5e5;
 }
 
 .footer {
@@ -163,4 +156,14 @@
 
 .user-menu-icon {
   margin-right: 0.5rem;
+}
+
+.configurable-button {
+  width: 100px;
+  height: 40px;
+  background-color: #FE5D0D;
+  color: #000000;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }

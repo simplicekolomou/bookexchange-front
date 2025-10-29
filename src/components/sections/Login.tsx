@@ -1,26 +1,18 @@
 import { Button, Card, Field, Input, Stack, Flex, Box, Heading } from "@chakra-ui/react";
+import {LogoWithText} from "../layout/LogoWithText.tsx";
 
 export const Login = () => {
 
     return (
-        <Flex className="login-container">
+        <Flex className="login-container" flexDirection="column" alignItems="center">
             <Box className="login-box">
-                <Heading as="h1" fontSize="4xl" mb="6">
+                <LogoWithText title="BookSwap" direction="column" />
+                <Heading as="h1" fontSize="3xl" mb="6" pt="4">
                     Connexion
                 </Heading>
-                <Flex className="login-buttons">
-                    <Button
-                        className="login-button-login-register"
-                        variant="solid"
-                    >
-                        Connexion
-                    </Button>
-                    <Button
-                        className="login-button-login-register"
-                        variant="solid"
-                    >
-                        S'inscrire
-                    </Button>
+                <Flex className="login-button-login-register">
+                    <Button size="md" variant="outline">Connexion</Button>
+                    <Button size="md" variant="outline">S'inscrire</Button>
                 </Flex>
                 <Card.Root className="login-card">
                     <Card.Header>
