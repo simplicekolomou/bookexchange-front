@@ -1,85 +1,61 @@
+/* Styles spécifiques à l'application */
+
+/* Conteneur principal */
 #root {
   width: 100%;
   max-width: 1280px;
   margin: 0 auto;
   padding: 1rem;
   text-align: center;
-  background: #f5f6f8;
+  background: var(--background);
 }
 
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-.card {
-  padding: 1.5em;
-  margin: 1rem auto;
-  max-width: 90%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-}
-
-.read-the-docs {
-  color: #888;
-}
-
-/* Responsive Design */
-@media (min-width: 768px) {
-  #root {
-    padding: 2rem;
-  }
-
-  .logo {
-    height: 6em;
-  }
-
-  .card {
-    padding: 2em;
-    max-width: 80%;
-  }
-}
-
-@media (min-width: 1024px) {
-  .card {
-    max-width: 60%;
-  }
-}
-
-.login-container {
+/* Boîte de connexion/inscription */
+.login-registration-box {
+  width: 100%;
   min-height: 70vh;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
   padding: 1rem;
 }
 
-.login-box {
-  width: 100%;
-  max-width: 24rem;
-  text-align: center;
-  border-radius: 0.375rem;
+/* Boutons */
+.btn {
+  opacity: 1;
+  transition: opacity 0.3s ease;
+  background: #afadad;
 }
 
-.login-card {
+.btn.inactive {
+  opacity: 0.5;
+}
+
+.btn:hover {
+  opacity: 0.8;
+}
+
+/* Formulaires */
+.form {
   width: 100%;
   padding: 1.5rem;
   background-color: white;
-  border: 1px solid #cecece;
+  border: 1px solid var(--border);
 }
-.login-box-input {
-  border: 1px solid gray;
+
+.form-input {
+  border: 1px solid var(--input);
 }
-.login-box-field {
-  color: black;
+
+.form-field {
+  color: var(--foreground);
 }
-.login-button-login-register {
+
+/* Boutons switchables */
+.switchable-button-login-register {
   width: 100%;
   padding: 0.75rem;
-  border: none;
   font-size: 1rem;
   display: flex;
   gap: 0.5rem;
@@ -88,25 +64,23 @@
   justify-content: center;
 }
 
-.login-button-login-register button {
+.switchable-button-login-register .btn {
   flex: 1;
   width: 100%;
-  color: black;
-  background: #cecece;
+  color: var(--foreground);
+  background: var(--border);
 }
 
-.login-button-login-register button:first-child {
-  background: #eae5e5;
-}
-
+/* Pied de page */
 .footer {
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--border);
   margin-top: 4rem;
   padding: 2rem 1rem;
   text-align: center;
-  color: #a0aec0;
+  color: var(--secondary-foreground);
 }
 
+/* Logo avec texte */
 .logo-with-text {
   display: flex;
   align-items: center;
@@ -116,27 +90,29 @@
 .logo-box {
   width: 2.5rem;
   height: 2.5rem;
-  border-radius: 0.75rem;
+  border-radius: var(--radius);
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: var(--primary);
 }
 
 .logo-title {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #2d3748;
+  color: var(--foreground);
 }
 
+/* Barre de navigation */
 .navbar {
-  background-color: #f7fafc;
-  border-bottom: 1px solid #e2e8f0;
+  background-color: var(--background);
+  border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
   z-index: 10;
   padding: 0.5rem 1rem;
   backdrop-filter: blur(10px);
-  border-radius: 10px;
+  border-radius: var(--radius);
 }
 
 .navbar-content {
@@ -147,23 +123,62 @@
   gap: 0.5rem;
 }
 
+.user-menu-content{
+  background: #9e9c9c;
+}
+
+/* Style de la barre de recherche */
+.search-bar {
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  width: 200px;
+  background: var(--background);
+  height: 5vh;
+}
+/* Bouton configurable */
+.configurable-button {
+  width: 100px;
+  height: 40px;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.configurable-button:hover {
+  background-color: #ff6d2d;
+}
+
+/* Media queries pour les écrans plus grands */
 @media (min-width: 768px) {
+  #root {
+    padding: 2rem;
+  }
+
   .navbar-content {
     flex-direction: row;
     gap: 0;
   }
+
+  .firstName-name-disposition {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+  }
 }
 
-.user-menu-icon {
-  margin-right: 0.5rem;
+@media (min-width: 1024px) {
+  .card {
+    max-width: 60%;
+  }
+  .firstName-name-disposition {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+  }
 }
-
-.configurable-button {
-  width: 100px;
-  height: 40px;
-  background-color: #FE5D0D;
-  color: #000000;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+/* Style pour la section collection */
+.user-menu {
 }

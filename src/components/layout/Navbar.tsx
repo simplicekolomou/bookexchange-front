@@ -3,6 +3,7 @@ import { LogoWithText } from "./LogoWithText.tsx";
 import { UserMenu } from "./UserMenu.tsx";
 import {RiArrowRightLine} from "react-icons/ri";
 import {Link} from "react-router-dom";
+import {SearchBar} from "./SearchBar.tsx";
 
 interface NavigationBarProps {
     title: string;
@@ -16,12 +17,15 @@ export const Navbar = ({ title, isAuthenticated }: NavigationBarProps) => {
                 <Flex className="navbar-content">
                     <LogoWithText title={title} direction={"row"}/>
                     <Flex align="center" gap="2">
+                        <SearchBar />
                         <Link to="/login">
-                            <Button size="md" colorPalette="teal" variant="outline">
+                            <Button size="md" variant="outline">
                                 Commencer <RiArrowRightLine />
                             </Button>
                         </Link>
-                        {isAuthenticated && <UserMenu />}
+                        <div className="avatar">
+                            {isAuthenticated && <UserMenu />}
+                        </div>
                     </Flex>
                 </Flex>
             </Box>

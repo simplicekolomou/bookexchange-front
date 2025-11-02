@@ -3,7 +3,7 @@ import { ArrowRight, Library, Users, MessageCircle } from "lucide-react";
 import {Navbar} from "../layout/Navbar.tsx";
 import {Link} from "react-router-dom";
 
-export const BodyContent = () => {
+export const Home = () => {
     const titles = [
         "Gérez votre collection",
         "Échangez avec la communauté",
@@ -19,7 +19,7 @@ export const BodyContent = () => {
         <>
             <Navbar title={"BookSwap"}/>
             <main>
-                <Box as="section" textAlign="center" py={{ base: 12, md: 5 }} px={{ base: 4, md: 8 }}>
+                <Box as="section" textAlign="center" py={{ base: 12, md: 5 }} px={{ base: 4, md: 8 }} className="home">
                     <Heading as="h1" fontSize={{ base: "4xl", sm: "5xl", md: "6xl", lg: "3xl" }} fontWeight="bold" color="foreground" mb="6">
                         Partagez votre passion pour la lecture
                     </Heading>

@@ -50,9 +50,26 @@ button:hover {
   border-radius: var(--radius);
   background-color: var(--primary);
 }
-.card {
-  padding: 2em;
+
+/* Media queries for larger screens */
+@media (min-width: 768px) {
+  body {
+    font-size: 1rem;
+  }
+
+  .logo-box {
+    width: 3rem;
+    height: 3rem;
+  }
 }
-Box {
-  border-radius: var(--radius);
+
+@media (min-width: 1024px) {
+  body {
+    font-size: 1.125rem;
+  }
+
+  .logo-box {
+    width: 4rem;
+    height: 4rem;
+  }
 }
