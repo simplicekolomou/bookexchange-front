@@ -1,8 +1,11 @@
 import { Avatar } from "@chakra-ui/react";
 import { User, Settings } from "lucide-react";
 import { Menu } from "@chakra-ui/react";
+import {useTranslation} from "react-i18next";
 
 export const UserMenu = () => {
+    const {t : tLocal} = useTranslation("userMenu");
+    const {t : tGlobal} = useTranslation("common");
     return (
         <div className="user-menu">
             <Menu.Root>
@@ -16,14 +19,14 @@ export const UserMenu = () => {
                     <Menu.Content className="user-menu-content">
                         <Menu.Item value="profile">
                             <User className="user-menu-icon" />
-                            Mon profil
+                            {tLocal("profil")}
                         </Menu.Item>
                         <Menu.Item value="settings">
                             <Settings className="user-menu-icon" />
-                            Paramètres
+                            {tLocal("settings")}
                         </Menu.Item>
                         <Menu.Separator />
-                        <Menu.Item value="logout">Déconnexion</Menu.Item>
+                        <Menu.Item value="logout">{tGlobal("nav.logout")}</Menu.Item>
                     </Menu.Content>
                 </Menu.Positioner>
             </Menu.Root>

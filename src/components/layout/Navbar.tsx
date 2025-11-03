@@ -4,6 +4,7 @@ import { UserMenu } from "./UserMenu.tsx";
 import {RiArrowRightLine} from "react-icons/ri";
 import {Link} from "react-router-dom";
 import {SearchBar} from "./SearchBar.tsx";
+import {useTranslation} from "react-i18next";
 
 interface NavigationBarProps {
     title: string;
@@ -11,6 +12,7 @@ interface NavigationBarProps {
 }
 
 export const Navbar = ({ title, isAuthenticated }: NavigationBarProps) => {
+    const {t} = useTranslation("common");
     return (
         <Box as="header" className="navbar">
             <Box>
@@ -20,7 +22,7 @@ export const Navbar = ({ title, isAuthenticated }: NavigationBarProps) => {
                         <SearchBar />
                         <Link to="/login">
                             <Button size="md" variant="outline">
-                                Commencer <RiArrowRightLine />
+                                {t("actions.start")} <RiArrowRightLine />
                             </Button>
                         </Link>
                         <div className="avatar">

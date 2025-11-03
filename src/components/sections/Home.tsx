@@ -2,17 +2,19 @@ import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
 import { ArrowRight, Library, Users, MessageCircle } from "lucide-react";
 import {Navbar} from "../layout/Navbar.tsx";
 import {Link} from "react-router-dom";
+import {useTranslation} from "react-i18next";
 
 export const Home = () => {
+    const {t} = useTranslation("home");
     const titles = [
-        "Gérez votre collection",
-        "Échangez avec la communauté",
-        "Discutez simplement"
+        t("titles.collection"),
+        t("titles.community"),
+        t("titles.discussion")
     ];
     const textes = [
-        "Organisez votre bibliothèque personnelle avec tous les détails de vos livres.",
-        "Trouvez les livres qui vous intéressent et proposez des échanges ciblés.",
-        "Communiquez facilement pour convenir des détails de vos transactions."
+        t("texts.collection"),
+        t("texts.community"),
+        t("texts.discussion")
     ];
 
     return (
@@ -21,14 +23,14 @@ export const Home = () => {
             <main>
                 <Box as="section" textAlign="center" py={{ base: 12, md: 5 }} px={{ base: 4, md: 8 }} className="home">
                     <Heading as="h1" fontSize={{ base: "4xl", sm: "5xl", md: "6xl", lg: "3xl" }} fontWeight="bold" color="foreground" mb="6">
-                        Partagez votre passion pour la lecture
+                        {t("slogan")}
                     </Heading>
                     <Text fontSize={{ base: "lg", md: "xl" }} color="muted" mb="8">
-                        Échangez, vendez ou donnez vos livres avec une communauté de lecteurs passionnés
+                        {t("subSlogan")}
                     </Text>
                     <Link to="/Login">
                         <Button maxW="xs" size="lg">
-                            Créer mon compte gratuitement
+                            {t("accountCreation")}
                             <ArrowRight className="w-5 h-5 ml-2" />
                         </Button>
                     </Link>
@@ -52,6 +54,7 @@ export const Home = () => {
                                 display="flex"
                                 alignItems="center"
                                 justifyContent="center"
+                                m="0 auto"
                                 mb="4"
                                 color={["brown", "green.700", "red.700"][index]}
                             >

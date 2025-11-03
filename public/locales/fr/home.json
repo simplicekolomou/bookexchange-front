@@ -1,0 +1,15 @@
+{
+  "slogan" : "Partagez votre passion pour la lecture",
+  "subSlogan" : "Échangez, vendez ou donnez vos livres avec une communauté de lecteurs passionnés",
+  "accountCreation" : "Créer mon compte gratuitement",
+  "titles" : {
+    "collection" : "Gérez votre collection",
+    "community"  : "Échangez avec la communauté",
+    "discussion" : "Discutez simplement"
+  },
+  "texts" : {
+    "collection" : "Organisez votre bibliothèque personnelle avec tous les détails de vos livres.",
+    "community"  : "Trouvez les livres qui vous intéressent et proposez des échanges ciblés.",
+    "discussion" : "Communiquez facilement pour convenir des détails de vos transactions."
+  }
+}

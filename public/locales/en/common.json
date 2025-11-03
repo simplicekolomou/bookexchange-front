@@ -1,6 +1,7 @@
 {
   "brand": {
-    "title": "BookExchange"
+    "title": "BookExchange",
+    "purpose" : "A book exchange platform"
   },
   "nav": {
     "home": "Home",
@@ -10,7 +11,9 @@
   "actions": {
     "save": "Save",
     "cancel": "Cancel",
-    "delete": "Delete"
+    "delete": "Delete",
+    "start": "Start",
+    "search": "Search"
   },
   "greeting": "Hello, {{name}}!"
 }
