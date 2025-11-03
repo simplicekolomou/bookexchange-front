@@ -2,6 +2,7 @@ import { Button, Card, Field, Input, Stack, Flex, Box, Heading } from "@chakra-u
 import {LogoWithText} from "../layout/LogoWithText.tsx";
 import { useNavigate } from "react-router-dom";
 import {useState} from "react";
+import {useTranslation} from "react-i18next";
 
 
 export const Registration = () => {
@@ -12,13 +13,13 @@ export const Registration = () => {
         setActiveButton(button);
         navigate(link);
     };
-
+    const {t} = useTranslation("auth");
     return (
         <Flex className="login-registration-box">
             <Box>
                 <LogoWithText title="BookSwap" direction="column" />
                 <Heading as="h1" fontSize="3xl" mb="6" pt="4">
-                    Inscription
+                    {t("registration.action")}
                 </Heading>
                 <Flex className="switchable-button-login-register">
                     <Button
@@ -26,50 +27,50 @@ export const Registration = () => {
                         className={`btn ${activeButton === "login" ? "" : "inactive"}`}
                         onClick={() => goto("/Login", "login")}
                     >
-                        Connexion
+                        {t("login.action")}
                     </Button>
                     <Button
                         variant={activeButton === "register" ? "solid" : "outline"}
                         className={`btn ${activeButton === "register" ? "" : "inactive"}`}
                         onClick={() => goto("/Registration", "register")}
                     >
-                        S'inscrire
+                        {t("registration.action")}
                     </Button>
                 </Flex>
                 <Card.Root className="form" >
                     <Card.Header>
                         <Card.Description>
-                            Créez votre compte gratuitement
+                            {t("registration.description")}
                         </Card.Description>
                     </Card.Header>
                     <Card.Body>
                         <Stack gap="4" w="full" className="login-card-input, form-field">
                             <Box className="firstName-name-disposition">
                                 <Field.Root>
-                                    <Field.Label>Prénom : </Field.Label>
+                                    <Field.Label>{t("field.firstName")} : </Field.Label>
                                     <Input className="form-input" />
                                 </Field.Root>
                                 <Field.Root>
-                                    <Field.Label>Nom : </Field.Label>
+                                    <Field.Label>{t("field.lastName")} : </Field.Label>
                                     <Input className="form-input" />
                                 </Field.Root>
                             </Box>
                             <Field.Root>
-                                <Field.Label>Email : </Field.Label>
+                                <Field.Label>{t("field.email")} : </Field.Label>
                                 <Input className="form-input"/>
                             </Field.Root>
                             <Field.Root>
-                                <Field.Label>Mot de passe : </Field.Label>
+                                <Field.Label>{t("field.password")} : </Field.Label>
                                 <Input type="password" className="form-input" />
                             </Field.Root>
                             <Field.Root>
-                                <Field.Label>Confirmer le mot de passe : </Field.Label>
+                                <Field.Label>{t("field.passwordConfirmation")} : </Field.Label>
                                 <Input type="password" className="form-input" />
                             </Field.Root>
                         </Stack>
                     </Card.Body>
                     <Card.Footer justifyContent="center">
-                        <Button variant="solid">S'inscrire</Button>
+                        <Button variant="solid">{t("registration.action")}</Button>
                     </Card.Footer>
                 </Card.Root>
             </Box>

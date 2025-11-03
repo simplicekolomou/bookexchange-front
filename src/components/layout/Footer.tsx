@@ -1,4 +1,5 @@
 import { Box, Container, Text } from "@chakra-ui/react";
+import {LanguageSwitcher} from "./LanguageSwitcher.tsx";
 
 export const Footer = () => {
     return (
@@ -6,6 +7,7 @@ export const Footer = () => {
             <Container>
                 <Text>© 2025 BookSwap - Plateforme d'échange de livres</Text>
             </Container>
+            <LanguageSwitcher/>
         </Box>
     );
 };

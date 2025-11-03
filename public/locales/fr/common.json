@@ -1,0 +1,16 @@
+{
+  "brand": {
+    "title": "BookExchange"
+  },
+  "nav": {
+    "home": "Accueil",
+    "login": "Se connecter",
+    "logout": "Se déconnecter"
+  },
+  "actions": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer"
+  },
+  "greeting": "Bonjour, {{name}} !"
+}
