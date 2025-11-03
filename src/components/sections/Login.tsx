@@ -51,7 +51,7 @@ export const Login = () => {
                             </Field.Root>
                         </Stack>
                     </Card.Body>
-                    <Card.Footer justifyContent="flex-end">
+                    <Card.Footer justifyContent="center">
                         <Button variant="solid">Se connecter</Button>
                     </Card.Footer>
                 </Card.Root>

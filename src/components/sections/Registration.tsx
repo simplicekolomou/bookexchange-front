@@ -68,7 +68,7 @@ export const Registration = () => {
                             </Field.Root>
                         </Stack>
                     </Card.Body>
-                    <Card.Footer justifyContent="flex-end">
+                    <Card.Footer justifyContent="center">
                         <Button variant="solid">S'inscrire</Button>
                     </Card.Footer>
                 </Card.Root>
