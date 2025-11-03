@@ -9,6 +9,7 @@
     "logout": "Log out"
   },
   "actions": {
+    "add" : "Add a book",
     "save": "Save",
     "cancel": "Cancel",
     "delete": "Delete",

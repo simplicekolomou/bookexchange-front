@@ -7,12 +7,12 @@ export const UserMenu = () => {
     const {t : tLocal} = useTranslation("userMenu");
     const {t : tGlobal} = useTranslation("common");
     return (
-        <div className="user-menu">
+        <div>
             <Menu.Root>
-                <Menu.Trigger>
-                    <Avatar.Root>
+                <Menu.Trigger className="navbar-avatar" as="div">
+                    <Avatar.Root >
                         <Avatar.Fallback name="Segun Adebayo" />
-                        <Avatar.Image src="https://bit.ly/sage-adebayo" />
+                        <Avatar.Image src="https://bit.ly/sage-adebayo"/>
                     </Avatar.Root>
                 </Menu.Trigger>
                 <Menu.Positioner>

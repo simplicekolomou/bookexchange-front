@@ -9,6 +9,7 @@
     "logout": "Se déconnecter"
   },
   "actions": {
+    "add" : "Ajouter un livre",
     "save": "Enregistrer",
     "cancel": "Annuler",
     "delete": "Supprimer",

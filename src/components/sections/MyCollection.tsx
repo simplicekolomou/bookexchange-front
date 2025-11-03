@@ -1,9 +1,9 @@
-import {Navbar} from "../layout/Navbar.tsx";
+import {NavbarAuthenticatedUser} from "../layout/NavbarAuthenticatedUser.tsx";
 
 export const MyCollection = () => {
     return (
         <>
-            <Navbar title={"BookSwap"} isAuthenticated={true} />
+            <NavbarAuthenticatedUser />
             <div>MyCollection Component</div>
         </>
     );

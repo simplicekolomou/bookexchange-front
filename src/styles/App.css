@@ -132,10 +132,16 @@
   padding: 8px;
   border-radius: 8px;
   border: 1px solid #ccc;
-  width: 200px;
+  width: 60%;
   background: var(--background);
   height: 5vh;
 }
+
+/* Style pour l'avatar d'utilisateur */
+.navbar-avatar {
+    border-radius: 50%;
+}
+
 /* Bouton configurable */
 .configurable-button {
   width: 100px;
@@ -179,6 +185,4 @@
     gap: 1rem;
   }
 }
-/* Style pour la section collection */
-.user-menu {
-}
+
