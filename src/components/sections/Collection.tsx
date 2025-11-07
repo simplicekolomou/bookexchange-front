@@ -4,6 +4,7 @@ import { CollectionContent } from './CollectionContent.tsx';
 import { AddBookDialog } from './AddBookDialog.tsx';
 import { Box } from '@chakra-ui/react';
 import {AuthenticatedNavbar} from "../layout/AuthenticatedNavbar.tsx";
+import {useTranslation} from "react-i18next";
 
 export const Collection = () => {
     const [books] = useState<Book[]>([]);
@@ -20,10 +21,12 @@ export const Collection = () => {
         const matchesFilter = filter === 'all' || book.availability !== 'none';
         return matchesSearch && matchesFilter;
     });
+    const {t} = useTranslation("collections");
 
     return (
         <Box minH="100vh" bg="gray.50">
             <AuthenticatedNavbar
+                title={t("title")}
                 bookCount={filteredBooks.length}
                 onAddBook={() => setIsAddDialogOpen(true)}
             />

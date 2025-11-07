@@ -1,0 +1,10 @@
+{
+  "title" : "My Collection",
+  "slogan" : "Start building your library",
+  "addButton": "Add your first book",
+  "emptyList": "No books",
+  "allBooks": "All",
+  "availableBooks": "Available",
+  "searchPlaceholder": "Search by title or author...",
+    "nbBooks": "book(s)"
+}

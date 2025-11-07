@@ -1,13 +1,4 @@
-import {
-    Box,
-    Flex,
-    Input,
-    Button,
-    SimpleGrid,
-    VStack,
-    Text,
-    useBreakpointValue,
-} from '@chakra-ui/react';
+import { Box, Flex, Input, Button, SimpleGrid, VStack, Text, useBreakpointValue } from '@chakra-ui/react';
 import type { Book } from '../../types/book';
 import { BookCard } from '../layout/BookCard';
 import { Search, BookOpen, Grid3x3, List } from 'lucide-react';
@@ -51,7 +42,7 @@ export const CollectionContent = ({
         onSearchChange(e.target.value);
     };
 
-    const { t } = useTranslation("myCollection");
+    const { t } = useTranslation("collections");
 
     return (
         <Box maxW="1200px" mx="auto" px={4} py={8}>
@@ -77,7 +68,7 @@ export const CollectionContent = ({
                         }}
                     />
                     <Input
-                        placeholder="Rechercher par titre ou auteur..."
+                        placeholder={t("searchPlaceholder")}
                         value={searchQuery}
                         onChange={handleSearchInputChange}
                         bg="white"
@@ -102,14 +93,14 @@ export const CollectionContent = ({
                             colorScheme={filter === 'all' ? 'blue' : 'gray'}
                             variant={filter === 'all' ? 'solid' : 'outline'}
                         >
-                            Tous
+                            {t("allBooks")}
                         </Button>
                         <Button
                             onClick={() => onFilterChange('available')}
                             colorScheme={filter === 'available' ? 'blue' : 'gray'}
                             variant={filter === 'available' ? 'solid' : 'outline'}
                         >
-                            Disponibles
+                            {t("availableBooks")}
                         </Button>
                     </Flex>
                     {/* Bouton Mode vue */}
@@ -180,10 +171,10 @@ const EmptyCollection = ({ t }: { t: (key: string) => string }) => (
         </Flex>
         <Box>
             <Text fontSize="2xl" fontWeight="semibold" color="gray.800" mb={2}>
-                Aucun livre
+                {t("emptyList")}
             </Text>
             <Text color="gray.600" mb={6}>
-                {t("collections.slogan")}
+                {t("slogan")}
             </Text>
         </Box>
         <Button
@@ -191,7 +182,7 @@ const EmptyCollection = ({ t }: { t: (key: string) => string }) => (
             size="lg"
             w={{ base: "full", sm: "auto" }}
         >
-            Ajouter votre premier livre
+            {t("addButton")}
         </Button>
     </VStack>
 );

@@ -1,11 +1,4 @@
-import {
-    Box,
-    Flex,
-    Heading,
-    Text,
-    Button,
-    useBreakpointValue
-} from '@chakra-ui/react';
+import { Box, Flex, Heading, Text, Button, useBreakpointValue } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { BookOpen, Search, Plus } from 'lucide-react';
 import { UserMenu } from "./UserMenu.tsx";
@@ -14,15 +7,17 @@ import {useTranslation} from "react-i18next";
 interface NavbarProps {
     bookCount: number;
     onAddBook: () => void;
+    title: string;
 }
 
-export const AuthenticatedNavbar = ({ bookCount, onAddBook }: NavbarProps) => {
+export const AuthenticatedNavbar = ({ bookCount, onAddBook, title }: NavbarProps) => {
     const navigate = useNavigate();
 
     const showText = useBreakpointValue({ base: false, md: true }) ?? false;
 
     const handleSearchClick = () => navigate('/search');
-    const {t} = useTranslation("collections");
+    const handleAddClick = () => navigate('/search');
+    const {t} = useTranslation(["collections", "common"]);
 
     return (
         <Box
@@ -59,10 +54,10 @@ export const AuthenticatedNavbar = ({ bookCount, onAddBook }: NavbarProps) => {
                     </Flex>
                     <Box>
                         <Heading size="sm" color="gray.800">
-                            {t("collections.title")}
+                            {title}
                         </Heading>
                         <Text fontSize="xs" color="gray.600">
-                            {bookCount} livre(s)
+                            {bookCount} {t("collections:nbBooks")}
                         </Text>
                     </Box>
                 </Flex>
@@ -77,7 +72,7 @@ export const AuthenticatedNavbar = ({ bookCount, onAddBook }: NavbarProps) => {
                         px={2}
                     >
                         <Search className="navbar-icon" />
-                        {showText && 'Rechercher'}
+                        {showText && t("common:actions.search")}
                     </Button>
 
                     <Button
@@ -88,7 +83,7 @@ export const AuthenticatedNavbar = ({ bookCount, onAddBook }: NavbarProps) => {
                         px={2}
                     >
                         <Plus className="navbar-icon" />
-                        {showText && 'Ajouter'}
+                        {showText && t("common:actions.add")}
                     </Button>
                     <UserMenu />
                 </Flex>

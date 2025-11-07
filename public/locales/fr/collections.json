@@ -1,4 +1,10 @@
 {
   "title" : "Ma Collection",
   "slogan" : "Commencez à construire votre bibliothèque",
+  "addButton" : "Ajouter votre premier livre",
+  "emptyList": "Aucun livre",
+  "allBooks": "Tous",
+  "availableBooks": "Disponibles",
+  "searchPlaceholder": "Rechercher par titre ou auteur...",
+  "nbBooks": "livre(s)"
 }
