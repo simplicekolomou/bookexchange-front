@@ -16,5 +16,24 @@
     "start": "Commencer",
     "search": "Rechercher"
   },
-  "greeting": "Bonjour, {{name}} !"
+  "greeting": "Bonjour, {{name}} !",
+  "book": {
+    "title": "Titre",
+    "author": "Auteur",
+    "description": "Description",
+    "isbn": "ISBN",
+    "edition": "Edition",
+    "format": "Format",
+    "personalImage": "Votre image personnelle (optionnelle)",
+    "imageApi": "Image de couverture (API)",
+    "availabletothecommunity": "Disponible pour la communauté"
+  },
+  "bookState": {
+    "new": "Neuf",
+    "excellent": "Excellent",
+    "good": "Bon",
+    "acceptable": "Acceptable",
+    "worn": "Usé"
+  }
+
 }

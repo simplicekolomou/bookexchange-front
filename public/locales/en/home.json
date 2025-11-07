@@ -11,5 +11,24 @@
     "collection" : "Organise your personal library with all the details of your books.",
     "community"  : "Find interesting books and ask for specific exchanges.",
     "discussion" : "Easily arrange transactions' details through the chat."
+  },
+  "greeting": "Bonjour, {{name}} !",
+  "book": {
+    "title": "Title",
+    "author": "Author",
+    "description": "Description",
+    "isbn": "ISBN",
+    "edition": "Edition",
+    "format": "Format",
+    "personalImage": "Personal image (optional)",
+    "imageApi": "Cover image (API)",
+    "availabletothecommunity": "Available to the community"
+  },
+  "bookState": {
+    "new": "New",
+    "excellent": "Excellent",
+    "good": "Good",
+    "acceptable": "Acceptable",
+    "worn": "Worn"
   }
 }

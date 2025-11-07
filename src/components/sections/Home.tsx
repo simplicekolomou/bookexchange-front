@@ -2,7 +2,7 @@ import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
 import { ArrowRight, Library, Users, MessageCircle } from "lucide-react";
 import {Link} from "react-router-dom";
 import {useTranslation} from "react-i18next";
-import {NavbarUnAuthenticatedUser} from "../layout/NavbarUnAuthenticatedUser.tsx";
+import {UnAuthenticatedNavbar} from "../layout/UnAuthenticatedNavbar.tsx";
 
 export const Home = () => {
     const {t} = useTranslation("home");
@@ -11,7 +11,7 @@ export const Home = () => {
 
     return (
         <>
-            <NavbarUnAuthenticatedUser />
+            <UnAuthenticatedNavbar />
             <main>
                 <Box as="section" textAlign="center" py={{ base: 12, md: 5 }} px={{ base: 4, md: 8 }} className="home">
                     <Heading as="h1" fontSize={{ base: "4xl", sm: "5xl", md: "6xl", lg: "3xl" }} fontWeight="bold" color="foreground" mb="6">

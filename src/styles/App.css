@@ -103,8 +103,8 @@
   color: var(--foreground);
 }
 
-/* Barre de navigation */
-.navbar {
+/* Barre de navigation utilisateur non connecté*/
+.unauthenticated-navbar {
   background-color: var(--background);
   border-bottom: 1px solid var(--border);
   position: sticky;
@@ -115,7 +115,7 @@
   border-radius: var(--radius);
 }
 
-.navbar-content {
+.unauthenticated-navbar-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -129,10 +129,10 @@
 
 /* Style de la barre de recherche */
 .search-bar {
-  padding: 8px;
+  padding: 3px;
   border-radius: 8px;
   border: 1px solid #ccc;
-  width: 60%;
+  width: 30%;
   background: var(--background);
   height: 5vh;
 }
@@ -142,20 +142,26 @@
     border-radius: 50%;
 }
 
-/* Bouton configurable */
-.configurable-button {
-  width: 100px;
-  height: 40px;
-  background-color: var(--primary);
-  color: var(--primary-foreground);
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+/* Style de la navbar pour l'utilisateur connecté */
+.authenticated-navbar-container {
+  flex-direction: column;
+  width: 100%;
+  margin: auto;
 }
 
-.configurable-button:hover {
-  background-color: #ff6d2d;
+.collection-section {
+  gap: 0.5rem;
+  margin-top: 0.5rem;
 }
+.btn-search{
+    background: var(--secondary);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius);
+    cursor: pointer;
+}
+
 
 /* Media queries pour les écrans plus grands */
 @media (min-width: 768px) {
@@ -163,7 +169,16 @@
     padding: 2rem;
   }
 
-  .navbar-content {
+  .unauthenticated-navbar-content {
+    width: 100%;
+    margin: auto;
+    flex-direction: row;
+    gap: 0;
+  }
+
+  .authenticated-navbar-container {
+    width: 100%;
+    margin: auto;
     flex-direction: row;
     gap: 0;
   }
@@ -173,16 +188,18 @@
     flex-direction: row;
     gap: 1rem;
   }
-}
 
-@media (min-width: 1024px) {
-  .card {
-    max-width: 60%;
-  }
   .firstName-name-disposition {
     display: flex;
     flex-direction: row;
     gap: 1rem;
+  }
+
+  .collection-section {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    margin-top: 1rem;
   }
 }
 
