@@ -13,7 +13,7 @@ export const Login = () => {
     };
     const {t} = useTranslation("auth");
     return (
-        <>
+        <Box minH="100vh">
             <UnAuthenticatedNavbar />
             <Flex className="login-registration-box">
                 <Box>
@@ -60,6 +60,6 @@ export const Login = () => {
                     </Card.Root>
                 </Box>
             </Flex>
-        </>
+        </Box>
     );
 };

@@ -5,6 +5,5 @@
   "emptyList": "No books",
   "allBooks": "All",
   "availableBooks": "Available",
-  "searchPlaceholder": "Search by title or author...",
-    "nbBooks": "book(s)"
+  "searchPlaceholder": "Search by title or author..."
 }

@@ -1,0 +1,32 @@
+{
+  "title": "Ajouter un livre",
+  "book": {
+    "basicInfo": "Informations de base",
+    "title" : "Titre *",
+    "titlePlaceholder": "Titre du livre",
+    "author": "Auteur *",
+    "authorPlaceholder": "Auteur du livre",
+    "bookDetails": "Détails du livre",
+    "isbn": "ISBN",
+    "isbnPlaceholder": "978-2-1234-5680-3",
+    "bookState": "État *",
+    "format": "Format ",
+    "formatPlaceholder": "Broché, Poche, Relié...",
+    "edition": "Édition ",
+    "editionPlaceholder": "Première édition, 2020...",
+    "images": {
+      "title": "Images",
+      "coverImage": "Image de couverture (API)",
+      "coverImagePlaceholder": "Télécharger l'image de couverture",
+      "personalImage": "Votre image personnelle (optionnelle)",
+      "personalImagePlaceholder": "Télécharger votre image"
+    },
+    "description": "Description",
+    "descriptionPlaceholder": "Notes personnelles sur ce livre..."
+  },
+  "availability": {
+    "title": "Disponible pour la communauté",
+    "subtitle": "Rendre ce livre visible aux autres membres",
+    "options" : "Type de disponibilité"
+  }
+}

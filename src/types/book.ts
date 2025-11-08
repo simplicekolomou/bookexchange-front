@@ -23,3 +23,17 @@ export interface Wishlist {
     author: string;
     createdAt: string;
 }
+
+export const bookStates = [
+    { label: "Neuf", value: "neuf" },
+    { label: "Excellent", value: "excellent" },
+    { label: "Bon", value: "bon" },
+    { label: "Acceptable", value: "acceptable" },
+    { label: "Usé", value: "usé" },
+];
+
+export const availabilityOptions = [
+    { label: "À échanger", value: "échanger" },
+    { label: "À vendre", value: "vendre" },
+    { label: "À donner", value: "donner" },
+];

@@ -14,7 +14,8 @@
     "cancel": "Annuler",
     "delete": "Supprimer",
     "start": "Commencer",
-    "search": "Rechercher"
+    "search": "Rechercher",
+    "reset": "Réinitialiser"
   },
   "greeting": "Bonjour, {{name}} !",
   "book": {
@@ -38,5 +39,6 @@
   "button": {
     "add": "Ajouter",
     "search": "Rechercher"
-  }
+  },
+  "nbBooks": "livre(s)"
 }

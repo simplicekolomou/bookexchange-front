@@ -5,6 +5,5 @@
   "emptyList": "Aucun livre",
   "allBooks": "Tous",
   "availableBooks": "Disponibles",
-  "searchPlaceholder": "Rechercher par titre ou auteur...",
-  "nbBooks": "livre(s)"
+  "searchPlaceholder": "Rechercher par titre ou auteur..."
 }

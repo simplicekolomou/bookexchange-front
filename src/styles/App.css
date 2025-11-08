@@ -162,6 +162,15 @@
     cursor: pointer;
 }
 
+/* Style de la page add book */
+.add-book-container input, textarea{
+  border: 1px solid var(--input);
+}
+.add-book-select-trigger {
+    border: 1px solid var(--input);
+  background: var(--background);
+  color: #9e9c9c;
+}
 
 /* Media queries pour les écrans plus grands */
 @media (min-width: 768px) {

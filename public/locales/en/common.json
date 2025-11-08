@@ -14,7 +14,9 @@
     "cancel": "Cancel",
     "delete": "Delete",
     "start": "Start",
-    "search": "Search"
+    "search": "Search",
+    "reset": "Reset"
   },
-  "greeting": "Hello, {{name}}!"
+  "greeting": "Hello, {{name}}!",
+  "nbBooks": "book(s)"
 }

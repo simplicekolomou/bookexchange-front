@@ -10,7 +10,7 @@ export const Home = () => {
     const textes = t("texts", { returnObjects: true });
 
     return (
-        <>
+        <Box minH="100vh">
             <UnAuthenticatedNavbar />
             <main>
                 <Box as="section" textAlign="center" py={{ base: 12, md: 5 }} px={{ base: 4, md: 8 }} className="home">
@@ -58,6 +58,6 @@ export const Home = () => {
                 ))}
             </Flex>
             </main>
-        </>
+        </Box>
     );
 };
