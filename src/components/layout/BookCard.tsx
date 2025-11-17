@@ -9,10 +9,10 @@ import {
     IconButton,
     useDisclosure, Box
 } from '@chakra-ui/react';
-import type { Book } from '../..//types/book';
+import type { BookApi } from '../../types/bookApi.ts';
 
 interface BookCardProps {
-    book: Book;
+    book: BookApi;
     viewMode: 'grid' | 'list'
 }
 

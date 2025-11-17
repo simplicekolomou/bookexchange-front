@@ -1,5 +1,5 @@
 {
-  "title": "Add a Book",
+  "title": "Add a book",
   "book": {
     "basicInfo": "Basic Information",
     "title" : "Title *",
