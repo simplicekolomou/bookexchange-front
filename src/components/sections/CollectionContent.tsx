@@ -1,12 +1,12 @@
 import { Box, Flex, Input, Button, SimpleGrid, VStack, Text, useBreakpointValue } from '@chakra-ui/react';
-import type { BookApi } from '../../types/bookApi.ts';
+import type { Book } from '../../types/book';
 import { BookCard } from '../layout/BookCard';
 import { Search, BookOpen, Grid3x3, List } from 'lucide-react';
 import { useTranslation } from "react-i18next";
 import {Link} from "react-router-dom";
 
 interface CollectionContentProps {
-    books: BookApi[];
+    books: Book[];
     searchQuery: string;
     viewMode: 'grid' | 'list';
     filter: 'all' | 'available';

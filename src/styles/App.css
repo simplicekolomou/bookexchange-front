@@ -40,8 +40,8 @@
 .form {
   width: 100%;
   padding: 1.5rem;
+  background-color: white;
   border: 1px solid var(--border);
-  background: white;
 }
 
 .form-input {
@@ -124,24 +124,7 @@
 }
 
 .user-menu-content{
-  background: var(--background);
-  width: 100%;
-}
-
-.user-menu-content a{
-  text-decoration: none;
-  color: var(--foreground);
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.user-menu-logout{
-  color: var(--foreground);
-  text-decoration: none;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
+  background: #9e9c9c;
 }
 
 /* Style de la barre de recherche */
@@ -166,15 +149,6 @@
   margin: auto;
 }
 
-.user-menu-link {
-  width: 100%;
-  align-items: center;
-  text-decoration: none;
-  color: var(--foreground);
-  border: none;
-  padding: 2px;
-}
-
 .collection-section {
   gap: 0.5rem;
   margin-top: 0.5rem;
@@ -186,11 +160,6 @@
     padding: 0.5rem 1rem;
     border-radius: var(--radius);
     cursor: pointer;
-}
-
-/* Style de la page profile */
-.btn-back-profile{
-  display: flex;
 }
 
 /* Style de la page add book */
@@ -242,3 +211,4 @@
     margin-top: 1rem;
   }
 }
+

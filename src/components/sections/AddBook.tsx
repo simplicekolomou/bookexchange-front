@@ -1,43 +1,37 @@
 import { useState } from 'react';
 import { Button, Input, Textarea, Box, Grid, Image, Text, VStack, Flex, Switch, Portal, Select, createListCollection, Container, Heading, } from '@chakra-ui/react';
+import {type BookCondition, type BookAvailability, availabilityOptions, bookStates} from '../../types/book';
+import {AuthenticatedNavbar} from "../layout/AuthenticatedNavbar.tsx";
 import {useTranslation} from "react-i18next";
-import { Availability, BookStateLabel} from "../../types/bookApi.ts";
 
+// Collections pour les Select
+const conditionCollection = createListCollection({
+    items: bookStates.map(condition => ({ label: condition.label, value: condition.value }))
+});
+
+const availabilityCollection = createListCollection({
+    items: availabilityOptions.map(option => ({ label: option.label, value: option.value }))
+});
 
 export const AddBook = () => {
-    // Collections pour les Select
-    const conditionCollection = createListCollection({
-        items: BookStateLabel.map(
-            (bookState) => ({ value: bookState.value, label: bookState.label })
-        )
-    });
-
-
-    const availabilityCollection = createListCollection({
-        items: Availability.map(
-            (option) => ({ value: option.value, label: option.label })
-        )
-    });
-
-
     const [formData, setFormData] = useState({
         title: '',
         author: '',
         isbn: '',
-        bookState: '',
+        condition: 'bon' as BookCondition,
         format: '',
         edition: '',
         coverImage: '',
         userCoverImage: '',
         description: '',
         isAvailable: false,
-        availability: ''
+        availability: 'none' as BookAvailability,
     });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         console.log("Livre ajouté :", formData);
-        // TODO : Ajouter la logique pour envoyer les données au backend
+        // Ici vous ajouterez la logique pour sauvegarder le livre
     };
 
     const handleReset = () => {
@@ -45,20 +39,21 @@ export const AddBook = () => {
             title: '',
             author: '',
             isbn: '',
-            bookState: '',
+            condition: 'bon',
             format: '',
             edition: '',
             coverImage: '',
             userCoverImage: '',
             description: '',
             isAvailable: false,
-            availability: ''
+            availability: 'none',
         });
     };
     const {t} = useTranslation(["common", "addBook"]);
 
     return (
         <Box className="add-book-container">
+            <AuthenticatedNavbar bookCount={0} title={t("common:brand.title")} />
             <Container maxW="4xl" py={8}>
                 {/* En-tête du formulaire */}
                 <Heading as="h1" fontSize="3xl" mb="6" pt="4">
@@ -122,8 +117,8 @@ export const AddBook = () => {
                                         </Text>
                                         <Select.Root
                                             collection={conditionCollection}
-                                            value={[formData.bookState]}
-                                            onValueChange={({ value }) => setFormData({ ...formData, bookState: value[0] })}
+                                            value={[formData.condition]}
+                                            onValueChange={({ value }) => setFormData({ ...formData, condition: value[0] as BookCondition })}
                                             size="md"
                                         >
                                             <Select.HiddenSelect />
@@ -139,7 +134,7 @@ export const AddBook = () => {
                                                 <Select.Positioner>
                                                     <Select.Content  bg={"gray.100"}>
                                                         {conditionCollection.items.map((item) => (
-                                                            <Select.Item key={item.value} item={item.label}>
+                                                            <Select.Item key={item.value} item={item}>
                                                                 <Select.ItemText>{item.label}</Select.ItemText>
                                                                 <Select.ItemIndicator />
                                                             </Select.Item>
@@ -243,7 +238,7 @@ export const AddBook = () => {
                                             setFormData({
                                                 ...formData,
                                                 isAvailable: checked,
-                                                availability: checked ? 'echanger' : 'none',
+                                                availability: checked ? 'échanger' : 'none',
                                             })
                                         }
                                     >
@@ -260,7 +255,7 @@ export const AddBook = () => {
                                         <Select.Root
                                             collection={availabilityCollection}
                                             value={[formData.availability]}
-                                            onValueChange={({ value }) => setFormData({ ...formData, availability: value[0] })}
+                                            onValueChange={({ value }) => setFormData({ ...formData, availability: value[0] as BookAvailability })}
                                             size="md"
                                         >
                                             <Select.HiddenSelect />
@@ -276,7 +271,7 @@ export const AddBook = () => {
                                                 <Select.Positioner>
                                                     <Select.Content bg={"gray.100"}>
                                                         {availabilityCollection.items.map((item) => (
-                                                            <Select.Item key={item.value} item={item.label}>
+                                                            <Select.Item key={item.value} item={item}>
                                                                 <Select.ItemText>{item.label}</Select.ItemText>
                                                                 <Select.ItemIndicator />
                                                             </Select.Item>
