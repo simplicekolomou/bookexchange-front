@@ -74,7 +74,7 @@ export const Login = () => {
             >
                 <Box w={{ base: "100%", md: "70%" }}>
                     <form onSubmit={handleSubmit} method="POST">
-                        <Heading as="h1" fontSize="3xl" mb="6" pt="4">
+                        <Heading as="h1" fontSize="3xl" mb="6">
                             {t("login.title")}
                         </Heading>
                         {/* Boutons de navigation */}
