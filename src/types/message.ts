@@ -5,7 +5,7 @@ export interface Message {
     content: string;
     createdAt: string;
     read: boolean;
-    type?: 'text';
+    type?: 'text' | 'proposal';
     metadata?: {
         bookId?: string;
         bookTitle?: string;
@@ -16,7 +16,7 @@ export interface Message {
 
 export interface Conversation {
     id: string;
-    participants: string[];
+    participants: string[]; // User IDs
     createdAt: string;
     updatedAt: string;
 }
