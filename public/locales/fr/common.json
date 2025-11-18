@@ -15,7 +15,8 @@
     "delete": "Supprimer",
     "start": "Commencer",
     "search": "Rechercher",
-    "reset": "Réinitialiser"
+    "reset": "Réinitialiser",
+    "collection": "Ma collection"
   },
   "greeting": "Bonjour, {{name}} !",
   "book": {
