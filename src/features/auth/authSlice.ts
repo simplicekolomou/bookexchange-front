@@ -1,6 +1,6 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 import { authApi } from './authApi'
-import type { AuthState, User } from '../../types/auth.types'
+import type {AuthResponse, AuthState, User} from '../../types/auth.types'
 
 const getStoredAuth = (): { token: string | null; user: User | null } => {
     try {
@@ -28,21 +28,16 @@ const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        setCredentials: (state, action: PayloadAction<{ user: User; token: string }>) => {
-            state.user = action.payload.user
-            state.token = action.payload.token
+        setCredentials: (state, action: PayloadAction<AuthResponse>) => {
+            state.token = action.payload.accessToken
             state.isAuthenticated = true
 
-            localStorage.setItem('auth_token', action.payload.token)
-            localStorage.setItem('auth_user', JSON.stringify(action.payload.user))
+            localStorage.setItem('auth_token', action.payload.accessToken)
         },
         logout: (state) => {
-            state.user = null
             state.token = null
-            state.isAuthenticated = false
 
             localStorage.removeItem('auth_token')
-            localStorage.removeItem('auth_user')
         },
     },
     // Écouter les actions des endpoints API
@@ -52,24 +47,17 @@ const authSlice = createSlice({
             .addMatcher(
                 authApi.endpoints.login.matchFulfilled,
                 (state, { payload }) => {
-                    state.user = payload.user
-                    state.token = payload.token
+                    state.token = payload.accessToken
                     state.isAuthenticated = true
-
-                    localStorage.setItem('auth_token', payload.token)
-                    localStorage.setItem('auth_user', JSON.stringify(payload.user))
                 }
             )
             // Logout successful
             .addMatcher(
                 authApi.endpoints.logout.matchFulfilled,
                 (state) => {
-                    state.user = null
                     state.token = null
-                    state.isAuthenticated = false
 
                     localStorage.removeItem('auth_token')
-                    localStorage.removeItem('auth_user')
                 }
             )
     },

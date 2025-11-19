@@ -46,3 +46,18 @@ export const Availability = [
     { value: 'donner', label: 'A donner' },
     { value: 'indisponible', label: 'Indisponible' }
 ]
+
+// src/types/books.ts
+export type VolumeShort = {
+    id: string;
+    title: string;
+    coverImage: string;
+    identifiers: IndustryIdentifier[];
+    authors: string[];
+    description: string;
+};
+
+export type IndustryIdentifier = {
+    type: string;
+    identifier: string;
+}

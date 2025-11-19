@@ -1,0 +1,192 @@
+// src/components/books/BookSearchCombobox.tsx
+"use client";
+
+import {
+    Combobox,
+    HStack,
+    Portal,
+    Span,
+    Spinner,
+    Image,
+    useListCollection,
+} from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+import type {VolumeShort} from "../../../types/bookApi.ts";
+import { useGetBookSuggestionsQuery } from "../../../features/book/bookApi.ts"; // adjust path if needed
+
+type Props = {
+    lang?: string;              // default "fre"
+    limit?: number;             // default 10
+    initialQuery?: string;
+    onSelect: (item: VolumeShort) => void;
+};
+
+export function BookSearchCombobox({
+                                       lang = "fre",
+                                       limit = 5,
+                                       initialQuery = "",
+                                       onSelect,
+                                   }: Props) {
+    const [inputValue, setInputValue] = useState(initialQuery);
+
+    // Chakra collection state
+    const { collection, set } = useListCollection<VolumeShort>({
+        initialItems: [],
+        itemToString: (item) => item.title,
+        itemToValue: (item) => item.id,
+    });
+
+    // Debounce
+    const debounced = useDebounced(inputValue, 300);
+
+    // Compute query args (title/author) from debounced input
+    const searchArgs = (() => {
+        const q = debounced.trim();
+        if (!q) return null;
+
+        const dash = q.indexOf(" - ");
+        const author = dash > 0 ? q.slice(0, dash).trim() : undefined;
+        const title = dash > 0 ? q.slice(dash + 3).trim() : q;
+
+        return {
+            title: title || undefined,
+            author: author || undefined,
+            lang,
+            limit,
+        };
+    })();
+
+    // 🔁 Call backend via RTK Query
+    const {
+        data,
+        isFetching,
+        isError,
+        error,
+    } = useGetBookSuggestionsQuery(searchArgs!, {
+        skip: !searchArgs, // don't call if query empty
+    });
+
+    // Sync RTK Query data into Chakra collection
+    useEffect(() => {
+        // eslint-disable-next-line no-debugger
+        alert("UseEffect !")
+        if (!searchArgs) {
+            set([]);
+            return;
+        }
+        if (data?.items) {
+            set(data.items);
+            console.log(data.items);
+        } else if (!isFetching && !data?.items) {
+            set([]);
+        }
+    }, [data.items, isFetching, searchArgs, set]);
+
+    // Normalize error message
+    let errorMessage: string | null = null;
+    if (isError && error) {
+        if ("status" in error) {
+            errorMessage = typeof error.data === "string"
+                ? error.data
+                : `HTTP ${error.status}`;
+        } else {
+            errorMessage = error.message ?? "Network error";
+        }
+    }
+
+    return (
+        <Combobox.Root
+            collection={collection}
+            placeholder="Rechercher un livre"
+            onInputValueChange={(e) => setInputValue(e.inputValue)}
+            positioning={{ sameWidth: false, placement: "bottom-end" }}
+        >
+            <Combobox.Label>Rechercher un livre</Combobox.Label>
+            <Combobox.Control>
+                <Combobox.Input placeholder="Livre à chercher" />
+                <Combobox.IndicatorGroup>
+                    <Combobox.ClearTrigger />
+                    <Combobox.Trigger />
+                </Combobox.IndicatorGroup>
+            </Combobox.Control>
+
+            <Portal>
+                <Combobox.Positioner>
+                    <Combobox.Content minW="lg">
+                        {isFetching ? (
+                            <HStack p="2">
+                                <Spinner size="xs" borderWidth="1px" />
+                                <Span>Recherche…</Span>
+                            </HStack>
+                        ) : errorMessage ? (
+                            <Span p="2" color="fg.error">
+                                {errorMessage}
+                            </Span>
+                        ) : collection.items?.length ? (
+                            collection.items.map((book: VolumeShort) => (
+                                <Combobox.Item
+                                    key={book.id}
+                                    item={book}
+                                    onPointerDown={(e) => {
+                                        // prevent blur before click on some browsers
+                                        e.preventDefault();
+                                    }}
+                                    onClick={() => onSelect(book)}
+                                >
+                                    <HStack justify="flex-start" align="center" gap="3" py="2">
+                                        {book.coverImage ? (
+                                            <Image
+                                                src={book.coverImage + "?fife=w130"}
+                                                alt={book.title}
+                                                boxSize="130px"
+                                                objectFit="cover"
+                                                borderRadius="md"
+                                            />
+                                        ) : (
+                                            <span
+                                                style={{
+                                                    width: 130,
+                                                    height: 40,
+                                                    background: "var(--chakra-colors-gray-100)",
+                                                    borderRadius: 8,
+                                                    display: "inline-block",
+                                                }}
+                                            />
+                                        )}
+                                        <div style={{ minWidth: 0 }}>
+                                            <Span fontWeight="medium" truncate>
+                                                {book.title}
+                                            </Span>
+                                            <Span display="block" color="fg.muted" truncate>
+                                                {book.authors?.join(", ")}
+                                            </Span>
+                                        </div>
+                                    </HStack>
+                                    <Combobox.ItemIndicator />
+                                </Combobox.Item>
+                            ))
+                        ) : debounced ? (
+                            <Span p="2" color="fg.muted">
+                                Aucun résultat
+                            </Span>
+                        ) : (
+                            <Span p="2" color="fg.muted">
+                                Commencez à taper pour chercher
+                            </Span>
+                        )}
+                    </Combobox.Content>
+                </Combobox.Positioner>
+            </Portal>
+        </Combobox.Root>
+    );
+}
+
+/* ---------- small debounce hook ---------- */
+function useDebounced<T>(value: T, delay = 500) {
+    const [v, setV] = useState(value);
+    useEffect(() => {
+        const t = setTimeout(() => setV(value), delay);
+        return () => clearTimeout(t);
+    }, [value, delay]);
+    return v;
+}

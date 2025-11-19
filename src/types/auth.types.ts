@@ -18,9 +18,7 @@ export interface RegisterCredentials {
 }
 
 export interface AuthResponse {
-    user: User
-    token: string
-    expiresIn: number
+    accessToken: string
 }
 
 export interface AuthState {

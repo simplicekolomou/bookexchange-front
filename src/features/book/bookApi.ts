@@ -1,19 +1,37 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import type { BookApi } from '../../types/bookApi.ts';
+import type {BookApi, SearchResponse} from '../../types/bookApi.ts';
+import {apiSlice} from "../../services/apiSlice.ts";
 
-export const booksApi = createApi({
-    reducerPath: 'booksApi',
-    baseQuery: fetchBaseQuery({
-        baseUrl: '/api/',
-        credentials: 'include',
-    }),
-    tagTypes: ['Book'],
+export const booksApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getUserBooks: builder.query<BookApi[], void>({
-            query: () => 'books',
+            query: () => ({
+                    url: '/books',
+                    method: 'GET',
+                }),
             providesTags: ['Book'],
         }),
+
+        getBookSuggestions: builder.query<
+            SearchResponse,
+            { title?: string; author?: string; lang?: string; limit?: number }
+        >({
+            query: ({ title, author, lang = 'fre', limit = 10 }) => ({
+                url: '/books/search',
+                method: 'GET',
+                params: {
+                    ...(title ? { title } : {}),
+                    ...(author ? { author } : {}),
+                    lang,
+                    page: 1,
+                    limit,
+                },
+            }),
+        }),
     }),
+    overrideExisting: false,
 });
 
-export const { useGetUserBooksQuery } = booksApi;
+export const {
+    useGetUserBooksQuery,
+    useGetBookSuggestionsQuery,
+} = booksApi;

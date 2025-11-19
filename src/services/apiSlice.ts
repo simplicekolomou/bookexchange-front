@@ -1,22 +1,26 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import type { RootState } from '../app/store'
+import localStorage from "redux-persist/es/storage";
 
 export const apiSlice = createApi({
     reducerPath: 'api',
     baseQuery: fetchBaseQuery({
         baseUrl: '/api',
         credentials: 'include',
-        prepareHeaders: (headers, { getState }) => {
-            const token = (getState() as RootState).auth.token
-            if (token) {
-                headers.set('authorization', `Bearer ${token}`)
-            }
-            headers.set('content-type', 'application/json')
+        prepareHeaders: (headers) => {
+            const token= localStorage.getItem('auth_token').then(reponse => {
+                console.log(reponse);
+                console.log(token);
+                if (reponse) {
+                    headers.set('Authorization', `Bearer ${reponse}`);
+                }
+                headers.set('content-type', 'application/json')
+                console.log(headers)
+            });
             return headers
         },
     }),
     // Tags globaux pour l'invalidation des caches
-    tagTypes: ['User', 'Auth'],
+    tagTypes: ['User', 'Auth', 'Book'],
     // Endpoints seront injectés dans les features
     endpoints: () => ({}),
 })

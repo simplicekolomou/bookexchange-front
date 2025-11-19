@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Button, Input, Textarea, Box, Grid, Image, Text, VStack, Flex, Switch, Portal, Select, createListCollection, Container, Heading, } from '@chakra-ui/react';
 import {useTranslation} from "react-i18next";
-import { Availability, BookStateLabel} from "../../types/bookApi.ts";
+import {Availability, BookStateLabel, type WorkSummary} from "../../types/bookApi.ts";
+import {BookSearchCombobox} from "./books/BookSearchCombobox.tsx";
 
 
 export const AddBook = () => {
@@ -66,7 +67,31 @@ export const AddBook = () => {
                 </Heading>
 
                 {/* Formulaire */}
-                <Box bg="white" borderRadius="lg" p={{ base: 4, md: 6 }} boxShadow="sm" border="1px" borderColor="gray.100" >
+                <Box bg="white" borderRadius="lg" p={{ base: 4, md: 6 }} boxShadow="sm" border="1px" borderColor="gray.100">
+
+                    {/* Search Bar */}
+                    <Box >
+                        <BookSearchCombobox
+                            lang="fre"
+                            limit={10}
+                            onSelect={(b: WorkSummary) => {
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    title: b.title ?? prev.title,
+                                    author: b.authors?.[0] ?? prev.author,
+                                    coverImage: b.coverUrl ?? prev.coverImage,
+                                    // If later you return ISBN or edition in your WorkSummary,
+                                    // fill them here:
+                                    // isbn: b.isbn13 ?? prev.isbn,
+                                    // edition: b.bestEditionLabel ?? prev.edition,
+                                }));
+                            }}
+                        />
+                        <Text mt={1} fontSize="xs" color="gray.500">
+                            Astuce : tapez <b>Auteur - Titre</b> pour une recherche combinée.
+                        </Text>
+                    </Box>
+
                     <form onSubmit={handleSubmit}>
                         <VStack gap={6} align="stretch">
                             {/* Informations de base */}

@@ -50,6 +50,7 @@ export const Login = () => {
             const result = await login(formData).unwrap()
             // Les credentials sont automatiquement mis à jour par le slice
             // via le extraReducers, mais on peut aussi les dispatcher manuellement :
+            localStorage.setItem("authToken", result.accessToken)
             dispatch(setCredentials(result))
             navigate("/collection");
         } catch (error: unknown) {
