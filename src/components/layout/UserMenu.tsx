@@ -32,7 +32,7 @@ export const UserMenu = () => {
                         <Menu.Item value="profile">
                             <Link to={"/profile"}>
                                 <User className="user-menu-icon" />
-                                {tLocal("profile")}
+                                {tLocal("profil")}
                             </Link>
                         </Menu.Item>
 
