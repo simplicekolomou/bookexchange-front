@@ -18,7 +18,7 @@ import {
     FileUpload, Float, useFileUploadContext, Show,
 } from '@chakra-ui/react';
 import {useTranslation} from "react-i18next";
-import {Availability, BookStateLabel, type isbns, type VolumeShort} from "../../types/bookApi.ts";
+import {Availability, BookStateLabel, type isbns, type VolumeShort} from "../../types/book.types.ts";
 import {BookSearchCombobox} from "./books/BookSearchCombobox.tsx";
 import {LuFileImage, LuX} from "react-icons/lu";
 

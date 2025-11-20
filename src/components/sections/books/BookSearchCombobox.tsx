@@ -11,7 +11,7 @@ import {
     useListCollection, Box,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import type {VolumeShort} from "../../../types/bookApi.ts";
+import type {VolumeShort} from "../../../types/book.types.ts";
 import { useGetBookSuggestionsQuery } from "../../../features/book/bookApi.ts"; // adjust path if needed
 
 type Props = {
@@ -37,7 +37,7 @@ export function BookSearchCombobox({
     });
 
     // Debounce
-    const debounced = useDebounced(inputValue, 1000);
+    const debounced = useDebounced(inputValue, 400);
 
     // Compute query args (title/author) from debounced input
     const searchArgs = (() => {

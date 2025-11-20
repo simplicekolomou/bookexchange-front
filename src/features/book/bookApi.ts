@@ -1,9 +1,9 @@
-import type {BookApi, VolumeShort} from '../../types/bookApi.ts';
+import type {BookTypes, VolumeShort} from '../../types/book.types.ts';
 import {apiSlice} from "../../services/apiSlice.ts";
 
 export const booksApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
-        getUserBooks: builder.query<BookApi[], void>({
+        getUserBooks: builder.query<BookTypes[], void>({
             query: () => ({
                     url: '/books',
                     method: 'GET',
