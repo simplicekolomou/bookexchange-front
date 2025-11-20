@@ -13,6 +13,7 @@ import { AuthenticatedNavbar } from "./layout/AuthenticatedNavbar.tsx"
 import { UnAuthenticatedNavbar } from "./layout/UnAuthenticatedNavbar.tsx"
 import {ProtectedRoute} from "./layout/ProtectedRoute.tsx";
 import {NotFound404} from "./layout/NotFound404.tsx";
+import {Settings} from "./sections/profile/Settings.tsx";
 
 function App() {
     const { isAuthenticated } = useAppSelector((state) => state.auth)
@@ -62,7 +63,16 @@ function App() {
                     path="/profile"
                     element={
                         <ProtectedRoute>
-                            <Profile />
+                            <Profile exchanges={[]} ratings={[]} />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/settings"
+                    element={
+                        <ProtectedRoute>
+                            <Settings />
                         </ProtectedRoute>
                     }
                 />

@@ -1,6 +1,6 @@
 import {Button, Card, Field, Input, Stack, Flex, Box, Heading, Alert} from "@chakra-ui/react";
 import {useNavigate} from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import * as React from "react";
 import { useAppDispatch } from "../../app/hooks.ts";
@@ -12,7 +12,7 @@ export const Login = () => {
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
     const [activeButton, setActiveButton] = useState("login")
-    const [login, {error: apiError}] = useLoginMutation()
+    const [login, {isSuccess: isLoginSuccess, isError: isLoginError, error: loginError}] = useLoginMutation()
     const [localError, setLocalError] = useState('');
 
     const [formData, setFormData] = useState({
@@ -33,37 +33,46 @@ export const Login = () => {
         });
     };
 
-    // Déterminer le message d'erreur à afficher
-    const displayError = localError ||
-        (apiError && ('data' in apiError
-                ? (apiError.data as Error)?.message
-                : t("login.error")
-        ));
 
     const handleSubmit = async (e: React.FormEvent) => {
+        setLocalError('')
         e.preventDefault();
         if (!/\S+@\S+\.\S+/.test(formData.email)) {
             setLocalError(t("validation.invalidEmail"));
             return;
         }
+
+        if(!formData.email || !formData.password){
+            setLocalError("Tous les champs sont obligatoires!")
+            return
+        }
         try {
             const result = await login(formData).unwrap()
-            // Les credentials sont automatiquement mis à jour par le slice
-            // via le extraReducers, mais on peut aussi les dispatcher manuellement :
             dispatch(setCredentials(result))
-            navigate("/collection");
-        } catch (error: unknown) {
-            // Gestion d'erreur pour RTK Query
-            const e = error as { message?: string; error?: string } | undefined;
+        } catch (error) {
+            const err = (error as any)?.data?.error
+            if(err === "Bad Request" || err ==="Unauthorized"){
+                setLocalError("Adresse email ou mot de passe incorrect!")
+            }
 
-            const errorMessage =
-                e?.message ??
-                e?.error ??
-                t("login.error");
-
-            setLocalError(errorMessage);
         }
     };
+
+    useEffect(() =>{
+        if(isLoginSuccess){
+            if(isLoginSuccess){
+                navigate("/collection");
+            }
+        }
+        }, [isLoginSuccess])
+    useEffect(() => {
+        if(isLoginError){
+            const err = (loginError as any)?.data.error
+            if(err === "Bad Request" || err ==="Unauthorized"){
+                setLocalError("Adresse email ou mot de passe incorrect!")
+            }
+        }
+    }, [isLoginError]);
 
     return (
         <Box minH="100vh" bg="gray.50" py={5}>
@@ -107,9 +116,9 @@ export const Login = () => {
                             <Card.Body>
 
                                 {/* Affichage des erreurs */}
-                                {displayError && (
+                                {localError && (
                                     <Alert.Root status="error" mb={4} borderRadius="md">
-                                        {displayError}
+                                        {localError}
                                     </Alert.Root>
                                 )}
 

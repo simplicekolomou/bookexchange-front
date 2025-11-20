@@ -1,9 +1,9 @@
 import {Box, Button, Flex, Image, Text} from '@chakra-ui/react';
-import type { BookApi } from '../../types/bookApi.ts';
+import type { BookTypes } from '../../types/book.types.ts';
 import type { User } from '../../types/user';
 
 interface BookDetailModalProps {
-    book: BookApi;
+    book: BookTypes;
     owner: User;
     open?: boolean;
     onOpenChange?: (open: boolean) => void;

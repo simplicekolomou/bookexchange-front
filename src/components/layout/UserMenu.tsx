@@ -2,20 +2,19 @@ import { Avatar } from "@chakra-ui/react";
 import { User, Settings, LogOut } from "lucide-react";
 import { Menu } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
-import { useAuth } from "../../features/auth/hooks/useAuth";
+import { Link, useNavigate } from "react-router-dom";
+import { useAppDispatch } from "../../app/hooks";
+import {logout} from "../../features/auth/authSlice"
 
 export const UserMenu = () => {
     const { t: tLocal } = useTranslation("userMenu");
+    const dispatch = useAppDispatch();
     const { t: tGlobal } = useTranslation("common");
-    const { logout } = useAuth();
+    const navigate = useNavigate();
 
     const handleLogout = async () => {
-        try {
-            await logout();
-        } catch (err) {
-            console.error("Logout failed:", err);
-        }
+       dispatch(logout())
+       navigate("/login")
     };
 
     return (

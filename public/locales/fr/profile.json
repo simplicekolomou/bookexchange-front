@@ -1,0 +1,23 @@
+{
+  "title": "Profil",
+  "subtitle": "Paramètres du profil",
+  "description": "Gérez vos informations personnelles.",
+  "firstName": "Prénom",
+  "firstNamePlaceholder": "Entrez votre prénom",
+  "lastName": "Nom",
+  "lastNamePlaceholder": "Entrez votre nom",
+  "locality": "Localité",
+  "localityPlaceholder": "Ville ou région",
+  "bio": "Bio",
+  "bioPlaceholder": "Parlez-nous de vous",
+  "uploadProfilePicture": "Photo de profil",
+  "profileState": {
+    "title": "Profil privé",
+    "subtitle": "Seuls vous pouvez voir votre collection et vos informations"
+  },
+
+  "actions": {
+    "save": "Enregistrer les modifications",
+    "profile": "Voir le profil"
+  }
+}

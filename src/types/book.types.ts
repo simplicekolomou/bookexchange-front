@@ -1,4 +1,4 @@
-export interface BookApi {
+export interface BookTypes {
     id: string;
     apiId: string;
     title: string;

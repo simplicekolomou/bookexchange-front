@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Container } from '@chakra-ui/react';
-import type { BookApi, WishlistItem } from '../../../types/bookApi.ts';
+import type { BookTypes, WishlistItem } from '../../../types/book.types.ts';
 import { ProfileHeader } from './ProfileHeaderProps'
 import { ProfileTabs } from './ProfileTabs';
 import { ProfileContent } from './ProfileContent';
@@ -10,14 +10,18 @@ import { BlockDialog } from './BlockDialog';
 
 interface ProfileProps {
     isOwnProfile?: boolean;
-    books?: BookApi[];
+    books?: BookTypes[];
     wishlist?: WishlistItem[];
+    exchanges: [];
+    ratings: [];
 }
 
 export const Profile = ({
                             isOwnProfile = false,
                             books = [],
                             wishlist = [],
+                            exchanges = [],
+                            ratings = [],
                         }: ProfileProps) => {
     const [activeTab, setActiveTab] = useState('collection');
     const [isBlocked, setIsBlocked] = useState(false);
@@ -66,6 +70,8 @@ export const Profile = ({
                         activeTab={activeTab}
                         books={books}
                         wishlist={wishlist}
+                        exchange={exchanges}
+                        rating={ratings}
                     />
                 </Container>
 

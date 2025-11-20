@@ -10,12 +10,13 @@ import {
     Alert,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import {useEffect, useState} from "react";
 import { useTranslation } from "react-i18next";
 import * as React from "react";
 import { useRegisterMutation } from "../../features/auth/authApi";
 import { useAppDispatch } from "../../app/hooks";
 import { setCredentials } from "../../features/auth/authSlice";
+import { toaster } from "../ui/toaster";
 
 export const Registration = () => {
     const navigate = useNavigate();
@@ -23,7 +24,7 @@ export const Registration = () => {
 
     const [localError, setLocalError] = useState('');
     const [activeButton, setActiveButton] = useState("register");
-    const [register, { isLoading, error: apiError }] = useRegisterMutation();
+    const [register, {isSuccess: isRegisterSuccess, isError: isRegisterError, error: registerError}] = useRegisterMutation()
 
     const { t } = useTranslation("auth");
 
@@ -48,7 +49,7 @@ export const Registration = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Validation côté client améliorée
+        // Validation côté client
         if (!formData.email || !formData.firstName || !formData.lastName || !formData.password) {
             setLocalError(t("validation.allFieldsRequired") || "Tous les champs sont obligatoires");
             return;
@@ -79,34 +80,11 @@ export const Registration = () => {
         try {
             const result = await register(newUser).unwrap();
 
-            // Dispatch des credentials dans le store Redux
-            dispatch(setCredentials({
-                user: result.user,
-                token: result.token
-            }));
+            // Dispatch uniquement le token reçu (backend renvoie accessToken)
+            dispatch(setCredentials(result));
 
-            /*
-            // Notification de succès
-            toaster.create({
-                title: t("registration.success"),
-                description: t("registration.welcome") || `Bienvenue ${result.user.firstName} !`,
-                duration: 3000,
-                closable: true,
-            });*/
-
-            // Redirection vers la collection
-            navigate("/collection", { replace: true });
-
-        } catch (err: unknown) {
-            // Gestion d'erreur pour RTK Query
-            const e = err as { message?: string; error?: string } | undefined;
-
-            const errorMessage =
-                e?.message ??
-                e?.error ??
-                t("registration.error");
-
-            setLocalError(errorMessage);
+        } catch (error) {
+            console.log(error)
         }
     };
 
@@ -117,12 +95,25 @@ export const Registration = () => {
         }));
     };
 
-    // Déterminer le message d'erreur à afficher
-    const displayError = localError ||
-        (apiError && ('data' in apiError
-                ? (apiError.data as Error)?.message
-                : t("registration.error")
-        ));
+    useEffect(() => {
+        navigate("/collection", { replace: true });
+    }, [isRegisterSuccess]);
+
+
+    useEffect(() =>{
+        const error = (registerError as any).data.message
+        toaster.create({
+            title: "Register error",
+            description: error
+        })
+    }, [isRegisterError])
+
+    useEffect(() => {
+        if(isRegisterError){
+            const error = (registerError as any).data.message
+            setLocalError(error)
+        }
+    }, []);
 
     return (
         <Box minH="100vh" bg="gray.50" py={5}>
@@ -174,9 +165,9 @@ export const Registration = () => {
 
                             <Card.Body className="form-field">
                                 {/* Affichage des erreurs */}
-                                {displayError && (
+                                {localError && (
                                     <Alert.Root status="error" mb={4} borderRadius="md">
-                                        {displayError}
+                                        {localError}
                                     </Alert.Root>
                                 )}
 
@@ -268,7 +259,6 @@ export const Registration = () => {
                                     width="full"
                                     size="lg"
                                     loadingText={t("registration.loading")}
-                                    disabled={isLoading}
                                 >
                                     {t("registration.action")}
                                 </Button>

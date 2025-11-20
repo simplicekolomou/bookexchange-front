@@ -1,11 +1,11 @@
 import { VStack, Box, Text, CardBody, Flex, HStack, Badge, Image } from '@chakra-ui/react';
 import { BookOpen } from 'lucide-react';
-import type { BookApi, BookCondition, BookAvailability } from '../../types/bookApi.ts';
+import type { BookTypes, BookCondition, BookAvailability } from '../../types/book.types.ts';
 import type { User } from '../../types/user';
 
 interface BookResultsProps {
-    books: { book: BookApi; owner: User }[];
-    onBookSelect: (bookData: { book: BookApi; owner: User }) => void;
+    books: { book: BookTypes; owner: User }[];
+    onBookSelect: (bookData: { book: BookTypes; owner: User }) => void;
 }
 
 const conditionLabels: Record<BookCondition, string> = {

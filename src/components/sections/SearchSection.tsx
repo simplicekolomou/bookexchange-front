@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import type { BookApi } from '../../types/bookApi.ts';
+import type { BookTypes } from '../../types/book.types.ts';
 import { Box, Container, Drawer, useDisclosure } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { SearchTabs } from './SearchTabs.tsx';
@@ -14,7 +14,7 @@ import type {UserProfile} from "../../types/user.types";
 export const SearchSection = ()=> {
     const [searchQuery, setSearchQuery] = useState('');
     const [searchType, setSearchType] = useState<'books' | 'users'>('books');
-    const [selectedBook, setSelectedBook] = useState<{ book: BookApi; owner: UserProfile } | null>(null);
+    const [selectedBook, setSelectedBook] = useState<{ book: BookTypes; owner: UserProfile } | null>(null);
     const [advancedFilters, setAdvancedFilters] = useState({
         author: '',
         isbn: '',
@@ -29,8 +29,8 @@ export const SearchSection = ()=> {
 
     const availableBooks = useMemo(() => {
         const user: UserProfile = JSON.parse(localStorage.getItem('users') || '[]');
-        const allBooksFromStorage: BookApi[] = JSON.parse(localStorage.getItem('books') || '[]');
-        const result: { book: BookApi; owner: UserProfile }[] = [];
+        const allBooksFromStorage: BookTypes[] = JSON.parse(localStorage.getItem('books') || '[]');
+        const result: { book: BookTypes; owner: UserProfile }[] = [];
 
         allBooksFromStorage.forEach((book) => {
             if (book.availability !== 'none') {
@@ -93,7 +93,7 @@ export const SearchSection = ()=> {
         });
     };
 
-    const handleBookSelect = (bookData: { book: BookApi; owner: User }) => {
+    const handleBookSelect = (bookData: { book: BookTypes; owner: User }) => {
         setSelectedBook(bookData);
         onBookModalOpen();
     };
