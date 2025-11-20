@@ -1,3 +1,5 @@
+import type { UserProfile } from "./user.types"
+
 export interface User {
     id: string
     email: string
@@ -19,11 +21,12 @@ export interface RegisterCredentials {
 
 export interface AuthResponse {
     accessToken: string
+    user: UserProfile
 }
 
 export interface AuthState {
-    user: User | null
     token: string | null
     isAuthenticated: boolean
     isLoading: boolean
+    user?: User | null
 }

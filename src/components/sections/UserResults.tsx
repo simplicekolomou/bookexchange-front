@@ -1,7 +1,7 @@
 import { VStack, Box, Text, CardBody, Flex, Avatar } from '@chakra-ui/react';
 import { Users } from 'lucide-react';
 import type { UserProfile } from '../../types/user.types';
-import type {BookCopy} from "../../types/bookApi.ts";
+import type {BookCopy} from "../../types/book.types.ts";
 
 interface UserResultsProps {
     user: UserProfile;

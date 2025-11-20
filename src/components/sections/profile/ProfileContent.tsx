@@ -1,18 +1,22 @@
 import { Box, Text, VStack, CardBody, HStack, Badge } from '@chakra-ui/react';
-import { BookOpen, Heart, Star } from 'lucide-react';
-import type {BookApi, WishlistItem} from '../../../types/bookApi.ts';
+import {Award, BookOpen, Heart, Repeat, Star} from 'lucide-react';
+import type {BookTypes, WishlistItem} from '../../../types/book.types.ts';
 import { BookCard } from '../../layout/BookCard';
 
 interface ProfileContentProps {
     activeTab: string;
-    books: BookApi[];
+    books: BookTypes[];
     wishlist: WishlistItem[];
+    exchange: [];
+    rating: [];
 }
 
 export const ProfileContent = ({
                                    activeTab,
                                    books,
                                    wishlist,
+                                   exchange,
+                                   rating,
                                }: ProfileContentProps) => {
     const renderEmptyState = (icon: React.ReactNode, message: string) => (
         <Box textAlign="center" py={12}>
@@ -28,6 +32,7 @@ export const ProfileContent = ({
                 "Aucun livre dans la collection"
             );
         }
+
 
         return (
             <Box
@@ -73,13 +78,13 @@ export const ProfileContent = ({
         );
     }
 
-    if (activeTab === 'exchanges') {
-        /*if (exchanges.length === 0) {
+    if (activeTab === 'exchange') {
+        if (exchange.length === 0) {
             return renderEmptyState(
                 <Repeat size={48} color="var(--chakra-colors-gray-400)" />,
                 "Aucun échange récent"
             );
-        }*/
+        }
 
         return (
             <VStack gap={4} align="stretch">
@@ -105,13 +110,13 @@ export const ProfileContent = ({
         );
     }
 
-    if (activeTab === 'ratings') {
-        /*if (ratings.length === 0) {
+    if (activeTab === 'rating') {
+        if (rating.length === 0) {
             return renderEmptyState(
                 <Award size={48} color="var(--chakra-colors-gray-400)" />,
                 "Aucune note reçue"
             );
-        }*/
+        }
 
         return (
             <VStack gap={4} align="stretch">

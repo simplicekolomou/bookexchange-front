@@ -31,7 +31,7 @@ export const ProfileTabs = ({ value, onChange }: ProfileTabsProps) => {
                     </HStack>
                 </Tabs.Trigger>
 
-                <Tabs.Trigger value="exchanges" justifyContent="center">
+                <Tabs.Trigger value="exchange" justifyContent="center">
                     <HStack gap={2}>
                         <Repeat size={16} />
                         <Text>Échanges</Text>
@@ -39,7 +39,7 @@ export const ProfileTabs = ({ value, onChange }: ProfileTabsProps) => {
                     </HStack>
                 </Tabs.Trigger>
 
-                <Tabs.Trigger value="ratings" justifyContent="center">
+                <Tabs.Trigger value="rating" justifyContent="center">
                     <HStack gap={2}>
                         <Award size={16} />
                         <Text>Notes</Text>

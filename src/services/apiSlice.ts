@@ -6,17 +6,13 @@ export const apiSlice = createApi({
         baseUrl: '/api',
         credentials: 'include',
         prepareHeaders: (headers) => {
-            const token = localStorage.getItem('auth_token');
-
-            console.log("token: " + token);
+            const token = localStorage.getItem("auth_token");
             if (token) {
-                headers.set("authorization", `Bearer ${token}`);
+                headers.set('authorization', `Bearer ${token}`)
             }
-
-            headers.set('Content-Type', 'application/json');
-            return headers;
+            headers.set('content-type', 'application/json')
+            return headers
         },
-
     }),
     // Tags globaux pour l'invalidation des caches
     tagTypes: ['User', 'Auth', 'Book'],

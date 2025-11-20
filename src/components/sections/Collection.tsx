@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import type { BookApi} from '../../types/bookApi.ts';
+import type { BookTypes} from '../../types/book.types.ts';
 import { CollectionContent } from './CollectionContent.tsx';
 
 export const Collection = () => {
-    const [books] = useState<BookApi[]>([]);
+    const [books] = useState<BookTypes[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const [filter, setFilter] = useState<'all' | 'available'>('all');
