@@ -1,8 +1,26 @@
 import { useState } from 'react';
-import { Button, Input, Textarea, Box, Grid, Image, Text, VStack, Flex, Switch, Portal, Select, createListCollection, Container, Heading, } from '@chakra-ui/react';
+import {
+    Button,
+    Input,
+    Textarea,
+    Box,
+    Grid,
+    Image,
+    Text,
+    VStack,
+    Flex,
+    Switch,
+    Portal,
+    Select,
+    createListCollection,
+    Container,
+    Heading,
+    FileUpload, Float, useFileUploadContext, Show,
+} from '@chakra-ui/react';
 import {useTranslation} from "react-i18next";
 import {Availability, BookStateLabel, type isbns, type VolumeShort} from "../../types/bookApi.ts";
 import {BookSearchCombobox} from "./books/BookSearchCombobox.tsx";
+import {LuFileImage, LuX} from "react-icons/lu";
 
 
 export const AddBook = () => {
@@ -69,6 +87,33 @@ export const AddBook = () => {
         });
     };
     const {t} = useTranslation(["common", "addBook"]);
+
+    const FileUploadList = () => {
+        const fileUpload = useFileUploadContext()
+        const files = fileUpload.acceptedFiles
+        if (files.length === 0) return null
+        return (
+            <FileUpload.ItemGroup>
+                {files.map((file) => (
+                    <FileUpload.Item
+                        w="auto"
+                        boxSize="20"
+                        p="2"
+                        file={file}
+                        key={file.name}
+                        mx="auto"
+                    >
+                        <FileUpload.ItemPreviewImage />
+                        <Float placement="top-end">
+                            <FileUpload.ItemDeleteTrigger boxSize="4" layerStyle="fill.solid">
+                                <LuX />
+                            </FileUpload.ItemDeleteTrigger>
+                        </Float>
+                    </FileUpload.Item>
+                ))}
+            </FileUpload.ItemGroup>
+        )
+    }
 
     return (
         <Box className="add-book-container">
@@ -219,36 +264,38 @@ export const AddBook = () => {
                                 <Text fontSize="lg" fontWeight="semibold" color="gray.800" mb={4}>
                                     {t("addBook:book.images.title")}
                                 </Text>
-                                <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={4}>
-                                    <Box>
-                                        <Text fontWeight="medium" mb={2} fontSize="sm" color="gray.700">
-                                            {t("addBook:book.images.coverImage")}
-                                        </Text>
-                                        <Input
-                                            value={formData.coverImage}
-                                            onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
-                                            placeholder="URL de l'image" size="md"
-                                            display={"none"}
-                                        />
-                                        {formData.coverImage && (
+                                <Grid templateColumns={{ base: "1fr", md: formData.coverImage ? "repeat(2, 1fr)" : "1fr", }} gap={4}>
+                                    <Show when={formData.coverImage}>
+                                        <Box>
+                                            <Text fontWeight="medium" mb={2} fontSize="sm" color="gray.700">
+                                                {t("addBook:book.images.coverImage")}
+                                            </Text>
+                                            <Input
+                                                value={formData.coverImage}
+                                                onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
+                                                placeholder="URL de l'image" size="md"
+                                                display={"none"}
+                                            />
                                             <Image src={formData.coverImage} alt="Couverture" w={20} h={28} objectFit="cover"
                                                 borderRadius="md" mt={2} mx="auto" />
-                                        )}
-                                    </Box>
+                                        </Box>
+                                    </Show>
 
-                                    <Box>
+                                    <Box mx="auto">
                                         <Text fontWeight="medium" mb={2} fontSize="sm" color="gray.700">
                                             {t("addBook:book.images.personalImage")}
                                         </Text>
-                                        <Input
-                                            value={formData.userCoverImage}
-                                            onChange={(e) => setFormData({ ...formData, userCoverImage: e.target.value })}
-                                            placeholder={t("addBook:book.images.personalImagePlaceholder")} size="md" />
-                                        {formData.userCoverImage && (
-                                            <Image src={formData.userCoverImage} alt="Image personnelle" w={20} h={28} objectFit="cover"
-                                                borderRadius="md" mt={2} mx="auto" />
-                                        )}
+                                        <FileUpload.Root accept="image/*">
+                                            <FileUpload.HiddenInput />
+                                            <FileUpload.Trigger asChild>
+                                                <Button variant="outline" size="sm" mx="auto">
+                                                    <LuFileImage /> Upload Images
+                                                </Button>
+                                            </FileUpload.Trigger>
+                                            <FileUploadList />
+                                        </FileUpload.Root>
                                     </Box>
+
                                 </Grid>
                             </Box>
 
