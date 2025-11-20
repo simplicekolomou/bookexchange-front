@@ -1,5 +1,4 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import localStorage from "redux-persist/es/storage";
 
 export const apiSlice = createApi({
     reducerPath: 'api',
@@ -7,17 +6,17 @@ export const apiSlice = createApi({
         baseUrl: '/api',
         credentials: 'include',
         prepareHeaders: (headers) => {
-            const token= localStorage.getItem('auth_token').then(reponse => {
-                console.log(reponse);
-                console.log(token);
-                if (reponse) {
-                    headers.set('Authorization', `Bearer ${reponse}`);
-                }
-                headers.set('content-type', 'application/json')
-                console.log(headers)
-            });
-            return headers
+            const token = localStorage.getItem('auth_token');
+
+            console.log("token: " + token);
+            if (token) {
+                headers.set("authorization", `Bearer ${token}`);
+            }
+
+            headers.set('Content-Type', 'application/json');
+            return headers;
         },
+
     }),
     // Tags globaux pour l'invalidation des caches
     tagTypes: ['User', 'Auth', 'Book'],
