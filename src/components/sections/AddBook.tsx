@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button, Input, Textarea, Box, Grid, Image, Text, VStack, Flex, Switch, Portal, Select, createListCollection, Container, Heading, } from '@chakra-ui/react';
 import {useTranslation} from "react-i18next";
-import {Availability, BookStateLabel, type WorkSummary} from "../../types/bookApi.ts";
+import {Availability, BookStateLabel, type VolumeShort} from "../../types/bookApi.ts";
 import {BookSearchCombobox} from "./books/BookSearchCombobox.tsx";
 
 
@@ -74,12 +74,13 @@ export const AddBook = () => {
                         <BookSearchCombobox
                             lang="fre"
                             limit={10}
-                            onSelect={(b: WorkSummary) => {
+                            onSelect={(b: VolumeShort) => {
                                 setFormData((prev) => ({
                                     ...prev,
                                     title: b.title ?? prev.title,
                                     author: b.authors?.[0] ?? prev.author,
                                     coverImage: b.coverUrl ?? prev.coverImage,
+                                    isbn: b.identifiers?.[1].identifier ?? prev.isbn,
                                     // If later you return ISBN or edition in your WorkSummary,
                                     // fill them here:
                                     // isbn: b.isbn13 ?? prev.isbn,

@@ -1,4 +1,4 @@
-import type {BookApi, SearchResponse} from '../../types/bookApi.ts';
+import type {BookApi, VolumeShort} from '../../types/bookApi.ts';
 import {apiSlice} from "../../services/apiSlice.ts";
 
 export const booksApi = apiSlice.injectEndpoints({
@@ -12,7 +12,7 @@ export const booksApi = apiSlice.injectEndpoints({
         }),
 
         getBookSuggestions: builder.query<
-            SearchResponse,
+            VolumeShort[],
             { title?: string; author?: string; lang?: string; limit?: number }
         >({
             query: ({ title, author, lang = 'fre', limit = 10 }) => ({

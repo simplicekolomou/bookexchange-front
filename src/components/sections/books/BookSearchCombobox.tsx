@@ -8,7 +8,7 @@ import {
     Span,
     Spinner,
     Image,
-    useListCollection,
+    useListCollection, Box,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import type {VolumeShort} from "../../../types/bookApi.ts";
@@ -37,7 +37,7 @@ export function BookSearchCombobox({
     });
 
     // Debounce
-    const debounced = useDebounced(inputValue, 300);
+    const debounced = useDebounced(inputValue, 1000);
 
     // Compute query args (title/author) from debounced input
     const searchArgs = (() => {
@@ -68,19 +68,18 @@ export function BookSearchCombobox({
 
     // Sync RTK Query data into Chakra collection
     useEffect(() => {
-        // eslint-disable-next-line no-debugger
-        alert("UseEffect !")
+        console.log("Here")
         if (!searchArgs) {
             set([]);
             return;
         }
-        if (data?.items) {
-            set(data.items);
-            console.log(data.items);
-        } else if (!isFetching && !data?.items) {
+        if (data) {
+            set(data);
+            console.log(data);
+        } else if (!isFetching && !data) {
             set([]);
         }
-    }, [data.items, isFetching, searchArgs, set]);
+    }, [data, isFetching, searchArgs, set]);
 
     // Normalize error message
     let errorMessage: string | null = null;
@@ -98,7 +97,13 @@ export function BookSearchCombobox({
         <Combobox.Root
             collection={collection}
             placeholder="Rechercher un livre"
-            onInputValueChange={(e) => setInputValue(e.inputValue)}
+            openOnClick={true}
+            inputValue={inputValue}                               // <— control value
+            onInputValueChange={(e) => {
+                if (e.reason === "input-change") {                       // <— only update when user types
+                    setInputValue(e.inputValue);
+                }
+            }}
             positioning={{ sameWidth: false, placement: "bottom-end" }}
         >
             <Combobox.Label>Rechercher un livre</Combobox.Label>
@@ -112,7 +117,15 @@ export function BookSearchCombobox({
 
             <Portal>
                 <Combobox.Positioner>
-                    <Combobox.Content minW="lg">
+                    <Combobox.Content
+                        minW="lg"
+                        bg="white"                   // 👈 force light background
+                        color="gray.800"             // 👈 readable text
+                        border="1px solid"
+                        borderColor="gray.200"
+                        boxShadow="md"
+                        zIndex={10}                  // ensures it stays above everything
+                    >
                         {isFetching ? (
                             <HStack p="2">
                                 <Spinner size="xs" borderWidth="1px" />
@@ -125,6 +138,9 @@ export function BookSearchCombobox({
                         ) : collection.items?.length ? (
                             collection.items.map((book: VolumeShort) => (
                                 <Combobox.Item
+                                    bg="white"
+                                    _hover={{ bg: "gray.100" }}      // 👈 light grey hover
+                                    _focus={{ bg: "gray.100" }}      // 👈 same for keyboard nav
                                     key={book.id}
                                     item={book}
                                     onPointerDown={(e) => {
@@ -134,12 +150,12 @@ export function BookSearchCombobox({
                                     onClick={() => onSelect(book)}
                                 >
                                     <HStack justify="flex-start" align="center" gap="3" py="2">
-                                        {book.coverImage ? (
+                                        {book.coverUrl ? (
                                             <Image
-                                                src={book.coverImage + "?fife=w130"}
+                                                src={book.coverUrl + "?fife=w130-h130"}
                                                 alt={book.title}
                                                 boxSize="130px"
-                                                objectFit="cover"
+                                                objectFit="contain"
                                                 borderRadius="md"
                                             />
                                         ) : (
@@ -153,14 +169,14 @@ export function BookSearchCombobox({
                                                 }}
                                             />
                                         )}
-                                        <div style={{ minWidth: 0 }}>
+                                        <Box style={{ minWidth: 0 }} display="flex" flexDirection="column">
                                             <Span fontWeight="medium" truncate>
                                                 {book.title}
                                             </Span>
-                                            <Span display="block" color="fg.muted" truncate>
+                                            <Span color="fg.muted" truncate>
                                                 {book.authors?.join(", ")}
                                             </Span>
-                                        </div>
+                                        </Box>
                                     </HStack>
                                     <Combobox.ItemIndicator />
                                 </Combobox.Item>

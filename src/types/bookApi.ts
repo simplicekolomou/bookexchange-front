@@ -51,7 +51,7 @@ export const Availability = [
 export type VolumeShort = {
     id: string;
     title: string;
-    coverImage: string;
+    coverUrl: string;
     identifiers: IndustryIdentifier[];
     authors: string[];
     description: string;
