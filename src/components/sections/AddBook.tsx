@@ -1,7 +1,26 @@
 import { useState } from 'react';
-import { Button, Input, Textarea, Box, Grid, Image, Text, VStack, Flex, Switch, Portal, Select, createListCollection, Container, Heading, } from '@chakra-ui/react';
+import {
+    Button,
+    Input,
+    Textarea,
+    Box,
+    Grid,
+    Image,
+    Text,
+    VStack,
+    Flex,
+    Switch,
+    Portal,
+    Select,
+    createListCollection,
+    Container,
+    Heading,
+    FileUpload, Float, useFileUploadContext, Show,
+} from '@chakra-ui/react';
 import {useTranslation} from "react-i18next";
-import { Availability, BookStateLabel} from "../../types/book.types";
+import {Availability, BookStateLabel, type isbns, type VolumeShort} from "../../types/book.types.ts";
+import {BookSearchCombobox} from "./books/BookSearchCombobox.tsx";
+import {LuFileImage, LuX} from "react-icons/lu";
 
 
 export const AddBook = () => {
@@ -40,6 +59,18 @@ export const AddBook = () => {
         // TODO : Ajouter la logique pour envoyer les données au backend
     };
 
+    /**
+     * Permet de récupérer le meilleur ISBN
+     * @param ids
+     */
+    function pickBestIsbn(ids?: isbns[]) {
+        if (!ids?.length) return undefined;
+
+        const isbn13 = ids.find(i => i.type === "ISBN_13");
+        const isbn10 = ids.find(i => i.type === "ISBN_10");
+        return isbn13?.identifier ?? isbn10?.identifier ?? ids[0].identifier;
+    }
+
     const handleReset = () => {
         setFormData({
             title: '',
@@ -57,6 +88,33 @@ export const AddBook = () => {
     };
     const {t} = useTranslation(["common", "addBook"]);
 
+    const FileUploadList = () => {
+        const fileUpload = useFileUploadContext()
+        const files = fileUpload.acceptedFiles
+        if (files.length === 0) return null
+        return (
+            <FileUpload.ItemGroup>
+                {files.map((file) => (
+                    <FileUpload.Item
+                        w="auto"
+                        boxSize="20"
+                        p="2"
+                        file={file}
+                        key={file.name}
+                        mx="auto"
+                    >
+                        <FileUpload.ItemPreviewImage />
+                        <Float placement="top-end">
+                            <FileUpload.ItemDeleteTrigger boxSize="4" layerStyle="fill.solid">
+                                <LuX />
+                            </FileUpload.ItemDeleteTrigger>
+                        </Float>
+                    </FileUpload.Item>
+                ))}
+            </FileUpload.ItemGroup>
+        )
+    }
+
     return (
         <Box className="add-book-container">
             <Container maxW="4xl" py={8}>
@@ -66,7 +124,29 @@ export const AddBook = () => {
                 </Heading>
 
                 {/* Formulaire */}
-                <Box bg="white" borderRadius="lg" p={{ base: 4, md: 6 }} boxShadow="sm" border="1px" borderColor="gray.100" >
+                <Box bg="white" borderRadius="lg" p={{ base: 4, md: 6 }} boxShadow="sm" border="1px" borderColor="gray.100">
+
+                    {/* Search Bar */}
+                    <Box marginBottom={"1em"}>
+                        <BookSearchCombobox
+                            lang="fre"
+                            limit={10}
+                            onSelect={(b: VolumeShort) => {
+                                setFormData(prev => ({
+                                    ...prev,
+                                    title: b.title ?? prev.title,
+                                    author: b.authors?.[0] ?? prev.author,
+                                    coverImage: b.coverUrl ?? prev.coverImage,
+                                    isbn: pickBestIsbn(b.isbns) ?? prev.isbn,
+                                    edition: b.publishedDate ?? prev.edition,
+                                }));
+                            }}
+                        />
+                        <Text mt={1} fontSize="xs" color="gray.500">
+                            Astuce : tapez <b>Auteur - Titre</b> pour une recherche combinée.
+                        </Text>
+                    </Box>
+
                     <form onSubmit={handleSubmit}>
                         <VStack gap={6} align="stretch">
                             {/* Informations de base */}
@@ -123,23 +203,26 @@ export const AddBook = () => {
                                         <Select.Root
                                             collection={conditionCollection}
                                             value={[formData.bookState]}
-                                            onValueChange={({ value }) => setFormData({ ...formData, bookState: value[0] })}
+                                            onValueChange={({ value }) =>
+                                                setFormData({ ...formData, bookState: value[0] })
+                                            }
                                             size="md"
                                         >
                                             <Select.HiddenSelect />
                                             <Select.Control>
-                                                <Select.Trigger  className="add-book-select-trigger">
+                                                <Select.Trigger className="add-book-select-trigger">
                                                     <Select.ValueText />
                                                 </Select.Trigger>
                                                 <Select.IndicatorGroup>
                                                     <Select.Indicator />
                                                 </Select.IndicatorGroup>
                                             </Select.Control>
+
                                             <Portal>
                                                 <Select.Positioner>
-                                                    <Select.Content  bg={"gray.100"}>
+                                                    <Select.Content bg={"gray.100"}>
                                                         {conditionCollection.items.map((item) => (
-                                                            <Select.Item key={item.value} item={item.label}>
+                                                            <Select.Item key={item.value} item={item}>    {/* FIXED HERE */}
                                                                 <Select.ItemText>{item.label}</Select.ItemText>
                                                                 <Select.ItemIndicator />
                                                             </Select.Item>
@@ -181,34 +264,38 @@ export const AddBook = () => {
                                 <Text fontSize="lg" fontWeight="semibold" color="gray.800" mb={4}>
                                     {t("addBook:book.images.title")}
                                 </Text>
-                                <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={4}>
-                                    <Box>
-                                        <Text fontWeight="medium" mb={2} fontSize="sm" color="gray.700">
-                                            {t("addBook:book.images.coverImage")}
-                                        </Text>
-                                        <Input
-                                            value={formData.coverImage}
-                                            onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
-                                            placeholder="URL de l'image" size="md" />
-                                        {formData.coverImage && (
+                                <Grid templateColumns={{ base: "1fr", md: formData.coverImage ? "repeat(2, 1fr)" : "1fr", }} gap={4}>
+                                    <Show when={formData.coverImage}>
+                                        <Box>
+                                            <Text fontWeight="medium" mb={2} fontSize="sm" color="gray.700">
+                                                {t("addBook:book.images.coverImage")}
+                                            </Text>
+                                            <Input
+                                                value={formData.coverImage}
+                                                onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
+                                                placeholder="URL de l'image" size="md"
+                                                display={"none"}
+                                            />
                                             <Image src={formData.coverImage} alt="Couverture" w={20} h={28} objectFit="cover"
                                                 borderRadius="md" mt={2} mx="auto" />
-                                        )}
-                                    </Box>
+                                        </Box>
+                                    </Show>
 
-                                    <Box>
+                                    <Box mx="auto">
                                         <Text fontWeight="medium" mb={2} fontSize="sm" color="gray.700">
                                             {t("addBook:book.images.personalImage")}
                                         </Text>
-                                        <Input
-                                            value={formData.userCoverImage}
-                                            onChange={(e) => setFormData({ ...formData, userCoverImage: e.target.value })}
-                                            placeholder={t("addBook:book.images.personalImagePlaceholder")} size="md" />
-                                        {formData.userCoverImage && (
-                                            <Image src={formData.userCoverImage} alt="Image personnelle" w={20} h={28} objectFit="cover"
-                                                borderRadius="md" mt={2} mx="auto" />
-                                        )}
+                                        <FileUpload.Root accept="image/*">
+                                            <FileUpload.HiddenInput />
+                                            <FileUpload.Trigger asChild>
+                                                <Button variant="outline" size="sm" mx="auto">
+                                                    <LuFileImage /> Upload Images
+                                                </Button>
+                                            </FileUpload.Trigger>
+                                            <FileUploadList />
+                                        </FileUpload.Root>
                                     </Box>
+
                                 </Grid>
                             </Box>
 
