@@ -51,13 +51,14 @@ export const Availability = [
 export type VolumeShort = {
     id: string;
     title: string;
+    publishedDate: string;
     coverUrl: string;
-    identifiers: IndustryIdentifier[];
+    isbns: isbns[];
     authors: string[];
     description: string;
 };
 
-export type IndustryIdentifier = {
+export type isbns = {
     type: string;
     identifier: string;
 }

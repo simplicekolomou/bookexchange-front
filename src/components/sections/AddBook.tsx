@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button, Input, Textarea, Box, Grid, Image, Text, VStack, Flex, Switch, Portal, Select, createListCollection, Container, Heading, } from '@chakra-ui/react';
 import {useTranslation} from "react-i18next";
-import {Availability, BookStateLabel, type VolumeShort} from "../../types/bookApi.ts";
+import {Availability, BookStateLabel, type isbns, type VolumeShort} from "../../types/bookApi.ts";
 import {BookSearchCombobox} from "./books/BookSearchCombobox.tsx";
 
 
@@ -41,6 +41,18 @@ export const AddBook = () => {
         // TODO : Ajouter la logique pour envoyer les données au backend
     };
 
+    /**
+     * Permet de récupérer le meilleur ISBN
+     * @param ids
+     */
+    function pickBestIsbn(ids?: isbns[]) {
+        if (!ids?.length) return undefined;
+
+        const isbn13 = ids.find(i => i.type === "ISBN_13");
+        const isbn10 = ids.find(i => i.type === "ISBN_10");
+        return isbn13?.identifier ?? isbn10?.identifier ?? ids[0].identifier;
+    }
+
     const handleReset = () => {
         setFormData({
             title: '',
@@ -70,21 +82,18 @@ export const AddBook = () => {
                 <Box bg="white" borderRadius="lg" p={{ base: 4, md: 6 }} boxShadow="sm" border="1px" borderColor="gray.100">
 
                     {/* Search Bar */}
-                    <Box >
+                    <Box marginBottom={"1em"}>
                         <BookSearchCombobox
                             lang="fre"
                             limit={10}
                             onSelect={(b: VolumeShort) => {
-                                setFormData((prev) => ({
+                                setFormData(prev => ({
                                     ...prev,
                                     title: b.title ?? prev.title,
                                     author: b.authors?.[0] ?? prev.author,
                                     coverImage: b.coverUrl ?? prev.coverImage,
-                                    isbn: b.identifiers?.[1].identifier ?? prev.isbn,
-                                    // If later you return ISBN or edition in your WorkSummary,
-                                    // fill them here:
-                                    // isbn: b.isbn13 ?? prev.isbn,
-                                    // edition: b.bestEditionLabel ?? prev.edition,
+                                    isbn: pickBestIsbn(b.isbns) ?? prev.isbn,
+                                    edition: b.publishedDate ?? prev.edition,
                                 }));
                             }}
                         />
@@ -149,23 +158,26 @@ export const AddBook = () => {
                                         <Select.Root
                                             collection={conditionCollection}
                                             value={[formData.bookState]}
-                                            onValueChange={({ value }) => setFormData({ ...formData, bookState: value[0] })}
+                                            onValueChange={({ value }) =>
+                                                setFormData({ ...formData, bookState: value[0] })
+                                            }
                                             size="md"
                                         >
                                             <Select.HiddenSelect />
                                             <Select.Control>
-                                                <Select.Trigger  className="add-book-select-trigger">
+                                                <Select.Trigger className="add-book-select-trigger">
                                                     <Select.ValueText />
                                                 </Select.Trigger>
                                                 <Select.IndicatorGroup>
                                                     <Select.Indicator />
                                                 </Select.IndicatorGroup>
                                             </Select.Control>
+
                                             <Portal>
                                                 <Select.Positioner>
-                                                    <Select.Content  bg={"gray.100"}>
+                                                    <Select.Content bg={"gray.100"}>
                                                         {conditionCollection.items.map((item) => (
-                                                            <Select.Item key={item.value} item={item.label}>
+                                                            <Select.Item key={item.value} item={item}>    {/* FIXED HERE */}
                                                                 <Select.ItemText>{item.label}</Select.ItemText>
                                                                 <Select.ItemIndicator />
                                                             </Select.Item>
@@ -215,7 +227,9 @@ export const AddBook = () => {
                                         <Input
                                             value={formData.coverImage}
                                             onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
-                                            placeholder="URL de l'image" size="md" />
+                                            placeholder="URL de l'image" size="md"
+                                            display={"none"}
+                                        />
                                         {formData.coverImage && (
                                             <Image src={formData.coverImage} alt="Couverture" w={20} h={28} objectFit="cover"
                                                 borderRadius="md" mt={2} mx="auto" />

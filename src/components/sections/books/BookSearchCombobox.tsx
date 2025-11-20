@@ -68,14 +68,12 @@ export function BookSearchCombobox({
 
     // Sync RTK Query data into Chakra collection
     useEffect(() => {
-        console.log("Here")
         if (!searchArgs) {
             set([]);
             return;
         }
         if (data) {
             set(data);
-            console.log(data);
         } else if (!isFetching && !data) {
             set([]);
         }
