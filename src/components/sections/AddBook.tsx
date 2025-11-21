@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import {
     Button,
     Input,
@@ -15,7 +15,7 @@ import {
     createListCollection,
     Container,
     Heading,
-    FileUpload, Float, useFileUploadContext, Show,
+    FileUpload, Float, useFileUploadContext, Show, For,
 } from '@chakra-ui/react';
 import {useTranslation} from "react-i18next";
 import {Availability, BookStateLabel, type isbns, type VolumeShort} from "../../types/book.types.ts";
@@ -41,7 +41,7 @@ export const AddBook = () => {
 
     const [formData, setFormData] = useState({
         title: '',
-        author: '',
+        authors: [''],
         isbn: '',
         bookState: '',
         format: '',
@@ -74,7 +74,7 @@ export const AddBook = () => {
     const handleReset = () => {
         setFormData({
             title: '',
-            author: '',
+            authors: [''],
             isbn: '',
             bookState: '',
             format: '',
@@ -135,7 +135,7 @@ export const AddBook = () => {
                                 setFormData(prev => ({
                                     ...prev,
                                     title: b.title ?? prev.title,
-                                    author: b.authors?.[0] ?? prev.author,
+                                    authors: b.authors ?? prev.authors,
                                     coverImage: b.coverUrl ?? prev.coverImage,
                                     isbn: pickBestIsbn(b.isbns) ?? prev.isbn,
                                     edition: b.publishedDate ?? prev.edition,
@@ -169,11 +169,35 @@ export const AddBook = () => {
                                         <Text fontWeight="medium" mb={2} fontSize="sm" color="gray.700">
                                             {t("addBook:book.author")}
                                         </Text>
-                                        <Input
-                                            value={formData.author}
-                                            onChange={(e) => setFormData({ ...formData, author: e.target.value })}
-                                            placeholder={t("addBook:book.authorPlaceholder")}
-                                            required size="md" />
+                                        <For each={formData.authors}>
+                                            {(item, index) => (
+                                                <Input
+                                                    key={index}
+                                                    value={item}
+                                                    onChange={(e) => {
+                                                        const updated = [...formData.authors];     // copy array
+                                                        updated[index] = e.target.value;           // update item
+                                                        setFormData({
+                                                            ...formData,
+                                                            authors: updated,                        // replace whole array
+                                                        });
+                                                    }}
+                                                    placeholder={t("addBook:book.authorPlaceholder")}
+                                                    required
+                                                    size="md"
+                                                />
+                                            )}
+                                        </For>
+                                        <Button
+                                            onClick={() =>
+                                                setFormData({
+                                                    ...formData,
+                                                    authors: [...formData.authors, ""],
+                                                })
+                                            }
+                                        >
+                                            Ajouter un auteur
+                                        </Button>
                                     </Box>
                                 </Grid>
                             </Box>
