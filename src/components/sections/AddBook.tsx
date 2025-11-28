@@ -1,5 +1,4 @@
 'use client';
-import { useState } from 'react';
 import {
     Button,
     Input,
@@ -15,14 +14,14 @@ import {
     createListCollection,
     Container,
     Heading,
-    FileUpload, Float, useFileUploadContext, Show, For, Field, FieldLabel
+    FileUpload, Float, useFileUploadContext, Show, Field, FieldLabel
 } from '@chakra-ui/react';
 import {useTranslation} from "react-i18next";
 import {Availability, BookStateLabel, type isbns, type VolumeShort} from "../../types/book.types.ts";
 import {BookSearchCombobox} from "./books/BookSearchCombobox.tsx";
 import {LuFileImage, LuX} from "react-icons/lu";
 import { z } from "zod";
-import {Controller, type SubmitHandler, useFieldArray, useForm} from "react-hook-form"
+import {type SubmitHandler, useFieldArray, useForm} from "react-hook-form"
 import {zodResolver} from "@hookform/resolvers/zod";
 
 const conditionEnum = BookStateLabel.map(item => item.value) as [string, ...string[]];
@@ -95,28 +94,13 @@ export const AddBook = () => {
         )
     });
 
-
-    const [formData, setFormData] = useState({
-        title: '',
-        authors: [''],
-        isbns: '',
-        bookState: '',
-        format: '',
-        edition: '',
-        coverImage: '',
-        userCoverImage: '',
-        description: '',
-        isAvailable: false,
-        availability: ''
-    });
-
     /**
      * Permet de récupérer le meilleur ISBN
      * @param ids
      */
     function pickBestIsbn(ids?: isbns[]) {
         console.log(ids)
-        if (!ids?.length) return undefined;
+        if (!ids?.length) return "";
 
         const isbn13 = ids.find(i => i.type === "ISBN_13");
         const isbn10 = ids.find(i => i.type === "ISBN_10");
@@ -223,16 +207,13 @@ export const AddBook = () => {
                             lang="fre"
                             limit={10}
                             onSelect={(b: VolumeShort) => {
-                                setFormData(prev => ({
-                                    ...prev,
-                                    title: b.title ?? prev.title,
-                                    authors: b.authors ?? prev.authors,
-                                    coverImage: b.coverUrl ?? prev.coverImage,
-                                    isbns: pickBestIsbn(b.isbns) ?? prev.isbns,
-                                    edition: b.publishedDate ?? prev.edition,
-                                }))
-                                console.log("here" + pickBestIsbn(b.isbns));
+                                setValue("title", b.title);
+                                setValue("authors", b.authors);
+                                setValue("isbns", pickBestIsbn(b.isbns));
+                                setValue("edition", b.publishedDate);
+                                setValue("coverImage", b.coverUrl);
                             }}
+
                         />
                         <Text mt={1} fontSize="xs" color="gray.500">
                             Astuce : tapez <b>Auteur - Titre</b> pour une recherche combinée.
@@ -279,41 +260,6 @@ export const AddBook = () => {
                                                 Ajouter un auteur
                                             </Button>
                                         </Field.Root>
-
-                                        <Field.Root invalid={!!errors.authors} >
-                                        <FieldLabel>{t("addBook:book.author")}</FieldLabel>
-                                            <For each={formData.authors}>
-                                                {(item, index) => (
-                                                    <Input
-                                                        key={index}
-                                                        value={item}
-                                                        onChange={(e) => {
-                                                            const updated = [...formData.authors];     // copy array
-                                                            updated[index] = e.target.value;           // update item
-                                                            setFormData({
-                                                                ...formData,
-                                                                authors: updated,                        // replace whole array
-                                                            });
-                                                        }}
-                                                        placeholder={t("addBook:book.authorPlaceholder")}
-                                                        required
-                                                        size="md"
-                                                    />
-                                                )}
-                                            </For>
-                                            <Field.ErrorText>{errors.authors?.message}</Field.ErrorText>
-                                            <Button
-                                                m={"auto"}
-                                                onClick={() =>
-                                                    setFormData({
-                                                        ...formData,
-                                                        authors: [...formData.authors, ""],
-                                                    })
-                                                }
-                                            >
-                                                Ajouter un auteur
-                                            </Button>
-                                        </Field.Root>
                                     </Box>
                                 </Grid>
                             </Box>
@@ -339,14 +285,14 @@ export const AddBook = () => {
                                         <Field.Label>{t("addBook:book.bookState")}</Field.Label>
                                         <Select.Root
                                             collection={conditionCollection}
-                                            value={[formData.bookState]}
-                                            {...register("bookState")}
+                                            value={watch("bookState") ? [watch("bookState")] : []}
+
                                             onValueChange={({ value }) =>
-                                                setFormData({ ...formData, bookState: value[0] })
+                                                setValue("bookState", value[0], { shouldValidate: true })
                                             }
                                             size="md"
                                         >
-                                            <Select.HiddenSelect />
+                                            <Select.HiddenSelect {...register("bookState")} />
                                             <Select.Control>
                                                 <Select.Trigger className="add-book-select-trigger">
                                                     <Select.ValueText />
@@ -403,16 +349,16 @@ export const AddBook = () => {
                                 <Text fontSize="lg" fontWeight="semibold" color="gray.800" mb={4}>
                                     {t("addBook:book.images.title")}
                                 </Text>
-                                <Grid templateColumns={{ base: "1fr", md: formData.coverImage ? "repeat(2, 1fr)" : "1fr", }} gap={4}>
-                                    <Show when={formData.coverImage}>
-                                        <Field.Root invalid={!!formData.coverImage}>
+                                <Grid templateColumns={{ base: "1fr", md: watch("coverImage") ? "repeat(2, 1fr)" : "1fr", }} gap={4}>
+                                    <Show when={watch("coverImage")}>
+                                        <Field.Root invalid={!!watch("coverImage")}>
                                             <Field.Label>{t("addBook:book.images.coverImage")}</Field.Label>
                                             <Input
                                                 {...register("coverImage")}
                                                 placeholder="URL de l'image" size="md"
                                                 display={"none"}
                                             />
-                                            <Image src={formData.coverImage} alt="Couverture" w={20} h={28} objectFit="cover"
+                                            <Image src={watch("coverImage")} alt="Couverture" w={20} h={28} objectFit="cover"
                                                 borderRadius="md" mt={2} mx="auto" />
                                             <Field.ErrorText>{errors.coverImage?.message}</Field.ErrorText>
                                         </Field.Root>
@@ -436,7 +382,7 @@ export const AddBook = () => {
 
                             {/* Description */}
                             <Box>
-                                <Field.Root invalid={!!formData.description}>
+                                <Field.Root invalid={!!watch("description")}>
                                     <Field.Label>{t("addBook:book.description")}</Field.Label>
                                     <Textarea
                                         {...register("description")}
@@ -449,46 +395,42 @@ export const AddBook = () => {
                             </Box>
 
                             <Box>
-                                <Field.Root invalid={!!formData.availability}>
+                                <Field.Root invalid={!!errors.availability}>
                                     <Field.Label>{t("addBook:availability.options")}</Field.Label>
-                                    <Controller
-                                        control={control}
-                                        name={"availability"}
-                                        render={({ field }) => (
-                                            <Select.Root
-                                                name={field.name}
-                                                value={[formData.availability]}
-                                                onValueChange={({ value }) => setFormData({ ...formData, availability: value[0] })}
-                                                collection={availabilityCollection}
-                                                size="md"
-                                            >
-                                                <Select.HiddenSelect />
-                                                <Select.Control>
-                                                    <Select.Trigger className="add-book-select-trigger">
-                                                        <Select.ValueText />
-                                                    </Select.Trigger>
-                                                    <Select.IndicatorGroup>
-                                                        <Select.Indicator />
-                                                    </Select.IndicatorGroup>
-                                                </Select.Control>
-                                                <Portal>
-                                                    <Select.Positioner>
-                                                        <Select.Content bg={"gray.100"}>
-                                                            {availabilityCollection.items.map((item) => (
-                                                                <Select.Item key={item.value} item={item.label}>
-                                                                    <Select.ItemText>{item.label}</Select.ItemText>
-                                                                    <Select.ItemIndicator />
-                                                                </Select.Item>
-                                                            ))}
-                                                        </Select.Content>
-                                                    </Select.Positioner>
-                                                </Portal>
-                                            </Select.Root>
-                                        )}
-                                    />
+                                    <Select.Root
+                                        collection={availabilityCollection}
+                                        value={watch("availability") ? [watch("availability")] : []}
+
+                                        onValueChange={({ value }) =>
+                                            setValue("availability", value[0], { shouldValidate: true })
+                                        }
+                                        size="md"
+                                    >
+                                        <Select.HiddenSelect {...register("availability")} />
+                                        <Select.Control>
+                                            <Select.Trigger className="add-book-select-trigger">
+                                                <Select.ValueText />
+                                            </Select.Trigger>
+                                            <Select.IndicatorGroup>
+                                                <Select.Indicator />
+                                            </Select.IndicatorGroup>
+                                        </Select.Control>
+
+                                        <Portal>
+                                            <Select.Positioner>
+                                                <Select.Content bg={"gray.100"}>
+                                                    {availabilityCollection.items.map((item) => (
+                                                        <Select.Item key={item.value} item={item}>    {/* FIXED HERE */}
+                                                            <Select.ItemText>{item.label}</Select.ItemText>
+                                                            <Select.ItemIndicator />
+                                                        </Select.Item>
+                                                    ))}
+                                                </Select.Content>
+                                            </Select.Positioner>
+                                        </Portal>
+                                    </Select.Root>
                                     <Field.ErrorText>{errors.availability?.message}</Field.ErrorText>
                                 </Field.Root>
-
                             </Box>
 
                             {/* Boutons d'action */}
