@@ -45,7 +45,9 @@ const formSchema = z.object({
     availability: z.enum(availabilityEnum),
 })
 
-const defaultValues = {
+type FormValues = z.infer<typeof formSchema>
+
+const defaultValues: FormValues = {
     title: '',
     authors: [''],
     isbns: '',
@@ -56,13 +58,10 @@ const defaultValues = {
     userCoverImage: null,
     description: '',
     isAvailable: false,
-    availability: availabilityEnum.at(3)
+    availability: availabilityEnum.at(3)?? "",
 }
 
-type FormValues = z.infer<typeof formSchema>
-
 /* Validation d'ISBN */
-
 /**
  * Check pour les 2 types d'ISBN (10 et 13)
  * @param isbn Un string contenant uniquement l'isbn
