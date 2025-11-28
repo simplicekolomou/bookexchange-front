@@ -14,15 +14,16 @@ import {
     createListCollection,
     Container,
     Heading,
-    FileUpload, Float, useFileUploadContext, Show, Field, FieldLabel
+    Show, Field, FieldLabel
 } from '@chakra-ui/react';
 import {useTranslation} from "react-i18next";
 import {Availability, BookStateLabel, type isbns, type VolumeShort} from "../../types/book.types.ts";
 import {BookSearchCombobox} from "./books/BookSearchCombobox.tsx";
-import {LuFileImage, LuX} from "react-icons/lu";
+import {FileUploadField} from "./books/FileUploadField.tsx";
 import { z } from "zod";
-import {type SubmitHandler, useFieldArray, useForm} from "react-hook-form"
+import {Controller, type SubmitHandler, useFieldArray, useForm} from "react-hook-form"
 import {zodResolver} from "@hookform/resolvers/zod";
+import {useEffect} from "react";
 
 const conditionEnum = BookStateLabel.map(item => item.value) as [string, ...string[]];
 const availabilityEnum = Availability.map(item => item.value) as [string, ...string[]];
@@ -30,12 +31,15 @@ const availabilityEnum = Availability.map(item => item.value) as [string, ...str
 const formSchema = z.object({
     title: z.string().min(1, {message: "Title is required"}),
     authors: z.array(z.string()),
-    isbns: z.string().min(1, {message: "Isbn is required"}),
+    isbns: z
+        .string()
+        .min(1, { message: "ISBN is required" })
+        .refine(isValidISBN, { message: "Invalid ISBN (must be ISBN-10 or ISBN-13)" }),
     bookState: z.enum(conditionEnum, {message: "Invalid book state"}),
     format: z.string(),
     edition: z.string(),
     coverImage: z.url(),
-    userCoverImage: z.file().optional(),
+    userCoverImage: z.file().nullable(),
     description: z.string(),
     isAvailable: z.boolean(),
     availability: z.enum(availabilityEnum),
@@ -49,13 +53,56 @@ const defaultValues = {
     format: '',
     edition: '',
     coverImage: '',
-    userCoverImage: undefined,
+    userCoverImage: null,
     description: '',
     isAvailable: false,
-    availability: ''
+    availability: availabilityEnum.at(3)
 }
 
 type FormValues = z.infer<typeof formSchema>
+
+/* Validation d'ISBN */
+
+/**
+ * Check pour les 2 types d'ISBN (10 et 13)
+ * @param isbn Un string contenant uniquement l'isbn
+ */
+function isValidISBN(isbn: string): boolean {
+    const clean = isbn.replace(/[-\s]/g, "");
+    return isValidISBN10(clean) || isValidISBN13(clean);
+}
+
+/**
+ * Check la validité d'un ISBN-10
+ * @param isbn Un string contenant uniquement l'isbn
+ */
+function isValidISBN10(isbn: string): boolean {
+    isbn = isbn.replace(/[-\s]/g, "");
+    if (!/^\d{9}[\dX]$/.test(isbn)) return false;
+
+    let sum = 0;
+    for (let i = 0; i < 10; i++) {
+        const char = isbn[i] === "X" ? 10 : Number(isbn[i]);
+        sum += char * (10 - i);
+    }
+    return sum % 11 === 0;
+}
+
+/**
+ * Check la validité d'un ISBN-13
+ * @param isbn Un string contenant uniquement l'isbn
+ */
+function isValidISBN13(isbn: string): boolean {
+    isbn = isbn.replace(/[-\s]/g, "");
+    if (!/^\d{13}$/.test(isbn)) return false;
+
+    let sum = 0;
+    for (let i = 0; i < 13; i++) {
+        const digit = Number(isbn[i]);
+        sum += i % 2 === 0 ? digit : digit * 3;
+    }
+    return sum % 10 === 0;
+}
 
 export const AddBook = () => {
     const {
@@ -74,13 +121,21 @@ export const AddBook = () => {
     const onSubmit: SubmitHandler<FormValues> = (data) => console.log(data);
 
     const handleReset = () => {
-        reset(defaultValues)
+        reset({...defaultValues})
     };
 
-    const { fields, append, prepend, remove, swap, move, insert } = useFieldArray({
+    const { fields, append} = useFieldArray({
         control, // control props comes from useForm (optional: if you are using FormProvider)
-        name: "authors", // unique name for your Field Array
+        name: "authors",
+        keyName: "id"// unique name for your Field Array
     });
+
+    // Ensure at least one field on mount
+    useEffect(() => {
+        if (fields.length === 0) {
+            append("");
+        }
+    }, [fields, append]);
 
     // Collections pour les Select
     const conditionCollection = createListCollection({
@@ -111,84 +166,11 @@ export const AddBook = () => {
         } else if (isbn10) {
             return isbn10.identifier;
         } else {
-            return undefined;
+            return ids[0].identifier;
         }
-        // return isbn13?.identifier ?? isbn10?.identifier ?? ids[0].identifier;
     }
 
     const {t} = useTranslation(["common", "addBook"]);
-
-    const FileUploadList = () => {
-        const fileUpload = useFileUploadContext()
-        const files = fileUpload.acceptedFiles
-        if (files.length === 0) return null
-        return (
-            <FileUpload.ItemGroup>
-                {files.map((file) => (
-                    <FileUpload.Item
-                        w="auto"
-                        boxSize="20"
-                        p="2"
-                        file={file}
-                        key={file.name}
-                        mx="auto"
-                    >
-                        <FileUpload.ItemPreviewImage />
-                        <Float placement="top-end">
-                            <FileUpload.ItemDeleteTrigger boxSize="4" layerStyle="fill.solid">
-                                <LuX />
-                            </FileUpload.ItemDeleteTrigger>
-                        </Float>
-                    </FileUpload.Item>
-                ))}
-            </FileUpload.ItemGroup>
-        )
-    }
-
-    /* Validation d'ISBN */
-
-    /**
-     * Check pour les 2 types d'ISBN (10 et 13)
-     * @param isbn Un string contenant uniquement l'isbn
-     */
-    function isValidISBN(isbn: string): boolean {
-        const clean = isbn.replace(/[-\s]/g, "");
-        return isValidISBN10(clean) || isValidISBN13(clean);
-    }
-
-    /**
-     * Check la validité d'un ISBN-10
-     * @param isbn Un string contenant uniquement l'isbn
-     */
-    function isValidISBN10(isbn: string): boolean {
-        isbn = isbn.replace(/[-\s]/g, "");
-        if (!/^\d{9}[\dX]$/.test(isbn)) return false;
-
-        let sum = 0;
-        for (let i = 0; i < 10; i++) {
-            const char = isbn[i] === "X" ? 10 : Number(isbn[i]);
-            sum += char * (10 - i);
-        }
-        return sum % 11 === 0;
-    }
-
-    /**
-     * Check la validité d'un ISBN-13
-     * @param isbn Un string contenant uniquement l'isbn
-     */
-    function isValidISBN13(isbn: string): boolean {
-        isbn = isbn.replace(/[-\s]/g, "");
-        if (!/^\d{13}$/.test(isbn)) return false;
-
-        let sum = 0;
-        for (let i = 0; i < 13; i++) {
-            const digit = Number(isbn[i]);
-            sum += i % 2 === 0 ? digit : digit * 3;
-        }
-        return sum % 10 === 0;
-    }
-
-
 
     return (
         <Box className="add-book-container">
@@ -365,16 +347,17 @@ export const AddBook = () => {
                                     </Show>
 
                                     <Box mx="auto">
-                                        <FileUpload.Root accept="image/*">
-                                            <FileUpload.Label>{t("addBook:book.images.personalImage")}</FileUpload.Label>
-                                            <FileUpload.HiddenInput />
-                                            <FileUpload.Trigger asChild>
-                                                <Button variant="outline" size="sm" mx="auto">
-                                                    <LuFileImage /> Upload Images
-                                                </Button>
-                                            </FileUpload.Trigger>
-                                            <FileUploadList />
-                                        </FileUpload.Root>
+                                        <Controller
+                                            control={control}
+                                            name="userCoverImage"
+                                            render={({ field }) => (
+                                                <FileUploadField
+                                                    value={field.value}
+                                                    onChange={(file) => field.onChange(file)}
+                                                    label={t("addBook:book.images.personalImage")}
+                                                />
+                                            )}
+                                        />
                                     </Box>
 
                                 </Grid>
