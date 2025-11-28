@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+'use client';
+import { useState } from 'react';
 import {
     Button,
     Input,
@@ -9,29 +10,85 @@ import {
     Text,
     VStack,
     Flex,
-    Switch,
     Portal,
     Select,
     createListCollection,
     Container,
     Heading,
-    FileUpload, Float, useFileUploadContext, Show, For,
+    FileUpload, Float, useFileUploadContext, Show, For, Field, FieldLabel
 } from '@chakra-ui/react';
 import {useTranslation} from "react-i18next";
 import {Availability, BookStateLabel, type isbns, type VolumeShort} from "../../types/book.types.ts";
 import {BookSearchCombobox} from "./books/BookSearchCombobox.tsx";
 import {LuFileImage, LuX} from "react-icons/lu";
+import { z } from "zod";
+import {Controller, type SubmitHandler, useFieldArray, useForm} from "react-hook-form"
+import {zodResolver} from "@hookform/resolvers/zod";
 
+const conditionEnum = BookStateLabel.map(item => item.value) as [string, ...string[]];
+const availabilityEnum = Availability.map(item => item.value) as [string, ...string[]];
+
+const formSchema = z.object({
+    title: z.string().min(1, {message: "Title is required"}),
+    authors: z.array(z.string()),
+    isbns: z.string().min(1, {message: "Isbn is required"}),
+    bookState: z.enum(conditionEnum, {message: "Invalid book state"}),
+    format: z.string(),
+    edition: z.string(),
+    coverImage: z.url(),
+    userCoverImage: z.file().optional(),
+    description: z.string(),
+    isAvailable: z.boolean(),
+    availability: z.enum(availabilityEnum),
+})
+
+const defaultValues = {
+    title: '',
+    authors: [''],
+    isbns: '',
+    bookState: '',
+    format: '',
+    edition: '',
+    coverImage: '',
+    userCoverImage: undefined,
+    description: '',
+    isAvailable: false,
+    availability: ''
+}
+
+type FormValues = z.infer<typeof formSchema>
 
 export const AddBook = () => {
+    const {
+        control,
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors },
+        setValue,
+        watch,
+    } = useForm<FormValues>({
+        resolver: zodResolver(formSchema),
+        defaultValues
+    });
+
+    const onSubmit: SubmitHandler<FormValues> = (data) => console.log(data);
+
+    const handleReset = () => {
+        reset(defaultValues)
+    };
+
+    const { fields, append, prepend, remove, swap, move, insert } = useFieldArray({
+        control, // control props comes from useForm (optional: if you are using FormProvider)
+        name: "authors", // unique name for your Field Array
+    });
+
     // Collections pour les Select
     const conditionCollection = createListCollection({
         items: BookStateLabel.map(
             (bookState) => ({ value: bookState.value, label: bookState.label })
         )
     });
-
-
     const availabilityCollection = createListCollection({
         items: Availability.map(
             (option) => ({ value: option.value, label: option.label })
@@ -42,7 +99,7 @@ export const AddBook = () => {
     const [formData, setFormData] = useState({
         title: '',
         authors: [''],
-        isbn: '',
+        isbns: '',
         bookState: '',
         format: '',
         edition: '',
@@ -53,39 +110,28 @@ export const AddBook = () => {
         availability: ''
     });
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        console.log("Livre ajouté :", formData);
-        // TODO : Ajouter la logique pour envoyer les données au backend
-    };
-
     /**
      * Permet de récupérer le meilleur ISBN
      * @param ids
      */
     function pickBestIsbn(ids?: isbns[]) {
+        console.log(ids)
         if (!ids?.length) return undefined;
 
         const isbn13 = ids.find(i => i.type === "ISBN_13");
         const isbn10 = ids.find(i => i.type === "ISBN_10");
-        return isbn13?.identifier ?? isbn10?.identifier ?? ids[0].identifier;
+        console.log("isbn13", isbn13)
+        console.log("isbn10", isbn10)
+        if (isbn13) {
+            return isbn13.identifier;
+        } else if (isbn10) {
+            return isbn10.identifier;
+        } else {
+            return undefined;
+        }
+        // return isbn13?.identifier ?? isbn10?.identifier ?? ids[0].identifier;
     }
 
-    const handleReset = () => {
-        setFormData({
-            title: '',
-            authors: [''],
-            isbn: '',
-            bookState: '',
-            format: '',
-            edition: '',
-            coverImage: '',
-            userCoverImage: '',
-            description: '',
-            isAvailable: false,
-            availability: ''
-        });
-    };
     const {t} = useTranslation(["common", "addBook"]);
 
     const FileUploadList = () => {
@@ -115,6 +161,51 @@ export const AddBook = () => {
         )
     }
 
+    /* Validation d'ISBN */
+
+    /**
+     * Check pour les 2 types d'ISBN (10 et 13)
+     * @param isbn Un string contenant uniquement l'isbn
+     */
+    function isValidISBN(isbn: string): boolean {
+        const clean = isbn.replace(/[-\s]/g, "");
+        return isValidISBN10(clean) || isValidISBN13(clean);
+    }
+
+    /**
+     * Check la validité d'un ISBN-10
+     * @param isbn Un string contenant uniquement l'isbn
+     */
+    function isValidISBN10(isbn: string): boolean {
+        isbn = isbn.replace(/[-\s]/g, "");
+        if (!/^\d{9}[\dX]$/.test(isbn)) return false;
+
+        let sum = 0;
+        for (let i = 0; i < 10; i++) {
+            const char = isbn[i] === "X" ? 10 : Number(isbn[i]);
+            sum += char * (10 - i);
+        }
+        return sum % 11 === 0;
+    }
+
+    /**
+     * Check la validité d'un ISBN-13
+     * @param isbn Un string contenant uniquement l'isbn
+     */
+    function isValidISBN13(isbn: string): boolean {
+        isbn = isbn.replace(/[-\s]/g, "");
+        if (!/^\d{13}$/.test(isbn)) return false;
+
+        let sum = 0;
+        for (let i = 0; i < 13; i++) {
+            const digit = Number(isbn[i]);
+            sum += i % 2 === 0 ? digit : digit * 3;
+        }
+        return sum % 10 === 0;
+    }
+
+
+
     return (
         <Box className="add-book-container">
             <Container maxW="4xl" py={8}>
@@ -137,9 +228,10 @@ export const AddBook = () => {
                                     title: b.title ?? prev.title,
                                     authors: b.authors ?? prev.authors,
                                     coverImage: b.coverUrl ?? prev.coverImage,
-                                    isbn: pickBestIsbn(b.isbns) ?? prev.isbn,
+                                    isbns: pickBestIsbn(b.isbns) ?? prev.isbns,
                                     edition: b.publishedDate ?? prev.edition,
-                                }));
+                                }))
+                                console.log("here" + pickBestIsbn(b.isbns));
                             }}
                         />
                         <Text mt={1} fontSize="xs" color="gray.500">
@@ -147,7 +239,7 @@ export const AddBook = () => {
                         </Text>
                     </Box>
 
-                    <form onSubmit={handleSubmit}>
+                    <form onSubmit={handleSubmit(onSubmit)}>
                         <VStack gap={6} align="stretch">
                             {/* Informations de base */}
                             <Box>
@@ -156,48 +248,72 @@ export const AddBook = () => {
                                 </Text>
                                 <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={4}>
                                     <Box>
-                                        <Text fontWeight="medium" mb={2} fontSize="sm" color="gray.700">
-                                            {t("addBook:book.title")}
-                                        </Text>
+                                        <Field.Root invalid={!!errors.title} >
+                                            <Field.Label>{t("addBook:book.title")}</Field.Label>
                                         <Input
-                                            value={formData.title}
-                                            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                            {...register('title')}
                                             placeholder={t("addBook:book.titlePlaceholder")} required size="md" />
+                                            <Field.ErrorText>{errors.title?.message}</Field.ErrorText>
+                                        </Field.Root>
                                     </Box>
 
                                     <Box>
-                                        <Text fontWeight="medium" mb={2} fontSize="sm" color="gray.700">
-                                            {t("addBook:book.author")}
-                                        </Text>
-                                        <For each={formData.authors}>
-                                            {(item, index) => (
+                                        <Field.Root invalid={!!errors.authors}>
+                                            <FieldLabel>{t("addBook:book.author")}</FieldLabel>
+
+                                            {fields.map((field, index) => (
                                                 <Input
-                                                    key={index}
-                                                    value={item}
-                                                    onChange={(e) => {
-                                                        const updated = [...formData.authors];     // copy array
-                                                        updated[index] = e.target.value;           // update item
-                                                        setFormData({
-                                                            ...formData,
-                                                            authors: updated,                        // replace whole array
-                                                        });
-                                                    }}
+                                                    key={field.id}
+                                                    {...register(`authors.${index}`)}
                                                     placeholder={t("addBook:book.authorPlaceholder")}
-                                                    required
                                                     size="md"
                                                 />
-                                            )}
-                                        </For>
-                                        <Button
-                                            onClick={() =>
-                                                setFormData({
-                                                    ...formData,
-                                                    authors: [...formData.authors, ""],
-                                                })
-                                            }
-                                        >
-                                            Ajouter un auteur
-                                        </Button>
+                                            ))}
+
+                                            <Field.ErrorText>{errors.authors?.message}</Field.ErrorText>
+
+                                            <Button
+                                                m="auto"
+                                                onClick={() => append("")}
+                                            >
+                                                Ajouter un auteur
+                                            </Button>
+                                        </Field.Root>
+
+                                        <Field.Root invalid={!!errors.authors} >
+                                        <FieldLabel>{t("addBook:book.author")}</FieldLabel>
+                                            <For each={formData.authors}>
+                                                {(item, index) => (
+                                                    <Input
+                                                        key={index}
+                                                        value={item}
+                                                        onChange={(e) => {
+                                                            const updated = [...formData.authors];     // copy array
+                                                            updated[index] = e.target.value;           // update item
+                                                            setFormData({
+                                                                ...formData,
+                                                                authors: updated,                        // replace whole array
+                                                            });
+                                                        }}
+                                                        placeholder={t("addBook:book.authorPlaceholder")}
+                                                        required
+                                                        size="md"
+                                                    />
+                                                )}
+                                            </For>
+                                            <Field.ErrorText>{errors.authors?.message}</Field.ErrorText>
+                                            <Button
+                                                m={"auto"}
+                                                onClick={() =>
+                                                    setFormData({
+                                                        ...formData,
+                                                        authors: [...formData.authors, ""],
+                                                    })
+                                                }
+                                            >
+                                                Ajouter un auteur
+                                            </Button>
+                                        </Field.Root>
                                     </Box>
                                 </Grid>
                             </Box>
@@ -209,24 +325,22 @@ export const AddBook = () => {
                                 </Text>
                                 <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={4}>
                                     <Box>
-                                        <Text fontWeight="medium" mb={2} fontSize="sm" color="gray.700">
-                                            {t("addBook:book.isbn")}
-                                        </Text>
-                                        <Input
-                                            value={formData.isbn}
-                                            onChange={(e) => setFormData({ ...formData, isbn: e.target.value })}
-                                            placeholder={t("addBook:book.isbnPlaceholder")}
-                                            size="md"
-                                        />
+                                        <Field.Root invalid={!!errors.isbns}>
+                                            <Field.Label>{t("addBook:book.isbn")}</Field.Label>
+                                            <Input
+                                                {...register("isbns")}
+                                                placeholder={t("addBook:book.isbnPlaceholder")}
+                                            />
+                                            <Field.ErrorText>{errors.isbns?.message}</Field.ErrorText>
+                                        </Field.Root>
                                     </Box>
 
-                                    <Box>
-                                        <Text fontWeight="medium" mb={2} fontSize="sm" color="gray.700">
-                                            {t("addBook:book.bookState")}
-                                        </Text>
+                                    <Field.Root invalid={!!errors.bookState}>
+                                        <Field.Label>{t("addBook:book.bookState")}</Field.Label>
                                         <Select.Root
                                             collection={conditionCollection}
                                             value={[formData.bookState]}
+                                            {...register("bookState")}
                                             onValueChange={({ value }) =>
                                                 setFormData({ ...formData, bookState: value[0] })
                                             }
@@ -255,30 +369,31 @@ export const AddBook = () => {
                                                 </Select.Positioner>
                                             </Portal>
                                         </Select.Root>
+                                        <Field.ErrorText>{errors.bookState?.message}</Field.ErrorText>
+                                    </Field.Root>
+
+                                    <Box>
+                                        <Field.Root invalid={!!errors.format}>
+                                            <Field.Label>{t("addBook:book.format")}</Field.Label>
+
+                                            <Input
+                                                {...register("format")}
+                                                placeholder={t("addBook:book.formatPlaceholder")}
+                                            />
+                                            <Field.ErrorText>{errors.format?.message}</Field.ErrorText>
+                                        </Field.Root>
                                     </Box>
 
                                     <Box>
-                                        <Text fontWeight="medium" mb={2} fontSize="sm" color="gray.700">
-                                            {t("addBook:book.format")}
-                                        </Text>
-                                        <Input
-                                            value={formData.format}
-                                            onChange={(e) => setFormData({ ...formData, format: e.target.value })}
-                                            placeholder={t("addBook:book.formatPlaceholder")}
-                                            size="md"
-                                        />
-                                    </Box>
-
-                                    <Box>
-                                        <Text fontWeight="medium" mb={2} fontSize="sm" color="gray.700">
-                                            {t("addBook:book.edition")}
-                                        </Text>
-                                        <Input
-                                            value={formData.edition}
-                                            onChange={(e) => setFormData({ ...formData, edition: e.target.value })}
-                                            placeholder={t("addBook:book.editionPlaceholder")}
-                                            size="md"
-                                        />
+                                        <Field.Root invalid={!!errors.edition}>
+                                            <Field.Label>{t("addBook:book.edition")}</Field.Label>
+                                            <Input
+                                                {...register("edition")}
+                                                placeholder={t("addBook:book.editionPlaceholder")}
+                                                size="md"
+                                            />
+                                            <Field.ErrorText>{errors.edition?.message}</Field.ErrorText>
+                                        </Field.Root>
                                     </Box>
                                 </Grid>
                             </Box>
@@ -290,26 +405,22 @@ export const AddBook = () => {
                                 </Text>
                                 <Grid templateColumns={{ base: "1fr", md: formData.coverImage ? "repeat(2, 1fr)" : "1fr", }} gap={4}>
                                     <Show when={formData.coverImage}>
-                                        <Box>
-                                            <Text fontWeight="medium" mb={2} fontSize="sm" color="gray.700">
-                                                {t("addBook:book.images.coverImage")}
-                                            </Text>
+                                        <Field.Root invalid={!!formData.coverImage}>
+                                            <Field.Label>{t("addBook:book.images.coverImage")}</Field.Label>
                                             <Input
-                                                value={formData.coverImage}
-                                                onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
+                                                {...register("coverImage")}
                                                 placeholder="URL de l'image" size="md"
                                                 display={"none"}
                                             />
                                             <Image src={formData.coverImage} alt="Couverture" w={20} h={28} objectFit="cover"
                                                 borderRadius="md" mt={2} mx="auto" />
-                                        </Box>
+                                            <Field.ErrorText>{errors.coverImage?.message}</Field.ErrorText>
+                                        </Field.Root>
                                     </Show>
 
                                     <Box mx="auto">
-                                        <Text fontWeight="medium" mb={2} fontSize="sm" color="gray.700">
-                                            {t("addBook:book.images.personalImage")}
-                                        </Text>
                                         <FileUpload.Root accept="image/*">
+                                            <FileUpload.Label>{t("addBook:book.images.personalImage")}</FileUpload.Label>
                                             <FileUpload.HiddenInput />
                                             <FileUpload.Trigger asChild>
                                                 <Button variant="outline" size="sm" mx="auto">
@@ -325,79 +436,59 @@ export const AddBook = () => {
 
                             {/* Description */}
                             <Box>
-                                <Text fontSize="lg" fontWeight="semibold" color="gray.800" mb={4}>
-                                    {t("addBook:book.description")}
-                                </Text>
-                                <Textarea
-                                    value={formData.description}
-                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                    placeholder={t("addBook:book.descriptionPlaceholder")}
-                                    rows={4}
-                                    resize="vertical"
-                                />
+                                <Field.Root invalid={!!formData.description}>
+                                    <Field.Label>{t("addBook:book.description")}</Field.Label>
+                                    <Textarea
+                                        {...register("description")}
+                                        placeholder={t("addBook:book.descriptionPlaceholder")}
+                                        rows={4}
+                                        resize="vertical"
+                                    />
+                                    <Field.ErrorText>{errors.description?.message}</Field.ErrorText>
+                                </Field.Root>
                             </Box>
 
-                            {/* Disponibilité */}
-                            <Box p={4} bg="gray.50" borderRadius="md">
-                                <Flex alignItems="center" justifyContent="space-between" flexWrap="wrap" gap={2}>
-                                    <Box flex="1">
-                                        <Text fontWeight="medium" mb={1} fontSize="sm" color="gray.800">
-                                            {t("addBook:availability.title")}
-                                        </Text>
-                                        <Text fontSize="sm" color="gray.600">
-                                            {t("addBook:availability.subtitle")}
-                                        </Text>
-                                    </Box>
-                                    <Switch.Root
-                                        checked={formData.isAvailable}
-                                        onCheckedChange={({ checked }) =>
-                                            setFormData({
-                                                ...formData,
-                                                isAvailable: checked,
-                                                availability: checked ? 'echanger' : 'none',
-                                            })
-                                        }
-                                    >
-                                        <Switch.HiddenInput />
-                                        <Switch.Control />
-                                    </Switch.Root>
-                                </Flex>
+                            <Box>
+                                <Field.Root invalid={!!formData.availability}>
+                                    <Field.Label>{t("addBook:availability.options")}</Field.Label>
+                                    <Controller
+                                        control={control}
+                                        name={"availability"}
+                                        render={({ field }) => (
+                                            <Select.Root
+                                                name={field.name}
+                                                value={[formData.availability]}
+                                                onValueChange={({ value }) => setFormData({ ...formData, availability: value[0] })}
+                                                collection={availabilityCollection}
+                                                size="md"
+                                            >
+                                                <Select.HiddenSelect />
+                                                <Select.Control>
+                                                    <Select.Trigger className="add-book-select-trigger">
+                                                        <Select.ValueText />
+                                                    </Select.Trigger>
+                                                    <Select.IndicatorGroup>
+                                                        <Select.Indicator />
+                                                    </Select.IndicatorGroup>
+                                                </Select.Control>
+                                                <Portal>
+                                                    <Select.Positioner>
+                                                        <Select.Content bg={"gray.100"}>
+                                                            {availabilityCollection.items.map((item) => (
+                                                                <Select.Item key={item.value} item={item.label}>
+                                                                    <Select.ItemText>{item.label}</Select.ItemText>
+                                                                    <Select.ItemIndicator />
+                                                                </Select.Item>
+                                                            ))}
+                                                        </Select.Content>
+                                                    </Select.Positioner>
+                                                </Portal>
+                                            </Select.Root>
+                                        )}
+                                    />
+                                    <Field.ErrorText>{errors.availability?.message}</Field.ErrorText>
+                                </Field.Root>
 
-                                {formData.isAvailable && (
-                                    <Box mt={4}>
-                                        <Text fontWeight="medium" mb={2} fontSize="sm" color="gray.700">
-                                            {t("addBook:availability.options")}
-                                        </Text>
-                                        <Select.Root
-                                            collection={availabilityCollection}
-                                            value={[formData.availability]}
-                                            onValueChange={({ value }) => setFormData({ ...formData, availability: value[0] })}
-                                            size="md"
-                                        >
-                                            <Select.HiddenSelect />
-                                            <Select.Control>
-                                                <Select.Trigger className="add-book-select-trigger">
-                                                    <Select.ValueText />
-                                                </Select.Trigger>
-                                                <Select.IndicatorGroup>
-                                                    <Select.Indicator />
-                                                </Select.IndicatorGroup>
-                                            </Select.Control>
-                                            <Portal>
-                                                <Select.Positioner>
-                                                    <Select.Content bg={"gray.100"}>
-                                                        {availabilityCollection.items.map((item) => (
-                                                            <Select.Item key={item.value} item={item.label}>
-                                                                <Select.ItemText>{item.label}</Select.ItemText>
-                                                                <Select.ItemIndicator />
-                                                            </Select.Item>
-                                                        ))}
-                                                    </Select.Content>
-                                                </Select.Positioner>
-                                            </Portal>
-                                        </Select.Root>
-                                    </Box>
-                                )}
                             </Box>
 
                             {/* Boutons d'action */}
