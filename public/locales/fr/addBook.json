@@ -27,6 +27,20 @@
   "availability": {
     "title": "Disponible pour la communauté",
     "subtitle": "Rendre ce livre visible aux autres membres",
-    "options" : "Type de disponibilité"
+    "optionsLabel" : "Type de disponibilité",
+    "options": {
+      "for_trade" : "A échanger",
+      "for_sale" : "A vendre",
+      "for_gift" : "A donner",
+      "none" : "Pour garder"
+    }
+  },
+  "bookState": {
+    "options" : {
+      "new" : "Neuf",
+      "very_good" : "Très bon",
+      "good" : "Bon",
+      "decent" : "Décent"
+    }
   }
 }

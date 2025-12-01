@@ -14,7 +14,7 @@ import {
     createListCollection,
     Container,
     Heading,
-    Show, Field, FieldLabel
+    Show, Field, FieldLabel, CloseButton
 } from '@chakra-ui/react';
 import {useTranslation} from "react-i18next";
 import {Availability, BookStateLabel, type isbns, type VolumeShort} from "../../types/book.types.ts";
@@ -24,6 +24,8 @@ import {z} from "zod";
 import {Controller, type SubmitHandler, useFieldArray, useForm} from "react-hook-form"
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useEffect} from "react";
+import {toaster} from "../ui/toaster.tsx";
+import {useAddBookCopyMutation} from "../../features/book/bookApi.ts";
 
 const conditionEnum = BookStateLabel.map(item => item.value) as [string, ...string[]];
 const availabilityEnum = Availability.map(item => item.value) as [string, ...string[]];
@@ -109,6 +111,8 @@ function isValidISBN13(isbn: string): boolean {
 }
 
 export const AddBook = () => {
+    const [addBookCopy, { isLoading, isSuccess, isError }] = useAddBookCopyMutation();
+
     const {
         control,
         register,
@@ -122,13 +126,49 @@ export const AddBook = () => {
         defaultValues
     });
 
-    const onSubmit: SubmitHandler<FormValues> = (data) => console.log(data);
+    const onSubmit: SubmitHandler<FormValues> = async (data) => {
+        try {
+            // Transform form data to match backend format
+            const bookData = {
+                physicalState: data.bookState,
+                availabilityType: data.availability,
+                askingPrice: 0, // You might want to add this to your form
+                title: data.title,
+                authors: data.authors.map(author => author.name), // Convert author objects to strings
+                format: data.format,
+                edition: data.edition,
+                isbn: data.isbns,
+                coverPictureApiUrl: data.coverImage,
+                userUploadPicturePath: data.userCoverImage ? data.userCoverImage.name : '', // Handle file upload separately if needed
+                description: data.description,
+            };
+
+            await addBookCopy(bookData).unwrap();
+
+            // Show success message
+            toaster.create({
+                title: "Succès",
+                description: "Le livre a été ajouté avec succès",
+                type: "success",
+            });
+
+            // Reset form
+            handleReset();
+        } catch (error) {
+            console.error('Failed to add book:', error);
+            toaster.create({
+                title: "Erreur",
+                description: "Une erreur est survenue lors de l'ajout du livre",
+                type: "error",
+            });
+        }
+    };
 
     const handleReset = () => {
         reset({...defaultValues})
     };
 
-    const { fields, append} = useFieldArray<FormValues>({
+    const { fields, append, remove} = useFieldArray<FormValues>({
         control, // control props comes from useForm (optional: if you are using FormProvider)
         name: "authors",
         keyName: "id"// unique name for your Field Array
@@ -141,15 +181,24 @@ export const AddBook = () => {
         }
     }, [fields, append]);
 
+    // I18n initialisation
+    const {t} = useTranslation(["common", "addBook"]);
+
     // Collections pour les Select
     const conditionCollection = createListCollection({
         items: BookStateLabel.map(
-            (bookState) => ({ value: bookState.value, label: bookState.label })
+            (bookState) => ({
+                value: bookState.value,
+                label: t(`addBook:bookState.options.${bookState.value}`)
+            })
         )
     });
     const availabilityCollection = createListCollection({
         items: Availability.map(
-            (option) => ({ value: option.value, label: option.label })
+            (option) => ({
+                value: option.value,
+                label: t(`addBook:availability.options.${option.value}`)
+            })
         )
     });
 
@@ -158,13 +207,13 @@ export const AddBook = () => {
      * @param ids
      */
     function pickBestIsbn(ids?: isbns[]) {
-        console.log(ids)
+        // console.log(ids)
         if (!ids?.length) return "";
 
         const isbn13 = ids.find(i => i.type === "ISBN_13");
         const isbn10 = ids.find(i => i.type === "ISBN_10");
-        console.log("isbn13", isbn13)
-        console.log("isbn10", isbn10)
+        // console.log("isbn13", isbn13)
+        // console.log("isbn10", isbn10)
         if (isbn13) {
             return isbn13.identifier;
         } else if (isbn10) {
@@ -173,8 +222,6 @@ export const AddBook = () => {
             return ids[0].identifier;
         }
     }
-
-    const {t} = useTranslation(["common", "addBook"]);
 
     return (
         <Box className="add-book-container">
@@ -194,10 +241,13 @@ export const AddBook = () => {
                             limit={10}
                             onSelect={(b: VolumeShort) => {
                                 setValue("title", b.title);
-                                setValue("authors", b.authors);
+
+                                setValue("authors", (b.authors ?? [""]).map(a => ({ name: a })));
                                 setValue("isbns", pickBestIsbn(b.isbns));
                                 setValue("edition", b.publishedDate);
                                 setValue("coverImage", b.coverUrl);
+                                console.log(b.authors)
+                                console.log(typeof b.authors?.at(0))
                             }}
 
                         />
@@ -229,12 +279,15 @@ export const AddBook = () => {
                                             <FieldLabel>{t("addBook:book.author")}</FieldLabel>
 
                                             {fields.map((field, index) => (
-                                                <Input
-                                                    key={field.id}
-                                                    {...register(`authors.${index}.name`)}
-                                                    placeholder={t("addBook:book.authorPlaceholder")}
-                                                    size="md"
-                                                />
+                                                <Flex key={field.id} align="center" gap={2}>
+                                                    <Input
+                                                        {...register(`authors.${index}.name`)}
+                                                        placeholder={t("addBook:book.authorPlaceholder")}
+                                                        size="md"
+                                                    />
+
+                                                    <CloseButton onClick={() => remove(index)} />
+                                                </Flex>
                                             ))}
 
                                             <Field.ErrorText>{errors.authors?.message}</Field.ErrorText>

@@ -1,4 +1,4 @@
-import type {VolumeShort} from '../../types/book.types.ts';
+import type {AddBookRequest, VolumeShort} from '../../types/book.types.ts';
 import {apiSlice} from "../../services/apiSlice.ts";
 import type {BookCopy} from '../../types/book.types.ts';
 
@@ -28,6 +28,15 @@ export const booksApi = apiSlice.injectEndpoints({
                 },
             }),
         }),
+
+        addBookCopy: builder.mutation<void, AddBookRequest>({
+            query: (bookData) => ({
+                url: '/book-copies/user/me',
+                method: 'POST',
+                body: bookData,
+            }),
+            invalidatesTags: ['Book'], // This will refetch getUserBooks after adding
+        }),
     }),
     overrideExisting: false,
 });
@@ -35,4 +44,5 @@ export const booksApi = apiSlice.injectEndpoints({
 export const {
     useGetUserBooksQuery,
     useGetBookSuggestionsQuery,
+    useAddBookCopyMutation
 } = booksApi;

@@ -41,17 +41,17 @@ export interface Exchange {
 }
 
 export const BookStateLabel = [
-    { value: 'neuf', label: 'Neuf' },
-    { value: 'bon', label: 'Bon état' },
-    { value: 'mauvais', label: 'Mauvais état' },
-    { value: 'acceptable', label: 'Acceptable' }
+    { value: 'new'},
+    { value: 'very_good'},
+    { value: 'good'},
+    { value: 'decent'}
 ]
 
 export const Availability = [
-    { value: 'echanger', label: 'A échanger' },
-    { value: 'vendre', label: 'A vendre' },
-    { value: 'donner', label: 'A donner' },
-    { value: 'indisponible', label: 'Indisponible' }
+    { value: 'for_trade'},
+    { value: 'for_sale'},
+    { value: 'for_gift'},
+    { value: 'none'}
 ]
 
 export interface UserBooksState {
@@ -61,10 +61,6 @@ export interface UserBooksState {
     averageRatings: number;
 }
 
-export type author = {
-    name : string;
-}
-
 // src/types/books.ts
 export type VolumeShort = {
     id: string;
@@ -72,11 +68,28 @@ export type VolumeShort = {
     publishedDate: string;
     coverUrl: string;
     isbns: isbns[];
-    authors: author[];
+    authors: string[];
     description: string;
 };
 
 export type isbns = {
     type: string;
     identifier: string;
+}
+
+/**
+ * Interface des bouquins de collection du backend
+ */
+export interface AddBookRequest {
+    physicalState: string;
+    availabilityType: string;
+    askingPrice: number;
+    title: string;
+    authors: string[];
+    format: string;
+    edition: string;
+    isbn: string;
+    coverPictureApiUrl: string;
+    userUploadPicturePath: string;
+    description: string;
 }
