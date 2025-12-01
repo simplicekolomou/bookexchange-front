@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import type { BookTypes } from '../../types/book.types.ts';
+import type {BookCopy} from '../../types/book.types.ts';
 
 export const booksApi = createApi({
     reducerPath: 'booksApi',
@@ -9,9 +9,12 @@ export const booksApi = createApi({
     }),
     tagTypes: ['Book'],
     endpoints: (builder) => ({
-        getUserBooks: builder.query<BookTypes[], void>({
-            query: () => 'books',
-            providesTags: ['Book'],
+        getUserBooks: builder.query<BookCopy[], {ownerEmail: string}>({
+            query: () => ({
+                url: '/book-copies/user/me',
+                method: 'GET',
+                providesTags: ['Book'],
+            })
         }),
     }),
 });

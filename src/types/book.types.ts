@@ -14,10 +14,17 @@ export interface BookTypes {
 export interface BookCopy {
     id: string;
     physicalState: string;
-    transactionType: string;
-    userId: string;
-    bookId: string;
-    coverImage?: string;
+    availabilityType: string //   NONE, FOR_SALE, FOR_TRADE,  FOR_GIFT'
+    askingPrice: number;
+    title: string;
+    authors: string[];
+    format: string;
+    edition: string;
+    isbn: string;
+    coverPictureApiUrl: string;
+    userUploadPicturePath: string;
+    description: string;
+    ownerId: string;
 }
 
 export interface WishlistItem {
@@ -46,3 +53,10 @@ export const Availability = [
     { value: 'donner', label: 'A donner' },
     { value: 'indisponible', label: 'Indisponible' }
 ]
+
+export interface UserBooksState {
+    books: BookTypes[];
+    wishlist: WishlistItem[];
+    exchanges: Exchange[];
+    averageRatings: number;
+}

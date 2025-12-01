@@ -1,16 +1,7 @@
-import {Box, Button, Flex, Image, Text} from '@chakra-ui/react';
-import type { BookTypes } from '../../types/book.types.ts';
-import type { User } from '../../types/user';
+import {Box, Button, Flex, Text} from '@chakra-ui/react';
+import { VStack, HStack, Badge } from '@chakra-ui/react';
 
-interface BookDetailModalProps {
-    book: BookTypes;
-    owner: User;
-    open?: boolean;
-    onOpenChange?: (open: boolean) => void;
-    onClose: () => void;
-}
-
-export const BookDetail = ({ book, owner, onClose }: BookDetailModalProps) => {
+export const BookDetail = () => {
     return (
         <Box>
             {/* En-tête avec bouton de fermeture */}
@@ -22,7 +13,7 @@ export const BookDetail = ({ book, owner, onClose }: BookDetailModalProps) => {
                 p={4}
             >
                 <Text fontSize="xl" fontWeight="bold">Détails du livre</Text>
-                <Button variant="outline" onClick={onClose}>
+                <Button variant="outline">
                     Fermer
                 </Button>
             </Flex>
@@ -39,96 +30,50 @@ export const BookDetail = ({ book, owner, onClose }: BookDetailModalProps) => {
                         overflow="hidden"
                         flexShrink={0}
                     >
-                        {book.userCoverImage || book.coverImage ? (
-                            <Image
-                                as="img"
-                                src={book.userCoverImage || book.coverImage}
-                                alt={book.title}
-                                w="full"
-                                h="full"
-                                objectFit="cover"
-                            />
-                        ) : (
-                            <Flex w="full" h="full" align="center" justify="center">
-                                <BookOpen size={48} color="var(--chakra-colors-gray-400)" />
-                            </Flex>
-                        )}
+                        {/* Remplacez par l'image réelle du livre */}
                     </Box>
 
                     {/* Informations du livre */}
                     <Box flex={1}>
                         <Text fontSize="2xl" fontWeight="bold" color="gray.800" mb={2}>
-                            {book.title}
+                            {/* Titre du livre */}
                         </Text>
                         <Text fontSize="lg" color="gray.600" mb={4}>
-                            par {book.author}
+                            par {/*auteur du livre */}
                         </Text>
 
                         {/* Métadonnées */}
                         <VStack align="start" gap={3} mb={6}>
                             <HStack>
                                 <Text fontWeight="medium">État:</Text>
-                                <Badge colorScheme="blue">{conditionLabels[book.condition as keyof typeof conditionLabels]}</Badge>
+                                <Badge colorScheme="blue">{/*état du livre*/}</Badge>
                             </HStack>
 
                             <HStack>
                                 <Text fontWeight="medium">Disponibilité:</Text>
-                                <Badge colorScheme={availabilityColors[book.availability]}>
-                                    {availabilityLabels[book.availability]}
+                                <Badge colorScheme="{/*couleur selon disponibilité*/}">
+                                    {/*disponibilité du livre*/}
                                 </Badge>
                             </HStack>
 
-                            {book.isbn && (
-                                <HStack>
-                                    <Text fontWeight="medium">ISBN:</Text>
-                                    <Text color="gray.600">{book.isbn}</Text>
-                                </HStack>
-                            )}
+                            {/* isbn du livre */}
 
-                            {book.format && (
-                                <HStack>
-                                    <Text fontWeight="medium">Format:</Text>
-                                    <Text color="gray.600">{book.format}</Text>
-                                </HStack>
-                            )}
+                            {/*format du livre*/}
 
-                            {book.edition && (
-                                <HStack>
-                                    <Text fontWeight="medium">Édition:</Text>
-                                    <Text color="gray.600">{book.edition}</Text>
-                                </HStack>
-                            )}
+                            {/*édition du livre*/}
                         </VStack>
 
                         {/* Description */}
-                        {book.description && (
-                            <Box mb={6}>
-                                <Text fontWeight="medium" mb={2}>Description:</Text>
-                                <Text color="gray.600" lineHeight="tall">
-                                    {book.description}
-                                </Text>
-                            </Box>
-                        )}
+                        {/*description du livre*/}
 
                         {/* Informations du propriétaire */}
                         <Box p={4} bg="gray.50" borderRadius="md">
                             <Text fontWeight="medium" mb={2}>Propriétaire:</Text>
                             <Flex align="center" gap={3}>
-                                <Avatar.Root size="md">
-                                    <Avatar.Image src={owner.avatar} />
-                                    <Avatar.Fallback>
-                                        {owner.firstName[0]}{owner.lastName[0]}
-                                    </Avatar.Fallback>
-                                </Avatar.Root>
                                 <Box>
                                     <Text fontWeight="medium">
-                                        {owner.firstName} {owner.lastName}
+                                        {/* nom et prénom du propriétaire */}
                                     </Text>
-                                    {owner.contry && (
-                                        <Text fontSize="sm" color="gray.600">
-                                            📍 {owner.contry}
-                                        </Text>
-                                    )}
                                 </Box>
                             </Flex>
                         </Box>
@@ -137,30 +82,4 @@ export const BookDetail = ({ book, owner, onClose }: BookDetailModalProps) => {
             </Box>
         </Box>
     );
-};
-
-// N'oubliez pas d'importer les composants manquants et de définir les constantes
-import { VStack, HStack, Badge, Avatar } from '@chakra-ui/react';
-import { BookOpen } from 'lucide-react';
-
-const conditionLabels = {
-    neuf: 'Neuf',
-    excellent: 'Excellent',
-    bon: 'Bon',
-    acceptable: 'Acceptable',
-    usé: 'Usé',
-};
-
-const availabilityLabels = {
-    echanger: 'À échanger',
-    vendre: 'À vendre',
-    donner: 'À donner',
-    none: 'Non disponible',
-};
-
-const availabilityColors = {
-    echanger: 'orange',
-    vendre: 'blue',
-    donner: 'green',
-    none: 'gray',
 };

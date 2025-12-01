@@ -3,7 +3,6 @@
 // des hooks typés dans toute l'application.
 // Nous désactivons ici la règle ESLint, car il s'agit de l'emplacement désigné
 // pour importer et réexporter les versions typées des hooks.
-/* eslint-disable no-restricted-imports */
 
 import { useDispatch, useSelector } from 'react-redux'
 import type { RootState, AppDispatch } from './store'

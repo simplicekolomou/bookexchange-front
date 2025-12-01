@@ -2,15 +2,15 @@ import { Tabs, Text } from '@chakra-ui/react';
 import { BookOpen, Users } from 'lucide-react';
 
 interface SearchTabsProps {
-    value: 'books' | 'users';
-    onChange: (value: 'books' | 'users') => void;
+    value: string;
+    onChange: (value: string) => void;
 }
 
 export const SearchTabs = ({ value, onChange }: SearchTabsProps) => {
     return (
         <Tabs.Root
             value={value}
-            onValueChange={({ value }) => onChange(value as 'books' | 'users')}
+            onValueChange={({ value }) => onChange(value)}
             mb={6}
         >
             <Tabs.List
@@ -19,11 +19,17 @@ export const SearchTabs = ({ value, onChange }: SearchTabsProps) => {
                 width="full"
                 gap={2}
             >
-                <Tabs.Trigger value="books" justifyContent="center">
+                <Tabs.Trigger
+                    value="books"
+                    justifyContent="center"
+                >
                     <BookOpen size={16} />
                     <Text ml={2}>Livres</Text>
                 </Tabs.Trigger>
-                <Tabs.Trigger value="users" justifyContent="center">
+                <Tabs.Trigger
+                    value="users"
+                    justifyContent="center"
+                >
                     <Users size={16} />
                     <Text ml={2}>Utilisateurs</Text>
                 </Tabs.Trigger>

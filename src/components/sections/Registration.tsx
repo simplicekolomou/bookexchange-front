@@ -16,7 +16,7 @@ import * as React from "react";
 import { useRegisterMutation } from "../../features/auth/authApi";
 import { useAppDispatch } from "../../app/hooks";
 import { setCredentials } from "../../features/auth/authSlice";
-import { toaster } from "../ui/toaster";
+import {tokens} from "../ui/theme.ts";
 
 export const Registration = () => {
     const navigate = useNavigate();
@@ -24,7 +24,7 @@ export const Registration = () => {
 
     const [localError, setLocalError] = useState('');
     const [activeButton, setActiveButton] = useState("register");
-    const [register, {isSuccess: isRegisterSuccess, isError: isRegisterError, error: registerError}] = useRegisterMutation()
+    const [register, {isSuccess: isRegisterSuccess}] = useRegisterMutation()
 
     const { t } = useTranslation("auth");
 
@@ -84,7 +84,13 @@ export const Registration = () => {
             dispatch(setCredentials(result));
 
         } catch (error) {
-            console.log(error)
+            const err = (error as { data?: { error?: string } })?.data?.error;
+            if(err === "Bad Request"){
+                setLocalError("Cet email est déjà utilisé.");
+                return;
+            }else {
+                setLocalError("Une erreur est survenue lors de l'inscription. Veuillez réessayer plus tard.");
+            }
         }
     };
 
@@ -96,48 +102,53 @@ export const Registration = () => {
     };
 
     useEffect(() => {
-        navigate("/collection", { replace: true });
-    }, [isRegisterSuccess]);
-
-
-    useEffect(() =>{
-        const error = (registerError as any).data.message
-        toaster.create({
-            title: "Register error",
-            description: error
-        })
-    }, [isRegisterError])
-
-    useEffect(() => {
-        if(isRegisterError){
-            const error = (registerError as any).data.message
-            setLocalError(error)
+        if(isRegisterSuccess){
+            navigate("/collection", { replace: true });
         }
-    }, []);
+    }, [isRegisterSuccess, navigate]);
+
+    // Props réutilisables pour tous les Input, basés sur les tokens sémantiques du thème
+    const inputProps = {
+        borderWidth: "2px",
+        borderColor: "border.default",
+        borderRadius: "md",
+        bg: "bg.surface",
+        color: "fg.default",
+        _placeholder: { color: "fg.muted" },
+        _hover: { borderColor: "colorPalette.emphasized" },
+        _focus: {
+            borderColor: "colorPalette.emphasized",
+            boxShadow: "0 0 0 4px rgba(59,130,246,0.12)",
+            outline: "none",
+        },
+    } as const;
 
     return (
-        <Box minH="100vh" bg="gray.50" py={5}>
+        <Box minH="100vh" bg={tokens.colors.background} py={tokens.spacing.md}>
             <Flex
                 justify="center"
                 align="center"
-                className="login-registration-box"
             >
-                <Box w={{ base: "100%", md: "70%" }}>
+                <Box
+                    w={{ base: "100%", md: "70%" }}
+                    p={tokens.spacing.lg}
+                    borderRadius={tokens.radius.xl}
+                    bg={tokens.colors.surface}
+                >
                     <form onSubmit={handleSubmit} method="POST">
                         <Heading
                             as="h1"
                             fontSize="3xl"
-                            mb="6"
-                            textAlign="center"
+                            mb={tokens.spacing.xl}
                         >
                             {t("registration.title")}
                         </Heading>
 
                         {/* Boutons de navigation */}
                         <Flex
-                            className="switchable-button-login-register"
-                            mb={6}
-                            gap={2}
+                            mb={tokens.spacing.md}
+                            gap={tokens.spacing.xl}
+                            justify="center"
                         >
                             <Button
                                 variant={activeButton === "login" ? "solid" : "outline"}
@@ -156,14 +167,14 @@ export const Registration = () => {
                         </Flex>
 
                         {/*Carte du formulaire */}
-                        <Card.Root className="form" variant="outline">
+                        <Card.Root className="login-card">
                             <Card.Header pb={4}>
-                                <Card.Description textAlign="center">
+                                <Card.Description textAlign="center" color="fg.muted">
                                     {t("registration.description")}
                                 </Card.Description>
                             </Card.Header>
 
-                            <Card.Body className="form-field">
+                            <Card.Body>
                                 {/* Affichage des erreurs */}
                                 {localError && (
                                     <Alert.Root status="error" mb={4} borderRadius="md">
@@ -173,7 +184,7 @@ export const Registration = () => {
 
                                 <Stack gap="4">
                                     {/* Prénom et Nom sur la même ligne */}
-                                    <Flex gap={4} className="firstName-name-disposition" direction={{ base: "column", md: "row" }}>
+                                    <Flex gap={4} direction={{ base: "column", md: "row" }}>
                                         <Field.Root flex={1} mb={{ base: 4, md: 0 }}>
                                             <Field.Label >
                                                 {t("field.firstName")} *
@@ -184,7 +195,7 @@ export const Registration = () => {
                                                 value={formData.firstName}
                                                 onChange={handleChange}
                                                 required
-                                                className="form-input"
+                                                {...inputProps}
                                             />
                                         </Field.Root>
                                         <Field.Root flex={1}>
@@ -197,7 +208,7 @@ export const Registration = () => {
                                                 value={formData.lastName}
                                                 onChange={handleChange}
                                                 required
-                                                className="form-input"
+                                                {...inputProps}
                                             />
                                         </Field.Root>
                                     </Flex>
@@ -214,7 +225,7 @@ export const Registration = () => {
                                             value={formData.email}
                                             onChange={handleChange}
                                             required
-                                            className="form-input"
+                                            {...inputProps}
                                         />
                                     </Field.Root>
 
@@ -230,7 +241,7 @@ export const Registration = () => {
                                             value={formData.password}
                                             onChange={handleChange}
                                             required
-                                            className="form-input"
+                                            {...inputProps}
                                         />
                                     </Field.Root>
 
@@ -246,7 +257,7 @@ export const Registration = () => {
                                             value={formData.confirmPassword}
                                             onChange={handleChange}
                                             required
-                                            className="form-input"
+                                            {...inputProps}
                                         />
                                     </Field.Root>
                                 </Stack>

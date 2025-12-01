@@ -8,6 +8,14 @@
   "lastNamePlaceholder": "Entrez votre nom",
   "locality": "Localité",
   "localityPlaceholder": "Ville ou région",
+  "postalCode": "Code postal",
+  "postalCodePlaceholder": "Entrez votre code postal",
+  "street": "Nom et numéro de rue",
+  "streetPlaceholder": "Entrez nom et numéro de rue",
+    "country": "Pays",
+  "countryPlaceholder": "Entrez votre pays",
+  "postalBoxNumber": "Boîte postale",
+  "postalBoxNumberPlaceholder": "Entrez le numéro de boîte postale",
   "bio": "Bio",
   "bioPlaceholder": "Parlez-nous de vous",
   "uploadProfilePicture": "Photo de profil",
@@ -15,6 +23,7 @@
     "title": "Profil privé",
     "subtitle": "Seuls vous pouvez voir votre collection et vos informations"
   },
+  "addressTitle": "Adresse",
 
   "actions": {
     "save": "Enregistrer les modifications",
