@@ -61,6 +61,10 @@ export interface UserBooksState {
     averageRatings: number;
 }
 
+export type author = {
+    name : string;
+}
+
 // src/types/books.ts
 export type VolumeShort = {
     id: string;
@@ -68,7 +72,7 @@ export type VolumeShort = {
     publishedDate: string;
     coverUrl: string;
     isbns: isbns[];
-    authors: string[];
+    authors: author[];
     description: string;
 };
 

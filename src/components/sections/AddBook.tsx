@@ -20,7 +20,7 @@ import {useTranslation} from "react-i18next";
 import {Availability, BookStateLabel, type isbns, type VolumeShort} from "../../types/book.types.ts";
 import {BookSearchCombobox} from "./books/BookSearchCombobox.tsx";
 import {FileUploadField} from "./books/FileUploadField.tsx";
-import { z } from "zod";
+import {z} from "zod";
 import {Controller, type SubmitHandler, useFieldArray, useForm} from "react-hook-form"
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useEffect} from "react";
@@ -28,9 +28,14 @@ import {useEffect} from "react";
 const conditionEnum = BookStateLabel.map(item => item.value) as [string, ...string[]];
 const availabilityEnum = Availability.map(item => item.value) as [string, ...string[]];
 
+// Create the author schema
+const authorSchema = z.object({
+    name: z.string().min(1, { message: "Author name is required" })
+});
+
 const formSchema = z.object({
     title: z.string().min(1, {message: "Title is required"}),
-    authors: z.array(z.string()),
+    authors: z.array(authorSchema),
     isbns: z
         .string()
         .min(1, { message: "ISBN is required" })
@@ -39,7 +44,7 @@ const formSchema = z.object({
     format: z.string(),
     edition: z.string(),
     coverImage: z.url(),
-    userCoverImage: z.file().nullable(),
+    userCoverImage: z.instanceof(File).nullable(),
     description: z.string(),
     isAvailable: z.boolean(),
     availability: z.enum(availabilityEnum),
@@ -49,7 +54,7 @@ type FormValues = z.infer<typeof formSchema>
 
 const defaultValues: FormValues = {
     title: '',
-    authors: [''],
+    authors: [{ name: '' }],
     isbns: '',
     bookState: '',
     format: '',
@@ -123,7 +128,7 @@ export const AddBook = () => {
         reset({...defaultValues})
     };
 
-    const { fields, append} = useFieldArray({
+    const { fields, append} = useFieldArray<FormValues>({
         control, // control props comes from useForm (optional: if you are using FormProvider)
         name: "authors",
         keyName: "id"// unique name for your Field Array
@@ -132,7 +137,7 @@ export const AddBook = () => {
     // Ensure at least one field on mount
     useEffect(() => {
         if (fields.length === 0) {
-            append("");
+            append({ name: '' });
         }
     }, [fields, append]);
 
@@ -226,7 +231,7 @@ export const AddBook = () => {
                                             {fields.map((field, index) => (
                                                 <Input
                                                     key={field.id}
-                                                    {...register(`authors.${index}`)}
+                                                    {...register(`authors.${index}.name`)}
                                                     placeholder={t("addBook:book.authorPlaceholder")}
                                                     size="md"
                                                 />
@@ -236,7 +241,7 @@ export const AddBook = () => {
 
                                             <Button
                                                 m="auto"
-                                                onClick={() => append("")}
+                                                onClick={() => append({ name: '' })}
                                             >
                                                 Ajouter un auteur
                                             </Button>
