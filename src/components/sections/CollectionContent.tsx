@@ -4,6 +4,7 @@ import { BookCard } from '../layout/BookCard';
 import { Search, BookOpen, Grid3x3, List } from 'lucide-react';
 import { useTranslation } from "react-i18next";
 import {Link} from "react-router-dom";
+import React from "react";
 
 interface CollectionContentProps {
     books: BookTypes[];

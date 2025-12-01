@@ -1,38 +1,15 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Container } from '@chakra-ui/react';
-import type { BookTypes, WishlistItem } from '../../../types/book.types.ts';
 import { ProfileHeader } from './ProfileHeaderProps'
 import { ProfileTabs } from './ProfileTabs';
 import { ProfileContent } from './ProfileContent';
-import { BlockDialog } from './BlockDialog';
 
-
-interface ProfileProps {
-    isOwnProfile?: boolean;
-    books?: BookTypes[];
-    wishlist?: WishlistItem[];
-    exchanges: [];
-    ratings: [];
-}
-
-export const Profile = ({
-                            isOwnProfile = false,
-                            books = [],
-                            wishlist = [],
-                            exchanges = [],
-                            ratings = [],
-                        }: ProfileProps) => {
+export const Profile = () => {
     const [activeTab, setActiveTab] = useState('collection');
-    const [isBlocked, setIsBlocked] = useState(false);
-    const [showBlockDialog, setShowBlockDialog] = useState(false);
     const navigate = useNavigate();
 
-    /*const calculateAverageRating = () => {
-        if (ratings.length === 0) return '0.0';
-        const sum = ratings.reduce((acc, r) => acc + r.stars, 0);
-        return (sum / ratings.length).toFixed(1);
-    };*/
+    const user = JSON.parse(localStorage.getItem("auth_user")!);
 
     const handleBack = () => {
         navigate(-1);
@@ -42,23 +19,15 @@ export const Profile = ({
         // Logique pour envoyer un message
         console.log('Envoyer un message à');
     };
-
-    const handleBlock = () => {
-        setIsBlocked(!isBlocked);
-        setShowBlockDialog(false);
-    };
-
     return (
         <>
-            <Box minH="100vh">
-                <Container maxW="6xl" py={8}>
+            <Box minH="100vh" bg="bg.canvas">
+                <Container maxW="6xl" py={8} bg="bg.surface" borderRadius="md" borderWidth="1px" borderColor="border.default">
                     <ProfileHeader
-                        isOwnProfile={isOwnProfile}
-                        isBlocked={isBlocked}
+                        isOwnProfile={true}
                         onBack={handleBack}
                         onMessage={handleMessage}
-                        onBlock={handleBlock}
-                        onShowBlockDialog={() => setShowBlockDialog(true)}
+                        user={user}
                     />
 
                     <ProfileTabs
@@ -68,19 +37,12 @@ export const Profile = ({
 
                     <ProfileContent
                         activeTab={activeTab}
-                        books={books}
-                        wishlist={wishlist}
-                        exchange={exchanges}
-                        rating={ratings}
+                        books={[]}
+                        wishlist={[]}
+                        exchange={[]}
+                        rating={[]}
                     />
                 </Container>
-
-                <BlockDialog
-                    isOpen={showBlockDialog}
-                    onClose={() => setShowBlockDialog(false)}
-                    onConfirm={handleBlock}
-                    isBlocked={isBlocked}
-                />
             </Box>
         </>
     );

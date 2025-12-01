@@ -1,61 +1,83 @@
+import React from "react";
 import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
 import { ArrowRight, Library, Users, MessageCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { tokens } from "../ui/theme";
 import {Link} from "react-router-dom";
-import {useTranslation} from "react-i18next";
 
-export const Home = () => {
-    const {t} = useTranslation("home");
-    const titles = t("titles", { returnObjects: true });
-    const textes = t("texts", { returnObjects: true });
+export const Home: React.FC = () => {
+    const { t } = useTranslation("home");
+    const rawTitles = t("titles", { returnObjects: true });
+    const rawTexts = t("texts", { returnObjects: true });
+
+    const titles = Array.isArray(rawTitles) ? rawTitles : Object.values(rawTitles as Record<string, string>);
+    const texts = Array.isArray(rawTexts) ? rawTexts : Object.values(rawTexts as Record<string, string>);
+
+    const icons = [<Library key="lib" />, <Users key="users" />, <MessageCircle key="msg" />];
+    const accentBgs = ["accent.50", "accent.100", "accent.200"];
+    const accentColors = ["accent.700", "brand.600", "brand.700"];
+    const primaryHoverToken = tokens.colors.primaryHover;
 
     return (
-        <Box minH="100vh" w="100%">
-            <main>
-                <Box as="section" textAlign="center" py={{ base: 12, md: 5 }} px={{ base: 4, md: 8 }}>
-                    <Heading as="h1" fontSize={{ base: "4xl", sm: "5xl", md: "6xl", lg: "3xl" }} fontWeight="bold" color="foreground" mb="6">
-                        {t("slogan")}
-                    </Heading>
-                    <Text fontSize={{ base: "lg", md: "xl" }} color="muted" mb="8">
-                        {t("subSlogan")}
-                    </Text>
-                    <Link to="/Login">
-                        <Button maxW="xs" size="lg">
-                            {t("accountCreation")}
-                            <ArrowRight className="w-5 h-5 ml-2" />
-                        </Button>
-                    </Link>
-                </Box>
-            <Flex justify="center" flexDirection={["column", "row"]} gap="6" padding="10">
-                {Object.values(titles).map((title, index) => (
-                    <Box
-                        key={index}
-                        width={{ base: "100%", sm: "320px" }}
-                        marginTop="6"
-                        borderRadius="lg"
-                        bg="white"
-                        p="4"
-                        border="1px solid #E2E8F0"
+        <Box bg="bg.canvas" minH="100vh" py={{ base: 8, md: 12 }}>
+            <Box as="section" maxW="100%" mx="auto" px={{ base: 4, md: 8 }} textAlign="center">
+                <Heading as="h1" mb={2}>
+                    {t("slogan")}
+                </Heading>
+                <Text fontSize={{ base: "lg", md: "xl" }} color="fg.muted" mb="6">
+                    {t("subSlogan")}
+                </Text>
+                <Link to="/login">
+                     <Button
+                        size="lg"
+                        variant="outline"
+                        bg={tokens.colors.primary}
+                        _hover={{ bg: primaryHoverToken, color: "white" }}
+                        color="white"
+                        mb={8}
                     >
+                        {t("accountCreation")}<ArrowRight />
+                    </Button>
+                </Link>
+
+                <Flex justify="center" flexDirection={{ base: "column", md: "row" }} gap="6" wrap="wrap">
+                    {titles.map((title, index) => (
                         <Box
-                            w="3.5rem"
-                            h="3.5rem"
-                            bg={["red.100", "green.100", "blue.100"][index]}
-                            borderRadius="xl"
-                            display="flex"
-                            alignItems="center"
-                            justifyContent="center"
-                            m="0 auto"
-                            mb="4"
-                            color={["brown", "green.700", "red.700"][index]}
+                            key={index}
+                            width={{ base: "100%", sm: "320px" }}
+                            mt={6}
+                            borderRadius="lg"
+                            bg="bg.surface"
+                            p={4}
+                            border="1px solid"
+                            borderColor="border.default"
+                            boxShadow="sm"
                         >
-                            {[<Library />, <Users />, <MessageCircle />][index]}
+                            <Box
+                                w="3.5rem"
+                                h="3.5rem"
+                                bg={accentBgs[index % accentBgs.length]}
+                                borderRadius="xl"
+                                display="flex"
+                                alignItems="center"
+                                justifyContent="center"
+                                mx="auto"
+                                mb={4}
+                                color={accentColors[index % accentColors.length]}
+                            >
+                                {icons[index % icons.length]}
+                            </Box>
+
+                            <Heading as="h3" size="md" mt={2} color="fg.default">
+                                {title}
+                            </Heading>
+                            <Text color="fg.muted" mt={2}>
+                                {texts[index] ?? ""}
+                            </Text>
                         </Box>
-                        <Heading as="h3" size="md" mt="2">{title}</Heading>
-                        <Text>{Object.values(textes)[index]}</Text>
-                    </Box>
-                ))}
-            </Flex>
-            </main>
+                    ))}
+                </Flex>
+            </Box>
         </Box>
     );
 };

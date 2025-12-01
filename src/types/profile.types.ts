@@ -2,11 +2,12 @@ import type {User} from "./auth.types.ts";
 
 export interface UserProfile extends User {
     bio?: string
-    location?: string
     avatarUrl?: string
+    address?: Address
+    isVisible: boolean
 }
 
-export interface UserStats {
+export interface ProfileStats {
     totalBooks: number
     booksLent: number
     successfulExchanges: number
@@ -17,9 +18,10 @@ export interface UserStats {
 export interface UpdateProfileData {
     firstName?: string
     lastName?: string
-    email?: string
     bio?: string
     address?: Address
+    isVisible?: boolean
+    profilePicture?: string
 }
 
 export interface ChangePasswordData {
@@ -35,9 +37,9 @@ export interface NotificationSettings {
 }
 
 export interface Address {
-    street: string
-    city: string
-    state: string
-    postalCode: string
-    country: string
+    street?: string
+    locality?: string
+    zipCode?: string
+    country?: string
+    postalBoxNumber?: string
 }

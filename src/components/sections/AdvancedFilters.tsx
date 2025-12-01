@@ -25,7 +25,7 @@ interface AdvancedFiltersProps {
     };
     onFiltersChange: (filters: AdvancedFiltersProps['filters']) => void;
     onClearFilters: () => void;
-    searchType: 'books' | 'users';
+    searchType: string;
     hasActiveFilters: boolean;
 }
 

@@ -63,7 +63,7 @@ function App() {
                     path="/profile"
                     element={
                         <ProtectedRoute>
-                            <Profile exchanges={[]} ratings={[]} />
+                            <Profile />
                         </ProtectedRoute>
                     }
                 />
