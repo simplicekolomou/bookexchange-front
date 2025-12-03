@@ -6,7 +6,7 @@ import {
     Badge,
     Flex,
     IconButton,
-    useDisclosure, For,
+    useDisclosure,
     Card
 } from '@chakra-ui/react';
 import {type BookCopy} from '../../types/book.types.ts';
@@ -18,8 +18,8 @@ interface BookCardProps {
     viewMode: 'grid' | 'list'
 }
 
-export const BookCard = ({ book, viewMode }: BookCardProps) => {
-    const { onOpen } = useDisclosure();
+export const BookCard = ({book, viewMode}: BookCardProps) => {
+    const {onOpen} = useDisclosure();
     // I18n initialisation
     const {t} = useTranslation(["common", "addBook"]);
 
@@ -84,7 +84,7 @@ export const BookCard = ({ book, viewMode }: BookCardProps) => {
                     </Flex>
 
                     {/* Actions */}
-                    <Flex direction="column" gap={2} ml={2}>
+                    <Flex direction="column" gap={2} mb="auto">
                         <IconButton
                             aria-label="Modifier le livre"
                             size="sm"
@@ -106,45 +106,78 @@ export const BookCard = ({ book, viewMode }: BookCardProps) => {
     }
 
     return (
-        <Card.Root>
-                <Card.Body>
-                    <Image
-                        src={book.coverPictureApiUrl}
-                        alt={book.title}
-                        borderRadius="lg"
-                        height="200px"
-                        objectFit="cover"
-                        width="full"
-                    />
-                    <Stack mt={4} gap={3}>
-                        <Heading size="md">{book.title}</Heading>
-                        <Flex direction="row" justify="space-between" align="start">
-                            <For each={book.authors}>
-                                {item => (
-                                    <Text color="gray.600">{item}</Text>
-                                )}
-                            </For>
+        <Card.Root overflow="hidden" borderRadius="lg" shadow="sm" bg="white" h="100%">
+            <Image
+                src={book.coverPictureApiUrl}
+                alt={book.title}
+                objectFit="cover"
+                w="full"
+                h="180px"
+                borderTopRadius="lg"
+            />
+
+            {/* Make the body stretch fully */}
+            <Card.Body p={4} display="flex" flexDirection="column" flex="1">
+                {/* Main content */}
+                <Flex direction="column" gap={2} flex="1">
+                    <Heading size="sm">{book.title}</Heading>
+
+                    <Stack gap={0}>
+                        {book.authors.map((author) => (
+                            <Text key={author} fontSize="sm" color="gray.600">
+                                {author}
+                            </Text>
+                        ))}
+                    </Stack>
+
+                    {/* Bottom section, pushed down */}
+                    <Flex direction="column" mt="auto">
+                        <Flex direction="row" gap={2}>
+                            <Badge
+                                mt={1}
+                                w="fit-content"
+                                variant="subtle"
+                                colorScheme={book.availabilityType === "FOR_SALE" ? "green" : "red"}
+                                fontSize="80%"
+                                fontStyle="italic"
+                                border="1px Solid"
+                                borderColor="accent.600"
+                                color="accent.600"
+                            >
+                                {t(`addBook:availability.options.${book.availabilityType}`)}
+                            </Badge>
+
+                            <Badge
+                                mt={1}
+                                w="fit-content"
+                                variant="subtle"
+                                fontSize="80%"
+                                fontStyle="italic"
+                                border="1px Solid"
+                                borderColor="accent.600"
+                                color="accent.600"
+                            >
+                                {t(`addBook:bookState.options.${book.physicalState}`)}
+                            </Badge>
                         </Flex>
-                        <Badge
-                            colorScheme={book.availabilityType === 'FOR_SALE' ? 'green' : 'red'}
-                            alignSelf="flex-start"
-                        >
-                            {book.availabilityType === 'FOR_SALE' ? 'Disponible' : 'Indisponible'}
-                        </Badge>
-                        <Flex gap={2} justify="flex-end">
+
+                        <Flex justify="flex-end" gap={2} pt={2}>
                             <IconButton
                                 aria-label="Modifier le livre"
                                 size="sm"
                                 onClick={onOpen}
-                            />
-                            <IconButton
-                                aria-label="Supprimer le livre"
-                                size="sm"
-                                colorScheme="red"
-                            />
+                                variant="ghost"
+                            >
+                                <Edit />
+                            </IconButton>
+                            <IconButton aria-label="Supprimer le livre" size="sm" colorScheme="red" variant="ghost">
+                                <Trash />
+                            </IconButton>
                         </Flex>
-                    </Stack>
-                </Card.Body>
+                    </Flex>
+                </Flex>
+            </Card.Body>
         </Card.Root>
+
     );
 };
