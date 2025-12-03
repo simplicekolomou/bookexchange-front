@@ -27,6 +27,20 @@
   "availability": {
     "title": "Available to the community",
     "subtitle": "Make this book visible to other members",
-    "options" : "Availability type"
+    "optionsLabel" : "Availability type",
+    "options": {
+      "FOR_TRADE" : "To trade",
+      "FOR_SALE" : "To sell",
+      "FOR_GIFT" : "To give",
+      "NONE" : "To keep"
+    }
+  },
+  "bookState": {
+    "options" : {
+      "NEW" : "New",
+      "VERY_GOOD" : "Very good",
+      "GOOD" : "Good",
+      "DECENT" : "Decent"
+    }
   }
 }

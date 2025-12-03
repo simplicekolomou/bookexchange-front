@@ -15,7 +15,7 @@ export const SearchBar = ({
                               activeFiltersCount
                           }: SearchBarProps) => {
     return (
-        <Flex gap={2} mb={6} direction={{ base: 'column', sm: 'row' }}>
+        <Flex gap={2} mb={6} direction={{ base: 'column', sm: 'row' }} bg={"black"}>
             <Box position="relative" flex={1}>
                 <SearchIcon
                     size={20}

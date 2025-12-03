@@ -2,6 +2,7 @@ import { Box, Text, VStack, CardBody, HStack, Badge } from '@chakra-ui/react';
 import {Award, BookOpen, Heart, Repeat, Star} from 'lucide-react';
 import type {BookTypes, WishlistItem} from '../../../types/book.types.ts';
 import { BookCard } from '../../layout/BookCard';
+import React from "react";
 
 interface ProfileContentProps {
     activeTab: string;
@@ -19,16 +20,16 @@ export const ProfileContent = ({
                                    rating,
                                }: ProfileContentProps) => {
     const renderEmptyState = (icon: React.ReactNode, message: string) => (
-        <Box textAlign="center" py={12}>
+        <Box textAlign="center" py={12} color="fg.muted">
             {icon}
-            <Text color="gray.500" mt={4}>{message}</Text>
+            <Text color="fg.muted" mt={4}>{message}</Text>
         </Box>
     );
 
     if (activeTab === 'collection') {
         if (books.length === 0) {
             return renderEmptyState(
-                <BookOpen size={48} color="var(--chakra-colors-gray-400)" />,
+                <BookOpen size={48} color="currentColor" />,
                 "Aucun livre dans la collection"
             );
         }
@@ -59,7 +60,7 @@ export const ProfileContent = ({
     if (activeTab === 'wishlist') {
         if (wishlist.length === 0) {
             return renderEmptyState(
-                <Heart size={48} color="var(--chakra-colors-gray-400)" />,
+                <Heart size={48} color="currentColor" />,
                 "Aucun livre dans la liste de souhaits"
             );
         }
@@ -69,8 +70,8 @@ export const ProfileContent = ({
                 {wishlist.map((item) => (
                     <Box key={item.id}>
                         <CardBody>
-                            <Text fontWeight="bold" fontSize="lg">{item.title}</Text>
-                            <Text color="gray.600">{item.author}</Text>
+                            <Text fontWeight="bold" fontSize="lg" color="fg.default">{item.title}</Text>
+                            <Text color="fg.muted">{item.author}</Text>
                         </CardBody>
                     </Box>
                 ))}
@@ -81,7 +82,7 @@ export const ProfileContent = ({
     if (activeTab === 'exchange') {
         if (exchange.length === 0) {
             return renderEmptyState(
-                <Repeat size={48} color="var(--chakra-colors-gray-400)" />,
+                <Repeat size={48} color="currentColor" />,
                 "Aucun échange récent"
             );
         }
@@ -93,19 +94,19 @@ export const ProfileContent = ({
                         <CardBody>
                             <HStack justify="space-between" align="start">
                                 <Box>
-                                    <Text fontWeight="bold" fontSize="lg">{/*exchange.bookTitle*/}</Text>
-                                    <Text color="gray.600">{/*exchange.bookAuthor*/}</Text>
+                                    <Text fontWeight="bold" fontSize="lg" color="fg.default">{/*exchange.bookTitle*/}</Text>
+                                    <Text color="fg.muted">{/*exchange.bookAuthor*/}</Text>
                                     <Badge colorScheme="blue" mt={2}>
                                         {/*exchange.type*/}
                                     </Badge>
                                 </Box>
-                                <Text fontSize="sm" color="gray.500">
+                                <Text fontSize="sm" color="fg.muted">
                                     {/*new Date(exchange.date).toLocaleDateString('fr-FR')*/}
                                 </Text>
                             </HStack>
                         </CardBody>
                     </Box>
-                /*))*/}
+                    /*))*/}
             </VStack>
         );
     }
@@ -113,7 +114,7 @@ export const ProfileContent = ({
     if (activeTab === 'rating') {
         if (rating.length === 0) {
             return renderEmptyState(
-                <Award size={48} color="var(--chakra-colors-gray-400)" />,
+                <Award size={48} color="currentColor" />,
                 "Aucune note reçue"
             );
         }
@@ -125,7 +126,7 @@ export const ProfileContent = ({
                         <CardBody>
                             <HStack justify="space-between" align="start" mb={2}>
                                 <HStack gap={2}>
-                                    <Text fontWeight="medium">{/*rating.fromUserName*/}</Text>
+                                    <Text fontWeight="medium" color="fg.default">{/*rating.fromUserName*/}</Text>
                                     <HStack gap={1}>
                                         {[...Array(5)].map((_, i) => (
                                             <Star
@@ -137,16 +138,16 @@ export const ProfileContent = ({
                                         ))}
                                     </HStack>
                                 </HStack>
-                                <Text fontSize="sm" color="gray.500">
+                                <Text fontSize="sm" color="fg.muted">
                                     {/*new Date(rating.date).toLocaleDateString('fr-FR')*/}
                                 </Text>
                             </HStack>
                             {/*rating.comment && (
-                                <Text color="gray.600">{rating.comment}</Text>
+                                <Text color="fg.muted">{rating.comment}</Text>
                             )*/}
                         </CardBody>
                     </Box>
-                /*))*/}
+                    /*))*/}
             </VStack>
         );
     }

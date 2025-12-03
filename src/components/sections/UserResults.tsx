@@ -1,16 +1,16 @@
 import { VStack, Box, Text, CardBody, Flex, Avatar } from '@chakra-ui/react';
 import { Users } from 'lucide-react';
-import type { UserProfile } from '../../types/user.types';
 import type {BookCopy} from "../../types/book.types.ts";
+import type {User} from "../../types/auth.types.ts";
 
 interface UserResultsProps {
-    user: UserProfile;
+    user: User;
     books: BookCopy[];
     onUserSelect: (userId: string) => void;
 }
 
 export const UserResults = ({ user, books, onUserSelect }: UserResultsProps) => {
-    const userBooks = books.filter(book => book.userId === user.id);
+    const userBooks = books.filter(book => book.ownerId === user.id);
     if (userBooks.length === 0) {
         return (
             <Box textAlign="center" py={12}>
@@ -33,14 +33,14 @@ export const UserResults = ({ user, books, onUserSelect }: UserResultsProps) => 
                     <CardBody p={4}>
                         <Flex align="center" gap={4}>
                             <Avatar.Root size="lg" >
-                                <Avatar.Image src={book.coverImage} />
+                                <Avatar.Image src={book.coverPictureApiUrl} />
                                 <Avatar.Fallback>
-                                    {book.coverImage}
+                                    {book.coverPictureApiUrl}
                                 </Avatar.Fallback>
                             </Avatar.Root>
                             <Box flex={1} minW={0}>
                                 <Text fontSize="lg" fontWeight="semibold" color="gray.800" mb={1}>
-                                    {book.physicalState} {book.transactionType}
+                                    {book.physicalState}
                                 </Text>
                             </Box>
                         </Flex>
