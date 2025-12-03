@@ -24,8 +24,9 @@ import {z} from "zod";
 import {Controller, type SubmitHandler, useFieldArray, useForm} from "react-hook-form"
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useEffect} from "react";
-import {toaster} from "../ui/toaster.tsx";
 import {useAddBookCopyMutation} from "../../features/book/bookApi.ts";
+import {Toaster} from "../ui/toaster.tsx";
+import {toaster} from "../toaster/toasterInstance.tsx";
 
 const conditionEnum = BookStateLabel.map(item => item.value) as [string, ...string[]];
 const availabilityEnum = Availability.map(item => item.value) as [string, ...string[]];
@@ -111,7 +112,8 @@ function isValidISBN13(isbn: string): boolean {
 }
 
 export const AddBook = () => {
-    const [addBookCopy, { isLoading, isSuccess, isError }] = useAddBookCopyMutation();
+    // const [addBookCopy, { isLoading, isSuccess, isError }] = useAddBookCopyMutation();
+    const [addBookCopy] = useAddBookCopyMutation();
 
     const {
         control,
@@ -148,8 +150,9 @@ export const AddBook = () => {
             // Show success message
             toaster.create({
                 title: "Succès",
-                description: "Le livre a été ajouté avec succès",
+                description: "Le livre \"" + bookData.title + "\" a été ajouté à votre collection",
                 type: "success",
+                closable: true,
             });
 
             // Reset form
@@ -158,8 +161,9 @@ export const AddBook = () => {
             console.error('Failed to add book:', error);
             toaster.create({
                 title: "Erreur",
-                description: "Une erreur est survenue lors de l'ajout du livre",
+                description: "Une erreur est survenue lors de l'ajout du livre :\n" + error,
                 type: "error",
+                closable: true,
             });
         }
     };
@@ -492,6 +496,7 @@ export const AddBook = () => {
                     </form>
                 </Box>
             </Container>
+            <Toaster/>
         </Box>
     );
 };
