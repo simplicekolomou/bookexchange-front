@@ -1,8 +1,8 @@
-import { Box, Flex, Input, Button, SimpleGrid, VStack, Text, useBreakpointValue } from '@chakra-ui/react';
+import {Box, Flex, Input, Button, SimpleGrid, VStack, Text, useBreakpointValue} from '@chakra-ui/react';
 import type {BookCopy} from '../../types/book.types.ts';
-import { BookCard } from '../layout/BookCard';
-import { Search, BookOpen, Grid3x3, List } from 'lucide-react';
-import { useTranslation } from "react-i18next";
+import {BookCard} from '../layout/BookCard';
+import {Search, BookOpen, Grid3x3, List} from 'lucide-react';
+import {useTranslation} from "react-i18next";
 import {Link} from "react-router-dom";
 import React from "react";
 
@@ -49,7 +49,7 @@ export const CollectionContent = ({
         onSearchChange(e.target.value);
     };
 
-    const { t } = useTranslation("collections");
+    const {t} = useTranslation("collections");
 
     return (
         <Box maxW="1200px" mx="auto" px={4} py={8}>
@@ -57,12 +57,12 @@ export const CollectionContent = ({
             <Flex
                 gap={4}
                 mb={8}
-                direction={{ base: 'column', lg: 'row' }}
+                direction={{base: 'column', lg: 'row'}}
                 justify="center"
                 w="full"
             >
                 {/* Search Input avec icône positionnée */}
-                <Box position="relative" w="full" maxW={{ base: "full", md: "400px" }}>
+                <Box position="relative" w="full" maxW={{base: "full", md: "400px"}}>
                     <Search
                         size={20}
                         color="var(--chakra-colors-gray-400)"
@@ -87,8 +87,8 @@ export const CollectionContent = ({
 
                 <Flex
                     gap={4}
-                    direction={{ base: 'column', sm: 'row' }}
-                    align={{ base: 'stretch', sm: 'center' }}
+                    direction={{base: 'column', sm: 'row'}}
+                    align={{base: 'stretch', sm: 'center'}}
                     w="max"
                     justify="center"
                     flexWrap="wrap"
@@ -118,7 +118,7 @@ export const CollectionContent = ({
                             variant={viewMode === 'grid' ? 'solid' : 'outline'}
                             onClick={() => onViewModeChange('grid')}
                         >
-                            <Grid3x3 />
+                            <Grid3x3/>
                         </Button>
                         <Button
                             aria-label="Vue liste"
@@ -126,7 +126,7 @@ export const CollectionContent = ({
                             variant={viewMode === 'list' ? 'solid' : 'outline'}
                             onClick={() => onViewModeChange('list')}
                         >
-                            <List />
+                            <List/>
                         </Button>
                     </Flex>
                 </Flex>
@@ -134,8 +134,10 @@ export const CollectionContent = ({
 
             {/* Books Grid/List */}
             {filteredBooks.length === 0 ? (
-                <EmptyCollection t={t} />
+                // COLLECTION VIDE
+                <EmptyCollection t={t}/>
             ) : viewMode === 'grid' ? (
+                // GRID
                 <SimpleGrid
                     columns={gridColumns}
                     gap={4}
@@ -150,6 +152,7 @@ export const CollectionContent = ({
                     ))}
                 </SimpleGrid>
             ) : (
+                // LISTE
                 <VStack gap={3} w="full">
                     {filteredBooks.map((book) => (
                         <BookCard
@@ -164,7 +167,7 @@ export const CollectionContent = ({
     );
 };
 
-const EmptyCollection = ({ t }: { t: (key: string) => string }) => (
+const EmptyCollection = ({t}: { t: (key: string) => string }) => (
     <VStack gap={6} py={16} textAlign="center" maxW="400px" mx="auto">
         <Flex
             w={20}
@@ -174,7 +177,7 @@ const EmptyCollection = ({ t }: { t: (key: string) => string }) => (
             align="center"
             justify="center"
         >
-            <BookOpen size={40} color="var(--chakra-colors-gray-400)" />
+            <BookOpen size={40} color="var(--chakra-colors-gray-400)"/>
         </Flex>
         <Box>
             <Text fontSize="2xl" fontWeight="semibold" color="gray.800" mb={2}>
@@ -188,7 +191,7 @@ const EmptyCollection = ({ t }: { t: (key: string) => string }) => (
             <Button
                 colorScheme="blue"
                 size="lg"
-                w={{ base: "full", sm: "auto" }}
+                w={{base: "full", sm: "auto"}}
             >
                 {t("addButton")}
             </Button>
