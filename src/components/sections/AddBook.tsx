@@ -41,7 +41,6 @@ const formSchema = z.object({
     authors: z.array(authorSchema),
     isbns: z
         .string()
-        .min(1, { message: "ISBN is required" })
         .refine(isValidISBN, { message: "Invalid ISBN (must be ISBN-10 or ISBN-13)" }),
     bookState: z.enum(conditionEnum, {message: "Invalid book state"}),
     format: z.string(),
@@ -440,7 +439,7 @@ export const AddBook = () => {
 
                             <Box>
                                 <Field.Root invalid={!!errors.availability}>
-                                    <Field.Label>{t("addBook:availability.options")}</Field.Label>
+                                    <Field.Label>{t("addBook:availability.optionsLabel")}</Field.Label>
                                     <Select.Root
                                         collection={availabilityCollection}
                                         value={watch("availability") ? [watch("availability")] : []}
