@@ -1,5 +1,5 @@
 import { Box, Flex, Input, Button, SimpleGrid, VStack, Text, useBreakpointValue } from '@chakra-ui/react';
-import type { BookTypes } from '../../types/book.types.ts';
+import type {BookCopy} from '../../types/book.types.ts';
 import { BookCard } from '../layout/BookCard';
 import { Search, BookOpen, Grid3x3, List } from 'lucide-react';
 import { useTranslation } from "react-i18next";
@@ -7,7 +7,7 @@ import {Link} from "react-router-dom";
 import React from "react";
 
 interface CollectionContentProps {
-    books: BookTypes[];
+    books: BookCopy[];
     searchQuery: string;
     viewMode: 'grid' | 'list';
     filter: 'all' | 'available';
@@ -33,10 +33,15 @@ export const CollectionContent = ({
     });
 
     const filteredBooks = books.filter((book) => {
+        const search = searchQuery.toLowerCase();
+
         const matchesSearch =
-            book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            book.author.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesFilter = filter === 'all' || book.availability !== 'none';
+            book.title.toLowerCase().includes(search) ||
+            book.authors.some(author => author.toLowerCase().includes(search));
+
+        const matchesFilter =
+            filter === 'all' || book.availabilityType !== 'NONE';
+
         return matchesSearch && matchesFilter;
     });
 

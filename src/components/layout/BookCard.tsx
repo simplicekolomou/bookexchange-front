@@ -1,5 +1,4 @@
 import {
-    CardBody,
     Stack,
     Heading,
     Text,
@@ -7,38 +6,46 @@ import {
     Badge,
     Flex,
     IconButton,
-    useDisclosure, Box
+    useDisclosure, Box, For,
+    Card
 } from '@chakra-ui/react';
-import type { BookTypes } from '../../types/book.types.ts';
+import {type BookCopy} from '../../types/book.types.ts';
+import {useTranslation} from "react-i18next";
 
 interface BookCardProps {
-    book: BookTypes;
+    book: BookCopy;
     viewMode: 'grid' | 'list'
 }
 
 export const BookCard = ({ book, viewMode }: BookCardProps) => {
     const { onOpen } = useDisclosure();
+    // I18n initialisation
+    const {t} = useTranslation(["common", "addBook"]);
 
     if (viewMode === 'list') {
         return (
-            <>
-                <CardBody direction="row" overflow="hidden" w="full">
+            <Card.Root>
+                <Card.Body direction="row" overflow="hidden" w="full">
                     <Image
                         objectFit="cover"
                         maxW={{ base: '100px', sm: '150px' }}
-                        src={book.coverImage}
+                        src={book.coverPictureApiUrl}
                         alt={book.title}
                     />
                     <Stack flex={1}>
-                        <CardBody>
+                        <Card.Body>
                             <Flex justify="space-between" align="start">
                                 <Box flex={1}>
                                     <Heading size="md">{book.title}</Heading>
-                                    <Text py="2" color="gray.600">
-                                        {book.author}
-                                    </Text>
-                                    <Badge colorScheme={book.availability === 'vendre' ? 'green' : 'red'}>
-                                        {book.availability === 'vendre' ? 'Vendre' : 'Indisponible'}
+                                    <For each={book.authors}>
+                                        {item => (
+                                            <Text py="2" color="gray.600">
+                                                {item}
+                                            </Text>
+                                        )}
+                                    </For>
+                                    <Badge colorScheme={book.availabilityType === 'FOR_SALE' ? 'green' : 'red'}>
+                                        {t(`addBook:availability.options.${book.availabilityType}`)}
                                     </Badge>
                                 </Box>
                                 <Flex gap={2} ml={4}>
@@ -54,19 +61,18 @@ export const BookCard = ({ book, viewMode }: BookCardProps) => {
                                     />
                                 </Flex>
                             </Flex>
-                        </CardBody>
+                        </Card.Body>
                     </Stack>
-                </CardBody>
-            </>
+                </Card.Body>
+            </Card.Root>
         );
     }
 
     return (
-        <>
-
-                <CardBody>
+        <Card.Root>
+                <Card.Body>
                     <Image
-                        src={book.coverImage}
+                        src={book.coverPictureApiUrl}
                         alt={book.title}
                         borderRadius="lg"
                         height="200px"
@@ -75,12 +81,18 @@ export const BookCard = ({ book, viewMode }: BookCardProps) => {
                     />
                     <Stack mt={4} gap={3}>
                         <Heading size="md">{book.title}</Heading>
-                        <Text color="gray.600">{book.author}</Text>
+                        <Flex direction="row" justify="space-between" align="start">
+                            <For each={book.authors}>
+                                {item => (
+                                    <Text color="gray.600">{item}</Text>
+                                )}
+                            </For>
+                        </Flex>
                         <Badge
-                            colorScheme={book.availability === 'vendre' ? 'green' : 'red'}
+                            colorScheme={book.availabilityType === 'FOR_SALE' ? 'green' : 'red'}
                             alignSelf="flex-start"
                         >
-                            {book.availability === 'vendre' ? 'Disponible' : 'Indisponible'}
+                            {book.availabilityType === 'FOR_SALE' ? 'Disponible' : 'Indisponible'}
                         </Badge>
                         <Flex gap={2} justify="flex-end">
                             <IconButton
@@ -95,7 +107,7 @@ export const BookCard = ({ book, viewMode }: BookCardProps) => {
                             />
                         </Flex>
                     </Stack>
-                </CardBody>
-        </>
+                </Card.Body>
+        </Card.Root>
     );
 };

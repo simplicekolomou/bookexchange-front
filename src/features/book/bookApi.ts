@@ -4,7 +4,7 @@ import type {BookCopy} from '../../types/book.types.ts';
 
 export const booksApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
-        getUserBooks: builder.query<BookCopy[], {ownerEmail: string}>({
+        getUserBooks: builder.query<BookCopy[], void>({
             query: () => ({
                 url: '/book-copies/user/me',
                 method: 'GET',
