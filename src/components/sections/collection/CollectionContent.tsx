@@ -1,6 +1,6 @@
 import {Box, Flex, Input, Button, SimpleGrid, VStack, Text, useBreakpointValue} from '@chakra-ui/react';
-import type {BookCopy} from '../../types/book.types.ts';
-import {BookCard} from '../layout/BookCard';
+import type {BookCopy} from '../../../types/book.types.ts';
+import {BookCard} from '../../layout/BookCard.tsx';
 import {Search, BookOpen, Grid3x3, List} from 'lucide-react';
 import {useTranslation} from "react-i18next";
 import {Link} from "react-router-dom";

@@ -2,7 +2,6 @@ import '../styles/App.css'
 import { Home } from "./sections/Home.tsx"
 import { Footer } from "./layout/Footer.tsx"
 import { Login } from "./sections/Login.tsx"
-import { Collection } from "./sections/Collection.tsx"
 import { Routes, Route } from "react-router-dom"
 import { Registration } from "./sections/Registration.tsx"
 import { SearchSection } from "./sections/SearchSection.tsx"
@@ -15,6 +14,8 @@ import {ProtectedRoute} from "./layout/ProtectedRoute.tsx";
 import {NotFound404} from "./layout/NotFound404.tsx";
 import {Settings} from "./sections/profile/Settings.tsx";
 import {Flex} from "@chakra-ui/react";
+import {BookDetail} from "./sections/collection/BookDetail.tsx";
+import {CollectionPage} from "./sections/collection/CollectionPage.tsx";
 
 function App() {
     const { isAuthenticated } = useAppSelector((state) => state.auth)
@@ -25,7 +26,7 @@ function App() {
             {!isAuthenticated ? (
                 <UnAuthenticatedNavbar />
             ) : (
-                <AuthenticatedNavbar bookCount={0} title="Ma Collection" />
+                <AuthenticatedNavbar bookCount={0} title="Ma CollectionPage" />
             )}
 
             {/* Routes principales */}
@@ -35,15 +36,25 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/registration" element={<Registration />} />
 
+
+                <Route path="/user/:userId/collection" element={<CollectionPage />} />
+
+                <Route
+                    path={"/user/:userId/bookCopy/:bookId"}
+                    element={
+                        <BookDetail/>
+                    }
+                />
+
                 {/* Routes protégées */}
                 <Route
                     path="/collection"
                     element={
-                        <ProtectedRoute>
-                            <Collection />
-                        </ProtectedRoute>
-                    }
-                />
+                    <ProtectedRoute>
+                        <CollectionPage />
+                    </ProtectedRoute>
+                } />
+
                 <Route
                     path="/search"
                     element={

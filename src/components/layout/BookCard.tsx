@@ -7,11 +7,12 @@ import {
     Flex,
     IconButton,
     useDisclosure,
-    Card
+    Card, LinkBox, LinkOverlay
 } from '@chakra-ui/react';
 import {type BookCopy} from '../../types/book.types.ts';
 import {useTranslation} from "react-i18next";
 import {Edit, Trash} from "lucide-react";
+import { Link as RouterLink } from "react-router-dom";
 
 interface BookCardProps {
     book: BookCopy;
@@ -25,20 +26,22 @@ export const BookCard = ({book, viewMode}: BookCardProps) => {
 
     if (viewMode === 'list') {
         return (
-            <Card.Root w="full" borderWidth="1px" borderRadius="md" p={3}>
+            <LinkBox as={Card.Root} w="full" borderWidth="1px" borderRadius="md" p={3}>
                 <Flex w="full" align="center" gap={4}>
 
-                    {/* Book Cover */}
-                    <Image
-                        objectFit="cover"
-                        w="90px"
-                        h="120px"
-                        src={book.coverPictureApiUrl}
-                        alt={book.title}
-                        borderRadius="md"
-                        flexShrink={0}
-                    />
-
+                    {/*@ts-expect-error Chakra LinkOverlay does not support "to" in TS*/}
+                    <LinkOverlay as={RouterLink} to={`/user/${book.ownerId}/bookCopy/${book.id}`}>
+                        {/* Book Cover */}
+                        <Image
+                            objectFit="cover"
+                            w="90px"
+                            h="120px"
+                            src={book.coverPictureApiUrl}
+                            alt={book.title}
+                            borderRadius="md"
+                            flexShrink={0}
+                        />
+                    </LinkOverlay>
                     {/* Text Section */}
                     <Flex direction="column" flex="1" minW={0}>
                         <Heading size="sm" mb={1}>
@@ -100,13 +103,15 @@ export const BookCard = ({book, viewMode}: BookCardProps) => {
                     </Flex>
 
                 </Flex>
-            </Card.Root>
+            </LinkBox>
 
         );
     }
 
     return (
-        <Card.Root overflow="hidden" borderRadius="lg" shadow="sm" bg="white" h="100%">
+        <LinkBox as={Card.Root} overflow="hidden" borderRadius="lg" shadow="sm" bg="white" h="100%">
+            {/*@ts-expect-error Chakra LinkOverlay does not support "to" in TS*/}
+            <LinkOverlay as={RouterLink} to={`/user/${book.ownerId}/bookCopy/${book.id}`}/>
             <Image
                 src={book.coverPictureApiUrl}
                 alt={book.title}
@@ -177,7 +182,7 @@ export const BookCard = ({book, viewMode}: BookCardProps) => {
                     </Flex>
                 </Flex>
             </Card.Body>
-        </Card.Root>
+        </LinkBox>
 
     );
 };

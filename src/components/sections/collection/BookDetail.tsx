@@ -51,7 +51,7 @@ export const BookDetail = () => {
 
                             <HStack>
                                 <Text fontWeight="medium">Disponibilité:</Text>
-                                <Badge colorScheme="{/*couleur selon disponibilité*/}">
+                                <Badge>
                                     {/*disponibilité du livre*/}
                                 </Badge>
                             </HStack>

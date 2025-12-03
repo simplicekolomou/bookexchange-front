@@ -3,7 +3,7 @@ import { Box, Container, Drawer, useDisclosure } from '@chakra-ui/react';
 import { SearchTabs } from './SearchTabs.tsx';
 import { SearchBar } from './SectionSearchBar.tsx';
 import { AdvancedFilters } from './AdvancedFilters';
-import {BookDetail} from "./BookDetail.tsx";
+import {BookDetail} from "./collection/BookDetail.tsx";
 
 export const SearchSection = ()=> {
     const [searchQuery, setSearchQuery] = useState('');
