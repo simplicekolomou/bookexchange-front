@@ -14,12 +14,13 @@ import { UnAuthenticatedNavbar } from "./layout/UnAuthenticatedNavbar.tsx"
 import {ProtectedRoute} from "./layout/ProtectedRoute.tsx";
 import {NotFound404} from "./layout/NotFound404.tsx";
 import {Settings} from "./sections/profile/Settings.tsx";
+import {Flex} from "@chakra-ui/react";
 
 function App() {
     const { isAuthenticated } = useAppSelector((state) => state.auth)
 
     return (
-        <div className="App">
+        <Flex className="App" direction="column" minH="100vh">
             {/* Navigation conditionnelle */}
             {!isAuthenticated ? (
                 <UnAuthenticatedNavbar />
@@ -81,7 +82,7 @@ function App() {
                 <Route path="*" element={<NotFound404 />} />
             </Routes>
             <Footer />
-        </div>
+        </Flex>
     );
 }
 
