@@ -29,18 +29,18 @@
     "subtitle": "Make this book visible to other members",
     "optionsLabel" : "Availability type",
     "options": {
-      "for_trade" : "To trade",
-      "for_sale" : "To sell",
-      "for_gift" : "To give",
-      "none" : "To keep"
+      "FOR_TRADE" : "To trade",
+      "FOR_SALE" : "To sell",
+      "FOR_GIFT" : "To give",
+      "NONE" : "To keep"
     }
   },
   "bookState": {
     "options" : {
-      "new" : "New",
-      "very_good" : "Very good",
-      "good" : "Good",
-      "decent" : "Decent"
+      "NEW" : "New",
+      "VERY_GOOD" : "Very good",
+      "GOOD" : "Good",
+      "DECENT" : "Decent"
     }
   }
 }

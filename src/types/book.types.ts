@@ -40,18 +40,30 @@ export interface Exchange {
     status: string;
 }
 
+/**
+ * Valeur servant au formulaire d'ajout de livre.
+ * Est en accord avec le backend -> NE PAS MODIFIER LES VALEURS
+ * Ou le faire en modifiant les enums correspondantes dans le backend
+ * Et aussi modifier les clés des traductions I18n dans addBook.json
+ */
 export const BookStateLabel = [
-    { value: 'new'},
-    { value: 'very_good'},
-    { value: 'good'},
-    { value: 'decent'}
+    { value: 'NEW'},
+    { value: 'VERY_GOOD'},
+    { value: 'GOOD'},
+    { value: 'DECENT'}
 ]
 
+/**
+ * Valeur servant au formulaire d'ajout de livre.
+ * Est en accord avec le backend -> NE PAS MODIFIER LES VALEURS
+ * Ou le faire en modifiant les enums correspondantes dans le backend
+ * Et aussi modifier les clés des traductions I18n dans addBook.json
+ */
 export const Availability = [
-    { value: 'for_trade'},
-    { value: 'for_sale'},
-    { value: 'for_gift'},
-    { value: 'none'}
+    { value: 'FOR_TRADE'},
+    { value: 'FOR_SALE'},
+    { value: 'FOR_GIFT'},
+    { value: 'NONE'}
 ]
 
 export interface UserBooksState {

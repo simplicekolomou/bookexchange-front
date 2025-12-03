@@ -29,18 +29,18 @@
     "subtitle": "Rendre ce livre visible aux autres membres",
     "optionsLabel" : "Type de disponibilité",
     "options": {
-      "for_trade" : "A échanger",
-      "for_sale" : "A vendre",
-      "for_gift" : "A donner",
-      "none" : "Pour garder"
+      "FOR_TRADE" : "A échanger",
+      "FOR_SALE" : "A vendre",
+      "FOR_GIFT" : "A donner",
+      "NONE" : "Pour garder"
     }
   },
   "bookState": {
     "options" : {
-      "new" : "Neuf",
-      "very_good" : "Très bon",
-      "good" : "Bon",
-      "decent" : "Décent"
+      "NEW" : "Neuf",
+      "VERY_GOOD" : "Très bon",
+      "GOOD" : "Bon",
+      "DECENT" : "Décent"
     }
   }
 }
