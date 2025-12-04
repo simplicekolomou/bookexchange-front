@@ -14,6 +14,7 @@
     "formatPlaceholder": "Paperback, Pocket, Hardcover...",
     "edition": "Edition ",
     "editionPlaceholder": "First edition, 2020...",
+    "owner": "Owner",
     "images": {
       "title": "Images",
       "coverImage": "Cover image (API)",

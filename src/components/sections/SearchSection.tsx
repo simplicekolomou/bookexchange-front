@@ -3,7 +3,6 @@ import { Box, Container, Drawer, useDisclosure } from '@chakra-ui/react';
 import { SearchTabs } from './SearchTabs.tsx';
 import { SearchBar } from './SectionSearchBar.tsx';
 import { AdvancedFilters } from './AdvancedFilters';
-import {BookDetail} from "./collection/BookDetail.tsx";
 
 export const SearchSection = ()=> {
     const [searchQuery, setSearchQuery] = useState('');
@@ -71,9 +70,9 @@ export const SearchSection = ()=> {
                             <Drawer.CloseTrigger />
                         </Drawer.Header>
                         <Drawer.Body>
-                            {/* Contenu du détail du livre */}
-                                <BookDetail
-                                />
+                            {/* Contenu du détail du livre //TODO revoir ça */}
+                            {/*    <BookDetailContent*/}
+                            {/*    />*/}
                         </Drawer.Body>
                     </Drawer.Content>
                 </Drawer.Positioner>

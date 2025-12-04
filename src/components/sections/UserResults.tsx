@@ -10,7 +10,7 @@ interface UserResultsProps {
 }
 
 export const UserResults = ({ user, books, onUserSelect }: UserResultsProps) => {
-    const userBooks = books.filter(book => book.ownerId === user.id);
+    const userBooks = books.filter(book => Number(book.ownerId) == Number(user.id));
     if (userBooks.length === 0) {
         return (
             <Box textAlign="center" py={12}>

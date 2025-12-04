@@ -1,16 +1,3 @@
-export interface BookTypes {
-    id: string;
-    apiId: string;
-    title: string;
-    bookState: string,
-    availability: string,
-    author: string;
-    coverImage: string;
-    personalImage?: string;
-    isbn?: string;
-    description?: string;
-}
-
 export interface BookCopy {
     id: string;
     physicalState: string;
@@ -24,7 +11,7 @@ export interface BookCopy {
     coverPictureApiUrl: string;
     userUploadPicturePath: string;
     description: string;
-    ownerId: string;
+    ownerId: number;
 }
 
 export interface WishlistItem {
@@ -67,7 +54,7 @@ export const Availability = [
 ]
 
 export interface UserBooksState {
-    books: BookTypes[];
+    books: BookCopy[];
     wishlist: WishlistItem[];
     exchanges: Exchange[];
     averageRatings: number;

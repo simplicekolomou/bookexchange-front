@@ -1,11 +1,11 @@
 import { VStack, Box, Text } from '@chakra-ui/react';
 import { BookOpen } from 'lucide-react';
-import type { BookTypes} from '../../types/book.types.ts';
+import type { BookCopy } from '../../types/book.types.ts';
 import type {User} from "../../types/auth.types.ts";
 
 interface BookResultsProps {
-    books: { book: BookTypes; owner: User }[];
-    onBookSelect: (bookData: { book: BookTypes; owner: User }) => void;
+    books: { book: BookCopy; owner: User }[];
+    onBookSelect: (bookData: { book: BookCopy; owner: User }) => void;
 }
 
 export const BookResults = ({ books }: BookResultsProps) => {

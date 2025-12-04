@@ -15,6 +15,7 @@ import {NotFound404} from "./layout/NotFound404.tsx";
 import {Settings} from "./sections/profile/Settings.tsx";
 import {Flex} from "@chakra-ui/react";
 import {CollectionPage} from "./sections/collection/CollectionPage.tsx";
+import {BookDetailPage} from "./sections/collection/BookDetailPage.tsx";
 
 function App() {
     const { isAuthenticated } = useAppSelector((state) => state.auth)
@@ -38,6 +39,12 @@ function App() {
 
                 <Route path="/user/:userId/collection" element={<CollectionPage />} />
 
+                <Route
+                    path={"/user/:userId/bookCopy/:bookCopyId"}
+                    element={
+                        <BookDetailPage/>
+                    }
+                />
 
                 {/* Routes protégées */}
                 <Route

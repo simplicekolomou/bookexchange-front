@@ -14,6 +14,7 @@
     "formatPlaceholder": "Broché, Poche, Relié...",
     "edition": "Édition ",
     "editionPlaceholder": "Première édition, 2020...",
+    "owner": "Propriétaire",
     "images": {
       "title": "Images",
       "coverImage": "Image de couverture (API)",

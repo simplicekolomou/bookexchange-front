@@ -1,12 +1,12 @@
 import { Box, Text, VStack, CardBody, HStack, Badge } from '@chakra-ui/react';
 import {Award, BookOpen, Heart, Repeat, Star} from 'lucide-react';
-import type {BookTypes, WishlistItem} from '../../../types/book.types.ts';
+import type {BookCopy, WishlistItem} from '../../../types/book.types.ts';
 import { BookCard } from '../../layout/BookCard';
 import React from "react";
 
 interface ProfileContentProps {
     activeTab: string;
-    books: BookTypes[];
+    books: BookCopy[];
     wishlist: WishlistItem[];
     exchange: [];
     rating: [];
