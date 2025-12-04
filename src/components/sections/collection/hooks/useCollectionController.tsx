@@ -6,20 +6,16 @@ import type {UserProfile} from "../../../../types/profile.types.ts";
 export const useCollectionController = () => {
     const { userId } = useParams();
     const user: UserProfile = JSON.parse(localStorage.getItem("auth_user")!);
-    const isMyCollection = userId == user.id;
+    const isMyCollection = Number(userId) == Number(user.id);
 
-    console.log("IsMyCollection ?: " + isMyCollection);
-
-    // Always call both hooks
-    const myBooksQuery = useGetMyBooksQuery(undefined, {
-        skip: !isMyCollection,
-    });
+    const myBooksQuery = useGetMyBooksQuery(
+        undefined,
+        { skip: !isMyCollection, }
+    );
 
     const userBooksQuery = useGetUserBooksQuery(
         { userId: Number(userId) },
-        {
-            skip: isMyCollection,
-        }
+        { skip: isMyCollection, }
     );
 
     const isLoading = isMyCollection
