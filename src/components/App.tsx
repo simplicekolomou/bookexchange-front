@@ -14,7 +14,6 @@ import {ProtectedRoute} from "./layout/ProtectedRoute.tsx";
 import {NotFound404} from "./layout/NotFound404.tsx";
 import {Settings} from "./sections/profile/Settings.tsx";
 import {Flex} from "@chakra-ui/react";
-import {BookDetail} from "./sections/collection/BookDetail.tsx";
 import {CollectionPage} from "./sections/collection/CollectionPage.tsx";
 
 function App() {
@@ -39,22 +38,8 @@ function App() {
 
                 <Route path="/user/:userId/collection" element={<CollectionPage />} />
 
-                <Route
-                    path={"/user/:userId/bookCopy/:bookId"}
-                    element={
-                        <BookDetail/>
-                    }
-                />
 
                 {/* Routes protégées */}
-                <Route
-                    path="/collection"
-                    element={
-                    <ProtectedRoute>
-                        <CollectionPage />
-                    </ProtectedRoute>
-                } />
-
                 <Route
                     path="/search"
                     element={

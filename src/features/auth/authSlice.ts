@@ -1,5 +1,6 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 import type {AuthResponse, AuthState} from '../../types/auth.types'
+import {apiSlice} from "../../services/apiSlice.ts";
 
 const token = localStorage.getItem('auth_token')
 const initialToken = token ? token : null
@@ -25,6 +26,8 @@ const authSlice = createSlice({
             state.user = null
             state.token = null
             state.isAuthenticated = false
+
+            apiSlice.util.resetApiState();
 
             localStorage.removeItem('auth_token')
             localStorage.removeItem('auth_user')

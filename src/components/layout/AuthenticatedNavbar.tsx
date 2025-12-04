@@ -5,6 +5,7 @@ import { Search, Plus, BookOpen } from "lucide-react";
 import { UserMenu } from "./UserMenu.tsx";
 import { useTranslation } from "react-i18next";
 import { LogoWithText } from "./LogoWithText.tsx";
+import type {UserProfile} from "../../types/profile.types.ts";
 
 interface NavbarProps {
     bookCount: number;
@@ -13,6 +14,8 @@ interface NavbarProps {
 
 export const AuthenticatedNavbar = ({ title }: NavbarProps) => {
     const navigate = useNavigate();
+    // Utilisé pour la navigation vers la collection
+    const user: UserProfile = JSON.parse(localStorage.getItem("auth_user")!);
     const showText = useBreakpointValue({ base: false, md: true }) ?? false;
     const { t } = useTranslation(["collections", "common"]);
 
@@ -57,11 +60,11 @@ export const AuthenticatedNavbar = ({ title }: NavbarProps) => {
             );
         }
 
-        if (pathname !== "/collection") {
+        if (pathname.endsWith("/collection")) {
             buttons.push(
                 <Button
                     key="collection"
-                    onClick={() => navigate("/collection")}
+                    onClick={() => navigate(`/user/${user.id}/collection`)}
                     size="sm"
                     minW="auto"
                     px={3}

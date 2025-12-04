@@ -17,6 +17,7 @@ import { useRegisterMutation } from "../../features/auth/authApi";
 import { useAppDispatch } from "../../app/hooks";
 import { setCredentials } from "../../features/auth/authSlice";
 import {tokens} from "../ui/theme.ts";
+import type {UserProfile} from "../../types/profile.types.ts";
 
 export const Registration = () => {
     const navigate = useNavigate();
@@ -103,7 +104,8 @@ export const Registration = () => {
 
     useEffect(() => {
         if(isRegisterSuccess){
-            navigate("/collection", { replace: true });
+            const user: UserProfile = JSON.parse(localStorage.getItem("auth_user")!);
+            navigate(`/user/${user.id}/collection`, {replace: true});
         }
     }, [isRegisterSuccess, navigate]);
 

@@ -1,10 +1,14 @@
 import { useParams } from "react-router-dom";
 import { useGetMyBooksQuery, useGetUserBooksQuery } from "../../../../features/book/bookApi.ts";
 import { useMemo, useState } from "react";
+import type {UserProfile} from "../../../../types/profile.types.ts";
 
 export const useCollectionController = () => {
     const { userId } = useParams();
-    const isMyCollection = !userId;
+    const user: UserProfile = JSON.parse(localStorage.getItem("auth_user")!);
+    const isMyCollection = userId == user.id;
+
+    console.log("IsMyCollection ?: " + isMyCollection);
 
     // Always call both hooks
     const myBooksQuery = useGetMyBooksQuery(undefined, {
