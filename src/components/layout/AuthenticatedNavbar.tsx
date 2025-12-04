@@ -60,7 +60,7 @@ export const AuthenticatedNavbar = ({ title }: NavbarProps) => {
             );
         }
 
-        if (pathname.endsWith("/collection")) {
+        if (!pathname.endsWith("/collection")) {
             buttons.push(
                 <Button
                     key="collection"
