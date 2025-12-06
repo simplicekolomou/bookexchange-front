@@ -40,18 +40,30 @@ export interface Exchange {
     status: string;
 }
 
+/**
+ * Valeur servant au formulaire d'ajout de livre.
+ * Est en accord avec le backend -> NE PAS MODIFIER LES VALEURS
+ * Ou le faire en modifiant les enums correspondantes dans le backend
+ * Et aussi modifier les clés des traductions I18n dans addBook.json
+ */
 export const BookStateLabel = [
-    { value: 'neuf', label: 'Neuf' },
-    { value: 'bon', label: 'Bon état' },
-    { value: 'mauvais', label: 'Mauvais état' },
-    { value: 'acceptable', label: 'Acceptable' }
+    { value: 'NEW'},
+    { value: 'VERY_GOOD'},
+    { value: 'GOOD'},
+    { value: 'DECENT'}
 ]
 
+/**
+ * Valeur servant au formulaire d'ajout de livre.
+ * Est en accord avec le backend -> NE PAS MODIFIER LES VALEURS
+ * Ou le faire en modifiant les enums correspondantes dans le backend
+ * Et aussi modifier les clés des traductions I18n dans addBook.json
+ */
 export const Availability = [
-    { value: 'echanger', label: 'A échanger' },
-    { value: 'vendre', label: 'A vendre' },
-    { value: 'donner', label: 'A donner' },
-    { value: 'indisponible', label: 'Indisponible' }
+    { value: 'FOR_TRADE'},
+    { value: 'FOR_SALE'},
+    { value: 'FOR_GIFT'},
+    { value: 'NONE'}
 ]
 
 export interface UserBooksState {
@@ -59,4 +71,37 @@ export interface UserBooksState {
     wishlist: WishlistItem[];
     exchanges: Exchange[];
     averageRatings: number;
+}
+
+// src/types/books.ts
+export type VolumeShort = {
+    id: string;
+    title: string;
+    publishedDate: string;
+    coverUrl: string;
+    isbns: isbns[];
+    authors: string[];
+    description: string;
+};
+
+export type isbns = {
+    type: string;
+    identifier: string;
+}
+
+/**
+ * Interface des bouquins de collection du backend
+ */
+export interface AddBookRequest {
+    physicalState: string;
+    availabilityType: string;
+    askingPrice: number;
+    title: string;
+    authors: string[];
+    format: string;
+    edition: string;
+    isbn: string;
+    coverPictureApiUrl: string;
+    userUploadPicturePath: string;
+    description: string;
 }

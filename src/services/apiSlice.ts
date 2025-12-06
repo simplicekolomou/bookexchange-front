@@ -15,7 +15,7 @@ export const apiSlice = createApi({
         },
     }),
     // Tags globaux pour l'invalidation des caches
-    tagTypes: ['User', 'Auth', 'Profile', 'Picture'],
+    tagTypes: ['User', 'Auth', 'Profile', 'Picture', 'Book'],
     // Endpoints seront injectés dans les features
     endpoints: () => ({}),
 })
