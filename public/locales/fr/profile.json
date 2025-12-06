@@ -24,6 +24,7 @@
     "subtitle": "Seuls vous pouvez voir votre collection et vos informations"
   },
   "addressTitle": "Adresse",
+  "serverError": "Une erreur est survenue lors de la mise à jour du profil.",
 
   "actions": {
     "save": "Enregistrer les modifications",

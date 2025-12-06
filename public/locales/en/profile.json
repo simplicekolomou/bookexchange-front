@@ -24,7 +24,8 @@
     "subtitle": "Only you can see your collection and information"
   },
   "addressTitle": "Address",
-
+  "invalidInformation": "Invalid information. Please check the fields and try again.",
+  "serverError": "An error occurred while updating the profile.",
   "actions": {
     "save": "Save Changes",
     "profile": "See Profile"
