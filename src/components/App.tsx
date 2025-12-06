@@ -1,12 +1,12 @@
 import '../styles/App.css'
 import { Home } from "./sections/Home.tsx"
 import { Footer } from "./layout/Footer.tsx"
-import { Login } from "./sections/Login.tsx"
-import { Collection } from "./sections/Collection.tsx"
+import { Login } from "./sections/login/Login.tsx"
+import { Collection } from "./sections/book/collection/Collection.tsx"
 import { Routes, Route } from "react-router-dom"
-import { Registration } from "./sections/Registration.tsx"
-import { SearchSection } from "./sections/SearchSection.tsx"
-import { AddBook } from "./sections/AddBook.tsx"
+import { Registration } from "./sections/register/Registration.tsx"
+import { SearchSection } from "./sections/book/search/SearchSection.tsx"
+import { AddBook } from "./sections/book/add/AddBook.tsx"
 import { Profile } from "./sections/profile/Profile.tsx"
 import { useAppSelector } from '../app/hooks.ts'
 import { AuthenticatedNavbar } from "./layout/AuthenticatedNavbar.tsx"
@@ -14,6 +14,8 @@ import { UnAuthenticatedNavbar } from "./layout/UnAuthenticatedNavbar.tsx"
 import {ProtectedRoute} from "./layout/ProtectedRoute.tsx";
 import {NotFound404} from "./layout/NotFound404.tsx";
 import {Settings} from "./sections/profile/Settings.tsx";
+import {ForgotPassword} from "./sections/login/resetPassword/ForgotPassword.tsx";
+import {ResetPassword} from "./sections/login/resetPassword/ResetPassword.tsx";
 
 function App() {
     const { isAuthenticated } = useAppSelector((state) => state.auth)
@@ -33,6 +35,8 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/registration" element={<Registration />} />
+                <Route path="/forgotPassword" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
 
                 {/* Routes protégées */}
                 <Route

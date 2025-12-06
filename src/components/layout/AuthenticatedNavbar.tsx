@@ -60,14 +60,9 @@ export const AuthenticatedNavbar = ({ title }: NavbarProps) => {
         if (pathname !== "/collection") {
             buttons.push(
                 <Button
+                    variant="solid"
                     key="collection"
                     onClick={() => navigate("/collection")}
-                    size="sm"
-                    minW="auto"
-                    px={3}
-                    bg="colorPalette.default"
-                    color="white"
-                    _hover={{ bg: "colorPalette.emphasized" }}
                 >
                     <BookOpen size={16} />
                     {showText && <ChakraBox as="span" ms={2}>{t("common:actions.collection")}</ChakraBox>}

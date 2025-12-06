@@ -4,12 +4,17 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../../app/hooks";
 import { logout } from "../../features/auth/authSlice";
+import defaultPicture from '../../assets/defaultPicture.svg';
+import { useProfilePicture } from "../../features/profile/hook/useProfilePicture";
+
 
 export const UserMenu = () => {
     const { t } = useTranslation("userMenu");
     const dispatch = useAppDispatch();
     const { t: tGlobal } = useTranslation("common");
     const navigate = useNavigate();
+    const { profilePictureUrl } = useProfilePicture();
+    const imageSrc = profilePictureUrl ?? defaultPicture;
 
     const handleLogout = async () => {
         dispatch(logout());
@@ -22,7 +27,7 @@ export const UserMenu = () => {
                 <Menu.Trigger className="navbar-avatar" as="div">
                     <Avatar.Root>
                         <Avatar.Fallback bg="colorPalette.default" color="white" name="Segun Adebayo" />
-                        <Avatar.Image src="https://bit.ly/sage-adebayo" />
+                        <Avatar.Image src={imageSrc} />
                     </Avatar.Root>
                 </Menu.Trigger>
 

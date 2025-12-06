@@ -1,0 +1,50 @@
+import { Box, Text, } from '@chakra-ui/react';
+import { Users } from 'lucide-react';
+
+/*interface UserResultsProps {
+    user: User;
+    books: BookCopy[];
+    onUserSelect: (userId: string) => void;
+}*/
+
+export const UserResults = () => {
+    //const userBooks = books.filter(book => book.ownerId === user.id);
+    //if (userBooks.length === 0) {
+        return (
+            <Box textAlign="center" py={12}>
+                <Users size={64} color="var(--chakra-colors-gray-400)" style={{ margin: '0 auto 16px' }} />
+                <Text color="gray.500">Aucun utilisateur trouvé</Text>
+            </Box>
+        );
+    //}
+
+    /*return (
+        <VStack gap={4} align="stretch">
+            {userBooks.map((book) => (}
+                <Box
+                    //key={book.id}
+                    cursor="pointer"
+                    _hover={{ shadow: 'lg' }}
+                    transition="shadow 0.2s"
+                    //onClick={() => onUserSelect(book.id)}
+                >
+                    <CardBody p={4}>
+                        <Flex align="center" gap={4}>
+                            <Avatar.Root size="lg" >
+                                <Avatar.Image src={book.coverPictureApiUrl} />
+                                <Avatar.Fallback>
+                                    {book.coverPictureApiUrl}
+                                </Avatar.Fallback>
+                            </Avatar.Root>
+                            <Box flex={1} minW={0}>
+                                <Text fontSize="lg" fontWeight="semibold" color="gray.800" mb={1}>
+                                    {book.physicalState}
+                                </Text>
+                            </Box>
+                        </Flex>
+                    </CardBody>
+                </Box>
+            ))}
+        </VStack>
+    );*/
+};

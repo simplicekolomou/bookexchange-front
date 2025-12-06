@@ -30,3 +30,13 @@ export interface AuthState {
     isLoading: boolean
     user?: User | null
 }
+
+
+export interface ForgotPasswordRequest {
+    email: string;
+}
+
+export interface ResetPasswordRequest {
+    token: string | null;
+    password: string;
+}

@@ -9,14 +9,14 @@ export const booksApi = createApi({
     }),
     tagTypes: ['Book'],
     endpoints: (builder) => ({
-        getUserBooks: builder.query<BookCopy[], {ownerEmail: string}>({
-            query: () => ({
-                url: '/book-copies/user/me',
-                method: 'GET',
-                providesTags: ['Book'],
-            })
+        searchBook: builder.mutation<BookCopy, string>({
+            query: (keyword) => ({
+                url: `books/search`,
+                method: 'POST',
+                body: keyword
+            }),
         }),
     }),
 });
 
-export const { useGetUserBooksQuery } = booksApi;
+export const { useSearchBookMutation } = booksApi;
