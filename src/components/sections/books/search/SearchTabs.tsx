@@ -18,11 +18,11 @@ export const SearchTabs = ({ value, onChange }: SearchTabsProps) => {
                 gridTemplateColumns="repeat(2, 1fr)"
                 width="full"
                 gap={2}
+                borderBottomWidth={0}
             >
-                <Button>
+                <Button variant="solid">
                     <Tabs.Trigger
                         value="books"
-                        justifyContent="center"
                     >
                         <BookOpen size={16} />
                         <Text ml={2}>Livres</Text>
@@ -31,7 +31,6 @@ export const SearchTabs = ({ value, onChange }: SearchTabsProps) => {
                 <Button variant="solid">
                     <Tabs.Trigger
                         value="users"
-                        justifyContent="center"
                     >
                         <Users size={16} />
                         <Text ml={2}>Utilisateurs</Text>

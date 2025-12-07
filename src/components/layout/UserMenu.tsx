@@ -6,6 +6,7 @@ import { useAppDispatch } from "../../app/hooks";
 import { logout } from "../../features/auth/authSlice";
 import defaultPicture from '../../assets/defaultPicture.svg';
 import { useProfilePicture } from "../../features/profile/hook/useProfilePicture";
+import {GrUpdate} from "react-icons/gr";
 
 
 export const UserMenu = () => {
@@ -60,6 +61,17 @@ export const UserMenu = () => {
                                 <Settings size={16} color="currentColor" />
                                 <Text as="span" color="fg.default">
                                     {t("settings")}
+                                </Text>
+                            </Link>
+                        </Menu.Item>
+                        <Menu.Item value="updatePassword" _hover={{ bg: "bg.subtle" }}>
+                            <Link
+                                to={"/update-password"}
+                                className="link"
+                            >
+                                <GrUpdate size={16} color="currentColor" />
+                                <Text as="span" color="fg.default">
+                                    {t("updatePassword")}
                                 </Text>
                             </Link>
                         </Menu.Item>

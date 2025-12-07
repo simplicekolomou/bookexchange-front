@@ -122,7 +122,10 @@ export const Login = () => {
                                 display="flex"
                                 flexDirection="column"
                             >
-                                <Button type="submit" variant="solid" w="full">
+                                <Button
+                                    type="submit"
+                                    variant="solid"
+                                    w="full">
                                     {t("login.action")}
                                 </Button>
                                 <Link

@@ -1,4 +1,5 @@
 {
   "profile" : "Mon Profil",
-  "settings" : "Paramètres"
+  "settings" : "Paramètres",
+  "updatePassword": "Changer le mot de passe"
 }

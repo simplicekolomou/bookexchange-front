@@ -26,12 +26,7 @@ export const AuthenticatedNavbar = ({ title }: NavbarProps) => {
                 <Button
                     key="search"
                     onClick={() => navigate("/search")}
-                    variant="outline"
-                    size="sm"
-                    minW="auto"
-                    px={3}
-                    borderColor="colorPalette.default"
-                    color="colorPalette.default"
+                    variant="solid"
                 >
                     <Search size={16} />
                     {showText && <ChakraBox as="span" ms={2}>{t("common:actions.search")}</ChakraBox>}
@@ -44,12 +39,7 @@ export const AuthenticatedNavbar = ({ title }: NavbarProps) => {
                 <Button
                     key="add"
                     onClick={() => navigate("/add-book")}
-                    size="sm"
-                    minW="auto"
-                    px={3}
-                    bg="colorPalette.default"
-                    color="white"
-                    _hover={{ bg: "colorPalette.emphasized" }}
+                    variant="solid"
                 >
                     <Plus size={16} />
                     {showText && <ChakraBox as="span" ms={2}>{t("common:actions.add")}</ChakraBox>}

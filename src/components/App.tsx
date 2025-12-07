@@ -16,6 +16,7 @@ import {NotFound404} from "./layout/NotFound404.tsx";
 import {Settings} from "./sections/profile/Settings.tsx";
 import {ForgotPassword} from "./sections/login/resetPassword/ForgotPassword.tsx";
 import {ResetPassword} from "./sections/login/resetPassword/ResetPassword.tsx";
+import {UpdatePassword} from "./sections/profile/UpdatePassword.tsx";
 
 function App() {
     const { isAuthenticated } = useAppSelector((state) => state.auth)
@@ -77,6 +78,15 @@ function App() {
                     element={
                         <ProtectedRoute>
                             <Settings />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/update-password"
+                    element={
+                        <ProtectedRoute>
+                            <UpdatePassword />
                         </ProtectedRoute>
                     }
                 />
