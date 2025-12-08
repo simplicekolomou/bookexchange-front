@@ -2,9 +2,12 @@ import { useState, } from 'react';
 import { Box, Container, Drawer, useDisclosure } from '@chakra-ui/react';
 import { SearchTabs } from './SearchTabs.tsx';
 import { SearchBar } from './SectionSearchBar.tsx';
-import { AdvancedFilters } from './AdvancedFilters';
+import { AdvancedFilters } from './AdvancedFilters.tsx';
+import {BookDetail} from "./BookDetail.tsx";
+import { UserResults } from './UserResults.tsx';
+import {BookResults} from "./BookResults.tsx";
 
-export const SearchSection = ()=> {
+export const SearchSection = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [searchType, setSearchType] = useState('books');
     const [advancedFilters, setAdvancedFilters] = useState({
@@ -15,7 +18,7 @@ export const SearchSection = ()=> {
         location: '',
     });
 
-    const { onOpen: onFiltersOpen, onClose: onFiltersClose } = useDisclosure();
+    const {onOpen: onFiltersOpen, onClose: onFiltersClose} = useDisclosure();
 
 
     const clearFilters = () => {
@@ -32,9 +35,11 @@ export const SearchSection = ()=> {
 
     return (
         <Box minH="100vh">
-
             <Container maxW="4xl" py={8}>
-                <SearchTabs value={searchType} onChange={setSearchType} />
+                <SearchTabs
+                    value={searchType}
+                    onChange={setSearchType}
+                />
 
                 <SearchBar
                     searchQuery={searchQuery}
@@ -52,11 +57,13 @@ export const SearchSection = ()=> {
                     hasActiveFilters={hasActiveFilters} isOpen={false} />
 
                 {searchType === 'books' ? (
-                    <div></div>
-                    //<BookResults books={filteredBooks} onBookSelect={handleBookSelect} />
+                    <div>
+                        <BookResults />
+                    </div>
                 ) : (
-                    <div></div>
-                    //<UserResults users={filteredUsers} onUserSelect={handleUserSelect} />
+                    <div>
+                        <UserResults />
+                    </div>
                 )}
             </Container>
 
@@ -70,9 +77,8 @@ export const SearchSection = ()=> {
                             <Drawer.CloseTrigger />
                         </Drawer.Header>
                         <Drawer.Body>
-                            {/* Contenu du détail du livre //TODO revoir ça */}
-                            {/*    <BookDetailContent*/}
-                            {/*    />*/}
+                            {/* Contenu du détail du livre */}
+                            <BookDetail />
                         </Drawer.Body>
                     </Drawer.Content>
                 </Drawer.Positioner>

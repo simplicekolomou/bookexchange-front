@@ -1,11 +1,12 @@
 import '../styles/App.css'
 import { Home } from "./sections/Home.tsx"
 import { Footer } from "./layout/Footer.tsx"
-import { Login } from "./sections/Login.tsx"
+import { Login } from "./sections/login/Login.tsx"
+import { Collection } from "./sections/books/collection/Collection.tsx"
 import { Routes, Route } from "react-router-dom"
-import { Registration } from "./sections/Registration.tsx"
-import { SearchSection } from "./sections/SearchSection.tsx"
-import { AddBook } from "./sections/AddBook.tsx"
+import { Registration } from "./sections/register/Registration.tsx"
+import { SearchSection } from "./sections/books/search/SearchSection.tsx"
+import { AddBook } from "./sections/books/add/AddBook.tsx"
 import { Profile } from "./sections/profile/Profile.tsx"
 import { useAppSelector } from '../app/hooks.ts'
 import { AuthenticatedNavbar } from "./layout/AuthenticatedNavbar.tsx"
@@ -16,6 +17,9 @@ import {Settings} from "./sections/profile/Settings.tsx";
 import {Flex} from "@chakra-ui/react";
 import {CollectionPage} from "./sections/collection/CollectionPage.tsx";
 import {BookDetailPage} from "./sections/collection/BookDetailPage.tsx";
+import {ForgotPassword} from "./sections/login/resetPassword/ForgotPassword.tsx";
+import {ResetPassword} from "./sections/login/resetPassword/ResetPassword.tsx";
+import {UpdatePassword} from "./sections/profile/UpdatePassword.tsx";
 
 function App() {
     const { isAuthenticated } = useAppSelector((state) => state.auth)
@@ -35,6 +39,8 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/registration" element={<Registration />} />
+                <Route path="/forgotPassword" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
 
 
                 <Route path="/user/:userId/collection" element={<CollectionPage />} />
@@ -77,6 +83,15 @@ function App() {
                     element={
                         <ProtectedRoute>
                             <Settings />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/update-password"
+                    element={
+                        <ProtectedRoute>
+                            <UpdatePassword />
                         </ProtectedRoute>
                     }
                 />

@@ -1,19 +1,18 @@
 import {Button, Card, Field, Input, Stack, Flex, Box, Heading, Alert, } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import * as React from "react";
-import { useAppDispatch } from "../../app/hooks.ts";
-import { setCredentials } from "../../features/auth/authSlice.ts";
-import { useLoginMutation } from "../../features/auth/authApi.ts";
-import { tokens } from "../ui/theme";
-import type {UserProfile} from "../../types/profile.types.ts";
+import { useAppDispatch } from "../../../app/hooks.ts";
+import { setCredentials } from "../../../features/auth/authSlice.ts";
+import { useLoginMutation } from "../../../features/auth/authApi.ts";
+import { tokens } from "../../ui/theme.ts";
+import {DoubleButton} from "../../layout/DoubleButton.tsx";
 
 export const Login = () => {
     const { t } = useTranslation("auth");
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    const [activeButton, setActiveButton] = useState("login");
     const [login, { isSuccess: isLoginSuccess }] = useLoginMutation();
     const [localError, setLocalError] = useState('');
 
@@ -21,11 +20,6 @@ export const Login = () => {
         email: '',
         password: '',
     });
-
-    const goto = (link: string, button: string) => {
-        setActiveButton(button);
-        navigate(link);
-    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setLocalError('');
@@ -44,26 +38,25 @@ export const Login = () => {
         }
 
         if (!formData.email || !formData.password) {
-            setLocalError("Tous les champs sont obligatoires!");
+            setLocalError(t("validation.requiredFields"));
             return;
         }
         try {
             const result = await login(formData).unwrap();
             dispatch(setCredentials(result));
         } catch (error) {
-            const err = (error as { data?: { error?: string } })?.data?.error;
-            if (err === "Bad Request" || err === "Unauthorized") {
-                setLocalError("Adresse email ou mot de passe incorrect!");
+            const status = (error as { status?: number })?.status;
+            if (status === 400 || status === 401) {
+                setLocalError(t("login.invalidCredentials"));
             } else {
-                setLocalError("Une erreur est survenue. Veuillez réessayer plus tard.");
+                setLocalError(t("login.serverError"));
             }
         }
     };
 
     useEffect(() => {
         if (isLoginSuccess) {
-            const user: UserProfile = JSON.parse(localStorage.getItem("auth_user")!);
-            navigate(`/user/${user.id}/collection`);
+            navigate("/collection");
         }
     }, [isLoginSuccess, navigate]);
 
@@ -84,26 +77,7 @@ export const Login = () => {
                             {t("login.title")}
                         </Heading>
 
-                        <Flex
-                            mb={tokens.spacing.md}
-                            gap={tokens.spacing.xl}
-                            justify="center"
-                        >
-                            <Button
-                                variant={activeButton === "login" ? "solid" : "outline"}
-                                className={`btn ${activeButton === "login" ? "" : "inactive"}`}
-                                onClick={() => goto("/Login", "login")}
-                            >
-                                {t("login.action")}
-                            </Button>
-                            <Button
-                                variant={activeButton === "register" ? "solid" : "outline"}
-                                className={`btn ${activeButton === "register" ? "" : "inactive"}`}
-                                onClick={() => goto("/Registration", "register")}
-                            >
-                                {t("registration.action")}
-                            </Button>
-                        </Flex>
+                        <DoubleButton />
 
                         <Card.Root className="login-card">
                             <Card.Header>
@@ -142,10 +116,24 @@ export const Login = () => {
                                     </Field.Root>
                                 </Stack>
                             </Card.Body>
-                            <Card.Footer justifyContent="center">
-                                <Button type="submit" variant="solid" w="full">
+                            <Card.Footer
+                                justifyContent="center"
+                                pt={tokens.spacing.md}
+                                display="flex"
+                                flexDirection="column"
+                            >
+                                <Button
+                                    type="submit"
+                                    variant="solid"
+                                    w="full">
                                     {t("login.action")}
                                 </Button>
+                                <Link
+                                    className="mt-4 text-center"
+                                    to="/ForgotPassword"
+                                >
+                                    {t("login.passwordReset")}
+                                </Link>
                             </Card.Footer>
                         </Card.Root>
                     </form>

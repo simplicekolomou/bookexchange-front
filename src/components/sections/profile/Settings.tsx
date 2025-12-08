@@ -1,4 +1,4 @@
-import {Box, Button, Container, Flex, Grid, Heading, Input, Switch, Text, Textarea, VStack} from "@chakra-ui/react";
+import {Box, Button, Container, FileUpload, Flex, Grid, Heading, Input, Switch, Text, Textarea, VStack} from "@chakra-ui/react";
 import {useTranslation} from "react-i18next";
 import {HiCheck, HiX} from "react-icons/hi";
 import * as React from "react";
@@ -7,7 +7,9 @@ import {useUpdateProfilePictureMutation, useUpdateUserProfileMutation} from "../
 import {useNavigate} from "react-router-dom";
 import {profileUpdated} from "../../../features/profile/profileSlice.ts";
 import {useAppDispatch} from "../../../app/hooks.ts";
-import type {UpdateProfileData, UserProfile} from "../../../types/profile.types.ts";
+import type {UpdateProfileData} from "../../../types/profile.types.ts";
+import {LuFileImage} from "react-icons/lu";
+import {FileUploader} from "./FileUploader.tsx";
 
 export const Settings = () => {
     const { t } = useTranslation(['profile', 'common']);
@@ -80,11 +82,11 @@ export const Settings = () => {
             dispatch(profileUpdated({ profile: updatedUser }));
 
         } catch (error) {
-            const err = (error as Error)?.message
-            if(err === 'Bad Request'){
-                setLocalError("Veuillez vérifier les informations saisies.");
-            }else{
-                setLocalError("Une erreur est survenue lors de la mise à jour du profil.");
+            const status = (error as { status?: number })?.status;
+            if (status === 400 || status === 401) {
+                setLocalError(t("profile:invalidInformation"));
+            } else {
+                setLocalError(t("profile:serverError"));
             }
         }
     };
@@ -92,8 +94,7 @@ export const Settings = () => {
     useEffect(() => {
         if(isUpdateSuccess){
             setLocalError('')
-            const user: UserProfile = JSON.parse(localStorage.getItem("auth_user")!);
-            navigate(`/user/${user.id}/collection`);
+            navigate('/collection')
         }
     }, [isUpdateSuccess, navigate]);
 
@@ -101,6 +102,17 @@ export const Settings = () => {
         const { name, value } = e.target as HTMLInputElement | HTMLTextAreaElement;
         if (name === 'bio') {
             setFormData({ ...formData, bio: value });
+            return;
+        }
+        if (name === 'zipCode' || name === 'postalBoxNumber') {
+            const toNumber = convertToNumber(value);
+            setFormData({
+                ...formData,
+                address: {
+                    ...formData.address,
+                    [name]: toNumber
+                }
+            });
             return;
         }
         setFormData({
@@ -124,8 +136,12 @@ export const Settings = () => {
         const val = typeof value === 'boolean' ? value : Boolean((value.checked));
         setIsVisible(val);
     };
+    const convertToNumber = (input: string)=> {
+        if (input === '') return '';
+        return input.replace(/\D+/g, '');
+    }
 
-    const handleFileChange = (files: FileList | null) => {
+    const handleFileChange = (files: File[] | null) => {
         if (files && files.length > 0) {
             const file = files[0];
             setProfilePictureFile(file);
@@ -281,12 +297,19 @@ export const Settings = () => {
                                 w="40%"
                                 h="40%"
                             >
-                                <Input
-                                    borderWidth="0"
-                                    type="file"
+                                <FileUpload.Root
                                     accept="image/*"
-                                    onChange={(e) => handleFileChange(e.target.files)}
-                                />
+                                    maxFiles={1}
+                                    onFileChange={(details) => handleFileChange(details.acceptedFiles)}
+                                >
+                                    <FileUpload.HiddenInput />
+                                    <FileUpload.Trigger asChild>
+                                        <Button variant="outline" size="sm">
+                                            <LuFileImage /> {t("profile:uploadProfilePicture")}
+                                        </Button>
+                                    </FileUpload.Trigger>
+                                    <FileUploader />
+                                </FileUpload.Root>
                             </Box>
 
                             {/* Etat du profil */}

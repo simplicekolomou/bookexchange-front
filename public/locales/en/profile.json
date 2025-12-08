@@ -12,7 +12,7 @@
   "postalCodePlaceholder": "Enter your postal code",
   "street": "Street Name and Number",
   "streetPlaceholder": "Enter street name and number",
-    "country": "Country",
+  "country": "Country",
   "countryPlaceholder": "Enter your country",
   "postalBoxNumber": "Postal Box",
   "postalBoxNumberPlaceholder": "Enter postal box number",
@@ -24,7 +24,8 @@
     "subtitle": "Only you can see your collection and information"
   },
   "addressTitle": "Address",
-
+  "invalidInformation": "Invalid information. Please check the fields and try again.",
+  "serverError": "An error occurred while updating the profile.",
   "actions": {
     "save": "Save Changes",
     "profile": "See Profile"

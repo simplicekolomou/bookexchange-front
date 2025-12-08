@@ -13,18 +13,17 @@ import { useNavigate } from "react-router-dom";
 import {useEffect, useState} from "react";
 import { useTranslation } from "react-i18next";
 import * as React from "react";
-import { useRegisterMutation } from "../../features/auth/authApi";
-import { useAppDispatch } from "../../app/hooks";
-import { setCredentials } from "../../features/auth/authSlice";
-import {tokens} from "../ui/theme.ts";
-import type {UserProfile} from "../../types/profile.types.ts";
+import { useRegisterMutation } from "../../../features/auth/authApi.ts";
+import { useAppDispatch } from "../../../app/hooks.ts";
+import { setCredentials } from "../../../features/auth/authSlice.ts";
+import {tokens} from "../../ui/theme.ts";
+import {DoubleButton} from "../../layout/DoubleButton.tsx";
 
 export const Registration = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
     const [localError, setLocalError] = useState('');
-    const [activeButton, setActiveButton] = useState("register");
     const [register, {isSuccess: isRegisterSuccess}] = useRegisterMutation()
 
     const { t } = useTranslation("auth");
@@ -42,27 +41,22 @@ export const Registration = () => {
         setLocalError('');
     }, [formData]);
 
-    const goto = (link: string, button: string) => {
-        setActiveButton(button);
-        navigate(link);
-    };
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         // Validation côté client
         if (!formData.email || !formData.firstName || !formData.lastName || !formData.password) {
-            setLocalError(t("validation.allFieldsRequired") || "Tous les champs sont obligatoires");
+            setLocalError(t("validation.requiredFields"));
             return;
         }
 
         if (formData.password.length < 6) {
-            setLocalError(t("validation.passwordLength") || "Le mot de passe doit contenir au moins 6 caractères");
+            setLocalError(t("validation.passwordLength"));
             return;
         }
 
         if (formData.password !== formData.confirmPassword) {
-            setLocalError(t("validation.passwordMismatch") || "Les mots de passe ne correspondent pas");
+            setLocalError(t("validation.passwordsMustMatch"));
             return;
         }
 
@@ -85,12 +79,12 @@ export const Registration = () => {
             dispatch(setCredentials(result));
 
         } catch (error) {
-            const err = (error as { data?: { error?: string } })?.data?.error;
-            if(err === "Bad Request"){
-                setLocalError("Cet email est déjà utilisé.");
+            const status = (error as { status?: number })?.status;
+            if(status === 400) {
+                setLocalError(t("registration.existingEmail"));
                 return;
             }else {
-                setLocalError("Une erreur est survenue lors de l'inscription. Veuillez réessayer plus tard.");
+                setLocalError(t("registration.serverError"));
             }
         }
     };
@@ -104,8 +98,7 @@ export const Registration = () => {
 
     useEffect(() => {
         if(isRegisterSuccess){
-            const user: UserProfile = JSON.parse(localStorage.getItem("auth_user")!);
-            navigate(`/user/${user.id}/collection`, {replace: true});
+            navigate("/collection", { replace: true });
         }
     }, [isRegisterSuccess, navigate]);
 
@@ -116,7 +109,7 @@ export const Registration = () => {
         borderRadius: "md",
         bg: "bg.surface",
         color: "fg.default",
-        _placeholder: { color: "fg.muted" },
+        _placeholder: { color: "fg.placeholder" },
         _hover: { borderColor: "colorPalette.emphasized" },
         _focus: {
             borderColor: "colorPalette.emphasized",
@@ -147,26 +140,7 @@ export const Registration = () => {
                         </Heading>
 
                         {/* Boutons de navigation */}
-                        <Flex
-                            mb={tokens.spacing.md}
-                            gap={tokens.spacing.xl}
-                            justify="center"
-                        >
-                            <Button
-                                variant={activeButton === "login" ? "solid" : "outline"}
-                                className={`btn ${activeButton === "login" ? "" : "inactive"}`}
-                                onClick={() => goto("/Login", "login")}
-                            >
-                                {t("login.action")}
-                            </Button>
-                            <Button
-                                variant={activeButton === "register" ? "solid" : "outline"}
-                                className={`btn ${activeButton === "register" ? "" : "inactive"}`}
-                                onClick={() => goto("/Registration", "register")}
-                            >
-                                {t("registration.action")}
-                            </Button>
-                        </Flex>
+                        <DoubleButton />
 
                         {/*Carte du formulaire */}
                         <Card.Root className="login-card">
@@ -179,7 +153,8 @@ export const Registration = () => {
                             <Card.Body>
                                 {/* Affichage des erreurs */}
                                 {localError && (
-                                    <Alert.Root status="error" mb={4} borderRadius="md">
+                                    <Alert.Root status="error" color={"red"} mb={tokens.spacing.md}>
+                                        <Alert.Indicator />
                                         {localError}
                                     </Alert.Root>
                                 )}

@@ -1,0 +1,17 @@
+server {
+    listen 80;
+    server_name localhost;
+
+    location / {
+        root /usr/share/nginx/html;
+        index index.html index.htm;
+        try_files $uri $uri/ /index.html;
+    }
+
+
+    location /api/ {
+        proxy_pass  http://${BACKEND_SERVICE_NAME}:${BACKEND_SERVICE_PORT}/;
+        client_max_body_size ${MAX_API_UPLOAD};
+        proxy_request_buffering off;
+    }
+}

@@ -17,16 +17,16 @@ import {
     Show, Field, FieldLabel, CloseButton
 } from '@chakra-ui/react';
 import {useTranslation} from "react-i18next";
-import {Availability, BookStateLabel, type isbns, type VolumeShort} from "../../types/book.types.ts";
-import {BookSearchCombobox} from "./books/BookSearchCombobox.tsx";
-import {FileUploadField} from "./books/FileUploadField.tsx";
+import {Availability, BookStateLabel, type isbns, type VolumeShort} from "../../../../types/book.types.ts";
+import {BookSearchCombobox} from "../BookSearchCombobox.tsx";
+import {FileUploadField} from "../FileUploadField.tsx";
 import {z} from "zod";
 import {Controller, type SubmitHandler, useFieldArray, useForm} from "react-hook-form"
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useEffect} from "react";
-import {useAddBookCopyMutation} from "../../features/book/bookApi.ts";
-import {Toaster} from "../ui/toaster.tsx";
-import {toaster} from "../toaster/toasterInstance.tsx";
+import {useAddBookCopyMutation} from "../../../../features/book/bookApi.ts";
+import {Toaster} from "../../../ui/toaster.tsx";
+import {toaster} from "../../../toaster/toasterInstance.tsx";
 
 const conditionEnum = BookStateLabel.map(item => item.value) as [string, ...string[]];
 const availabilityEnum = Availability.map(item => item.value) as [string, ...string[]];

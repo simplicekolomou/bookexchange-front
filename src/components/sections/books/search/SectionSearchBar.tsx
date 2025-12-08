@@ -15,7 +15,12 @@ export const SearchBar = ({
                               activeFiltersCount
                           }: SearchBarProps) => {
     return (
-        <Flex gap={2} mb={6} direction={{ base: 'column', sm: 'row' }} bg={"black"}>
+        <Flex
+            gap={2}
+            mb={6}
+            direction={{ base: 'column', sm: 'row' }}
+            bg={"red.200"}
+        >
             <Box position="relative" flex={1}>
                 <SearchIcon
                     size={20}
@@ -27,14 +32,17 @@ export const SearchBar = ({
                         transform: 'translateY(-50%)'
                     }}
                 />
-                <Input
-                    type="text"
-                    placeholder="Rechercher par titre..."
-                    value={searchQuery}
-                    onChange={(e) => onSearchChange(e.target.value)}
-                    pl="40px"
-                    size="lg"
-                />
+                <form method={"POST"} >
+                    <Input
+                        type="text"
+                        placeholder="Rechercher par titre..."
+                        value={searchQuery}
+                        onChange={(e) => onSearchChange(e.target.value)}
+                        pl="40px"
+                        size="lg"
+                        name="search"
+                    />
+                </form>
             </Box>
 
             <Button

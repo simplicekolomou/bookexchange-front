@@ -12,7 +12,7 @@
   "postalCodePlaceholder": "Entrez votre code postal",
   "street": "Nom et numéro de rue",
   "streetPlaceholder": "Entrez nom et numéro de rue",
-    "country": "Pays",
+  "country": "Pays",
   "countryPlaceholder": "Entrez votre pays",
   "postalBoxNumber": "Boîte postale",
   "postalBoxNumberPlaceholder": "Entrez le numéro de boîte postale",
@@ -24,6 +24,7 @@
     "subtitle": "Seuls vous pouvez voir votre collection et vos informations"
   },
   "addressTitle": "Adresse",
+  "serverError": "Une erreur est survenue lors de la mise à jour du profil.",
 
   "actions": {
     "save": "Enregistrer les modifications",

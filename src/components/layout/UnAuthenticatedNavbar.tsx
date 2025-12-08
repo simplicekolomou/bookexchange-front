@@ -11,8 +11,6 @@ export const UnAuthenticatedNavbar = () => {
     const surfaceToken = tokens.colors.surface;
     const borderToken = tokens.colors.border;
     const textToken = tokens.colors.text;
-    const primaryToken = tokens.colors.primary;
-    const primaryHoverToken = tokens.colors.primaryHover;
 
     return (
         <Box
@@ -50,10 +48,7 @@ export const UnAuthenticatedNavbar = () => {
                 >
                     <Link to="/login">
                         <Button
-                            bg={primaryToken}
-                            variant="outline"
-                            color={"white"}
-                            _hover={{ bg: primaryHoverToken, color: "white" }}
+                            variant="solid"
                         >
                             {t("actions.start")} <RiArrowRightLine style={{ marginLeft: 0 }} />
                         </Button>

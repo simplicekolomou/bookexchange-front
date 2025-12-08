@@ -1,4 +1,5 @@
 {
   "profile" : "Profile",
-  "settings" : "Settings"
+  "settings" : "Settings",
+  "updatePassword": "Change Password"
 }

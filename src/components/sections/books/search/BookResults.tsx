@@ -8,15 +8,15 @@ interface BookResultsProps {
     onBookSelect: (bookData: { book: BookCopy; owner: User }) => void;
 }
 
-export const BookResults = ({ books }: BookResultsProps) => {
-    if (books.length === 0) {
+export const BookResults = () => {
+    //if (books.length === 0) {
         return (
             <Box textAlign="center" py={12}>
                 <BookOpen size={64} color="var(--chakra-colors-gray-400)" style={{ margin: '0 auto 16px' }} />
                 <Text color="gray.500">Aucun livre trouvé</Text>
             </Box>
         );
-    }
+    //}
 
     return (
         <VStack gap={4} align="stretch">

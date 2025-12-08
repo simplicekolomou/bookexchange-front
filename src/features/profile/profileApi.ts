@@ -11,15 +11,8 @@ export const profileApi = apiSlice.injectEndpoints({
                     body: photoFile,
                 };
             },
-            invalidatesTags: ['User'],
+            invalidatesTags: ['Picture'],
         }),
-        /*updateProfilePicture: builder.mutation<void, string>({
-            query: (pictureUrl) =>({
-                url: `/users/me/profile-picture`,
-                method: 'PUT',
-                body: pictureUrl,
-            })
-        }),*/
 
         updateUserProfile: builder.mutation<void, UpdateProfileData>({
             query: (updateInfo) => ({
@@ -30,6 +23,19 @@ export const profileApi = apiSlice.injectEndpoints({
             invalidatesTags: ['Profile'],
         }),
 
+        getProfilePicture: builder.query<string, void>({
+            query: () => ({
+                url: '/users/me/profile-picture',
+                method: 'GET',
+                responseHandler: async (response) => {
+                    console.log("Reponse du back : ", response);
+                    const blob = await response.blob();
+                    return URL.createObjectURL(blob);
+                },
+                cache: 'no-cache',
+            }),
+            providesTags: ['Picture'],
+        }),
         changePassword: builder.mutation<void, { userId: string; data: ChangePasswordData }>({
             query: ({ userId, data }) => ({
                 url: `/users/${userId}/password`,
@@ -40,28 +46,12 @@ export const profileApi = apiSlice.injectEndpoints({
                 },
             }),
         }),
-
-        /*uploadAvatar: builder.mutation<{ avatarUrl: string }, { userId: string; formData: FormData }>({
-            query: ({ userId, formData }) => ({
-                url: `/users/${userId}/avatar`,
-                method: 'POST',
-                body: formData,
-            }),
-            invalidatesTags: (_result, _error, { userId }) => [{ type: 'User', id: userId }],
-        }),
-
-        deleteAccount: builder.mutation<void, { userId: string; password: string }>({
-            query: (credentials) => ({
-                url: `/users/${credentials.userId}`,
-                method: 'DELETE',
-                body: { password: credentials.password },
-            }),
-        }),*/
     }),
 });
 
 export const {
     useUpdateUserProfileMutation,
     useUpdateProfilePictureMutation,
+    useGetProfilePictureQuery,
     useChangePasswordMutation,
 } = profileApi;

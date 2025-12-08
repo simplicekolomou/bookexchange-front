@@ -168,6 +168,10 @@ const customConfig = defineConfig({
                     value: { base: "{colors.neutral.600}", _dark: "{colors.neutral.400}" },
                 },
 
+                "fg.placeholder": {
+                    value: { base: "{colors.neutral.300}", _dark: "{colors.neutral.400}" },
+                },
+
                 // Couleurs de bordure
                 "border.default": {
                     value: { base: "{colors.neutral.100}", _dark: "{colors.neutral.700}" },
