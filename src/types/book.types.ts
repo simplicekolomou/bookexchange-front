@@ -8,7 +8,7 @@ export interface BookCopy {
     format: string;
     edition: string;
     isbn: string;
-    coverPictureApiUrl: string;
+    coverPictureApiUrl: string | undefined;
     userUploadPicturePath: string;
     description: string;
     ownerId: number;
@@ -88,7 +88,7 @@ export interface AddBookRequest {
     format: string;
     edition: string;
     isbn: string;
-    coverPictureApiUrl: string;
+    coverPictureApiUrl: string | undefined;
     userUploadPicturePath: string;
     description: string;
 }

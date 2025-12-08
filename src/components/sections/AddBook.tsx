@@ -45,7 +45,7 @@ const formSchema = z.object({
     bookState: z.enum(conditionEnum, {message: "Invalid book state"}),
     format: z.string(),
     edition: z.string(),
-    coverImage: z.url(),
+    coverImage: z.url().optional(),
     userCoverImage: z.instanceof(File).nullable(),
     description: z.string(),
     isAvailable: z.boolean(),
@@ -61,7 +61,7 @@ const defaultValues: FormValues = {
     bookState: '',
     format: '',
     edition: '',
-    coverImage: '',
+    coverImage: undefined,
     userCoverImage: null,
     description: '',
     isAvailable: false,
@@ -143,6 +143,8 @@ export const AddBook = () => {
                 userUploadPicturePath: data.userCoverImage ? data.userCoverImage.name : '', // Handle file upload separately if needed
                 description: data.description,
             };
+
+            console.log(bookData);
 
             await addBookCopy(bookData).unwrap();
 
