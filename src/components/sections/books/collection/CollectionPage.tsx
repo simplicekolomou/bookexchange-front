@@ -1,5 +1,5 @@
-import { CollectionContent } from "./CollectionContent";
-import { useCollectionController } from "./hooks/useCollectionController";
+import { CollectionContent } from "./CollectionContent.tsx";
+import { useCollectionController } from "./hooks/useCollectionController.tsx";
 
 export const CollectionPage = () => {
     const controller = useCollectionController();

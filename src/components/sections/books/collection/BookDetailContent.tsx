@@ -5,9 +5,9 @@ import {
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import type {BookCopy} from "../../../types/book.types.ts";
+import type {BookCopy} from "../../../../types/book.types.ts";
 import {ArrowLeftIcon, PencilIcon} from "lucide-react";
-import type {UserProfile} from "../../../types/profile.types.ts";
+import type {UserProfile} from "../../../../types/profile.types.ts";
 
 interface BookDetailProps {
     book: BookCopy;

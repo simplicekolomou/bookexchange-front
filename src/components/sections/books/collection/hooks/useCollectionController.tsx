@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
-import { useGetMyBooksQuery, useGetUserBooksQuery } from "../../../../features/book/bookApi.ts";
+import { useGetMyBooksQuery, useGetUserBooksQuery } from "../../../../../features/book/bookApi.ts";
 import { useMemo, useState } from "react";
-import type {UserProfile} from "../../../../types/profile.types.ts";
+import type {UserProfile} from "../../../../../types/profile.types.ts";
 
 export const useCollectionController = () => {
     const { userId } = useParams();

@@ -15,6 +15,7 @@
     "edition": "Edition ",
     "editionPlaceholder": "First edition, 2020...",
     "owner": "Owner",
+    "noOwner": "The owner was not found.",
     "images": {
       "title": "Images",
       "coverImage": "Cover image (API)",
@@ -23,7 +24,8 @@
       "personalImagePlaceholder": "Download your image"
     },
     "description": "Description",
-    "descriptionPlaceholder": "Personal notes on this book..."
+    "descriptionPlaceholder": "Personal notes on this book...",
+    "noDescription": "No description provided."
   },
   "availability": {
     "title": "Available to the community",

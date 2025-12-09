@@ -7,7 +7,7 @@ import {useUpdateProfilePictureMutation, useUpdateUserProfileMutation} from "../
 import {useNavigate} from "react-router-dom";
 import {profileUpdated} from "../../../features/profile/profileSlice.ts";
 import {useAppDispatch} from "../../../app/hooks.ts";
-import type {UpdateProfileData} from "../../../types/profile.types.ts";
+import type {UpdateProfileData, UserProfile} from "../../../types/profile.types.ts";
 import {LuFileImage} from "react-icons/lu";
 import {FileUploader} from "./FileUploader.tsx";
 
@@ -94,7 +94,8 @@ export const Settings = () => {
     useEffect(() => {
         if(isUpdateSuccess){
             setLocalError('')
-            navigate('/collection')
+            const user: UserProfile = JSON.parse(localStorage.getItem("auth_user")!);
+            navigate(`/user/${user.id}/collection`);
         }
     }, [isUpdateSuccess, navigate]);
 

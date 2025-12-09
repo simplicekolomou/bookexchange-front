@@ -1,16 +1,8 @@
-<<<<<<<< HEAD:src/components/sections/collection/CollectionContent.tsx
 import {Box, Flex, Input, Button, SimpleGrid, VStack, Text, useBreakpointValue} from '@chakra-ui/react';
-import type {BookCopy} from '../../../types/book.types.ts';
-import {BookCard} from '../../layout/BookCard.tsx';
+import type {BookCopy} from '../../../../types/book.types.ts';
+import {BookCard} from '../../../layout/BookCard.tsx';
 import {Search, BookOpen, Grid3x3, List} from 'lucide-react';
 import {useTranslation} from "react-i18next";
-========
-import { Box, Flex, Input, Button, SimpleGrid, VStack, Text, useBreakpointValue } from '@chakra-ui/react';
-import type { BookTypes } from '../../../../types/book.types.ts';
-import { BookCard } from '../../../layout/BookCard.tsx';
-import { Search, BookOpen, Grid3x3, List } from 'lucide-react';
-import { useTranslation } from "react-i18next";
->>>>>>>> origin/update-password:src/components/sections/books/collection/CollectionContent.tsx
 import {Link} from "react-router-dom";
 import React from "react";
 

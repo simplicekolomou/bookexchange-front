@@ -1,4 +1,4 @@
-import { useBookDetailController } from "./hooks/useBookDetailController";
+import { useBookDetailController } from "./hooks/useBookDetailController.tsx";
 import { BookDetailContent } from "./BookDetailContent.tsx";
 
 export const BookDetailPage = () => {

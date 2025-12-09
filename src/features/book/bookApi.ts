@@ -1,6 +1,7 @@
 import type {AddBookRequest, VolumeShort} from '../../types/book.types.ts';
 import {apiSlice} from "../../services/apiSlice.ts";
 import type {BookCopy} from '../../types/book.types.ts';
+import type {UserProfile} from "../../types/profile.types.ts";
 
 export const booksApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
@@ -12,9 +13,17 @@ export const booksApi = apiSlice.injectEndpoints({
             })
         }),
 
-        getMyBookCopy: builder.query<BookCopy[], { copyId: number }>({
+        getBookCopy: builder.query<BookCopy, { copyId: number }>({
             query: ({ copyId }) => ({
-                url: `/book-copies/user/me/copy/${copyId}`,
+                url: `/book-copies/${copyId}`,
+                method: "GET",
+            }),
+            providesTags: ["Book"]
+        }),
+
+        getBookOwner: builder.query<UserProfile, {userId: number}>({
+            query: ({ userId }) => ({
+                url: `/users/${userId}`,
                 method: "GET",
             }),
         }),
@@ -27,19 +36,19 @@ export const booksApi = apiSlice.injectEndpoints({
             providesTags: ["Book"],
         }),
 
-        getUserBookCopy: builder.query<BookCopy[], { userId: number; copyId: number }>({
-            query: ({ userId, copyId }) => ({
-                url: `/book-copies/user/${userId}/copy/${copyId}`,
-                method: "GET",
-            }),
-        }),
-
-
-
         addBookCopy: builder.mutation<void, AddBookRequest>({
             query: (bookData) => ({
                 url: '/book-copies/user/me',
                 method: 'POST',
+                body: bookData,
+            }),
+            invalidatesTags: ['Book'], // This will refetch getUserBooks after adding
+        }),
+
+        updateBookCopy: builder.mutation<void, AddBookRequest>({
+            query: (bookData) => ({
+                url: '/book-copies/user/me',
+                method: 'PUT',
                 body: bookData,
             }),
             invalidatesTags: ['Book'], // This will refetch getUserBooks after adding
@@ -67,9 +76,10 @@ export const booksApi = apiSlice.injectEndpoints({
 
 export const {
     useGetMyBooksQuery,
-    useGetMyBookCopyQuery,
+    useGetBookCopyQuery,
+    useGetBookOwnerQuery,
     useGetUserBooksQuery,
-    useGetUserBookCopyQuery,
     useGetBookSuggestionsQuery,
-    useAddBookCopyMutation
+    useAddBookCopyMutation,
+    useUpdateBookCopyMutation,
 } = booksApi;

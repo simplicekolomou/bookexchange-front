@@ -8,6 +8,7 @@ import { setCredentials } from "../../../features/auth/authSlice.ts";
 import { useLoginMutation } from "../../../features/auth/authApi.ts";
 import { tokens } from "../../ui/theme.ts";
 import {DoubleButton} from "../../layout/DoubleButton.tsx";
+import type {UserProfile} from "../../../types/profile.types.ts";
 
 export const Login = () => {
     const { t } = useTranslation("auth");
@@ -56,7 +57,8 @@ export const Login = () => {
 
     useEffect(() => {
         if (isLoginSuccess) {
-            navigate("/collection");
+            const user: UserProfile = JSON.parse(localStorage.getItem("auth_user")!);
+            navigate(`/user/${user.id}/collection`);
         }
     }, [isLoginSuccess, navigate]);
 

@@ -55,7 +55,7 @@ export const AuthenticatedNavbar = ({ title }: NavbarProps) => {
                 <Button
                     variant="solid"
                     key="collection"
-                    onClick={() => navigate("/collection")}
+                    onClick={() => navigate(`/user/${user.id}/collection`)}
                 >
                     <BookOpen size={16} />
                     {showText && <ChakraBox as="span" ms={2}>{t("common:actions.collection")}</ChakraBox>}

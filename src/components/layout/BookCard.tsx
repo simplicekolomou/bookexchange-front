@@ -30,7 +30,7 @@ export const BookCard = ({book, viewMode}: BookCardProps) => {
                 <Flex w="full" align="center" gap={4}>
 
                     {/*@ts-expect-error Chakra LinkOverlay does not support "to" in TS*/}
-                    <LinkOverlay as={RouterLink} to={`/user/${book.ownerId}/bookCopy/${book.id}`}>
+                    <LinkOverlay as={RouterLink} to={`/bookCopy/${book.id}`}>
                         {/* Book Cover */}
                         <Image
                             objectFit="cover"
@@ -111,7 +111,7 @@ export const BookCard = ({book, viewMode}: BookCardProps) => {
     return (
         <LinkBox as={Card.Root} overflow="hidden" borderRadius="lg" shadow="sm" bg="white" h="100%">
             {/*@ts-expect-error Chakra LinkOverlay does not support "to" in TS*/}
-            <LinkOverlay as={RouterLink} to={`/user/${book.ownerId}/bookCopy/${book.id}`}/>
+            <LinkOverlay as={RouterLink} to={`/bookCopy/${book.id}`}/>
             <Image
                 src={book.coverPictureApiUrl}
                 alt={book.title}

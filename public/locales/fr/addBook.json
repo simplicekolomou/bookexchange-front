@@ -15,6 +15,7 @@
     "edition": "Édition ",
     "editionPlaceholder": "Première édition, 2020...",
     "owner": "Propriétaire",
+    "noOwner": "Le propriétaire n'a pas été trouvé.",
     "images": {
       "title": "Images",
       "coverImage": "Image de couverture (API)",
@@ -23,7 +24,8 @@
       "personalImagePlaceholder": "Télécharger votre image"
     },
     "description": "Description",
-    "descriptionPlaceholder": "Notes personnelles sur ce livre..."
+    "descriptionPlaceholder": "Notes personnelles sur ce livre...",
+    "noDescription": "Pas de description fournie."
   },
   "availability": {
     "title": "Disponible pour la communauté",

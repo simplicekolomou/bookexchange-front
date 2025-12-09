@@ -18,6 +18,7 @@ import { useAppDispatch } from "../../../app/hooks.ts";
 import { setCredentials } from "../../../features/auth/authSlice.ts";
 import {tokens} from "../../ui/theme.ts";
 import {DoubleButton} from "../../layout/DoubleButton.tsx";
+import type {UserProfile} from "../../../types/profile.types.ts";
 
 export const Registration = () => {
     const navigate = useNavigate();
@@ -98,7 +99,8 @@ export const Registration = () => {
 
     useEffect(() => {
         if(isRegisterSuccess){
-            navigate("/collection", { replace: true });
+            const user: UserProfile = JSON.parse(localStorage.getItem("auth_user")!);
+            navigate(`/user/${user.id}/collection`, {replace: true});
         }
     }, [isRegisterSuccess, navigate]);
 
