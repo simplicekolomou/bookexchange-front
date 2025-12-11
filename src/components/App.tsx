@@ -1,4 +1,5 @@
 import '../styles/App.css'
+import { Message } from "./sections/Message.tsx"
 import { Home } from "./sections/Home.tsx"
 import { Footer } from "./layout/Footer.tsx"
 import { Login } from "./sections/login/Login.tsx"
@@ -84,6 +85,15 @@ function App() {
                     element={
                         <ProtectedRoute>
                             <Settings />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/dms"
+                    element={
+                        <ProtectedRoute>
+                            <Message/>
                         </ProtectedRoute>
                     }
                 />

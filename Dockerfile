@@ -5,4 +5,5 @@ RUN npm install
 RUN npm run build
 FROM nginx:1.29
 COPY --from=builder /builder/dist /usr/share/nginx/html
+COPY serviceWorker.js /usr/share/nginx/html/serviceWorker.js
 COPY .docker/conf.template /etc/nginx/templates/default.conf.template
