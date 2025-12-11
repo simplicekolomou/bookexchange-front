@@ -1,7 +1,7 @@
 import { type JSX } from "react";
 import { Box, Flex, Button, useBreakpointValue, Box as ChakraBox } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { Search, Plus, BookOpen } from "lucide-react";
+import { Search, Plus, BookOpen, Send } from "lucide-react";
 import { UserMenu } from "./UserMenu.tsx";
 import { useTranslation } from "react-i18next";
 import { LogoWithText } from "./LogoWithText.tsx";
@@ -73,6 +73,23 @@ export const AuthenticatedNavbar = ({ title }: NavbarProps) => {
                     {showText && <ChakraBox as="span" ms={2}>{t("common:actions.collection")}</ChakraBox>}
                 </Button>
             );
+        }
+
+        if (pathname !== "/dms") {
+            buttons.push(
+                <Button
+                    key="dms"
+                    onClick={() => navigate("/dms")}
+                    size="sm"
+                    minW="auto"
+                    px={3}
+                    bg="colorPalette.default"
+                    _hover={{bg: "colorPalette.emphasized" }}
+                >
+                    <Send size={16} />
+                    {showText && <ChakraBox as="span" ms={2}>{t("common:actions.dms")}</ChakraBox>}
+                </Button>
+            )
         }
 
         return buttons;

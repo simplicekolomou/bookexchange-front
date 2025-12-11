@@ -16,7 +16,8 @@
     "start": "Commencer",
     "search": "Rechercher",
     "reset": "Réinitialiser",
-    "collection": "Ma collection"
+    "collection": "Ma collection",
+    "dms": "Mes messages"
   },
   "greeting": "Bonjour, {{name}} !",
   "book": {
@@ -41,5 +42,7 @@
     "add": "Ajouter",
     "search": "Rechercher"
   },
-  "nbBooks": "livre(s)"
+  "nbBooks": "livre(s)",
+  "yes": "Oui",
+  "no": "Non"
 }

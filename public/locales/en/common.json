@@ -15,8 +15,11 @@
     "delete": "Delete",
     "start": "Start",
     "search": "Search",
-    "reset": "Reset"
+    "reset": "Reset",
+    "dms": "Direct Messages"
   },
   "greeting": "Hello, {{name}}!",
-  "nbBooks": "book(s)"
+  "nbBooks": "book(s)",
+  "yes": "Yes",
+  "no": "No"
 }
