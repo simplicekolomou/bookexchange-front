@@ -372,4 +372,5 @@ export const tokens = {
         lg: "0.75rem",
         xl: "1rem",
     },
+    border_width: "2px"
 }

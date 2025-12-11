@@ -1,3 +1,12 @@
+# Bookexchange
+## ServiceWorker and Notification
+Use src/services/notification.ts to send notifications
+
+The public VAPID key is in src/services/notification.ts. In case there ever is a need to change it; do it there, then restart ci-cd.
+
+The ServiceWorker.js is copied to the dist folder in the Dockerfile, because it is not picked up by the build process (not imported in a js or html file).
+If you build locally, you have to copy it manually to dist/serviceWorker.js.
+Vite has a workaround for this, but it does not work well with typescript.
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
