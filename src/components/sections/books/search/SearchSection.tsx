@@ -1,88 +1,49 @@
-import { useState, } from 'react';
-import { Box, Container, Drawer, useDisclosure } from '@chakra-ui/react';
-import { SearchTabs } from './SearchTabs.tsx';
-import { SearchBar } from './SectionSearchBar.tsx';
-import { AdvancedFilters } from './AdvancedFilters.tsx';
-import {BookDetail} from "./BookDetail.tsx";
-import { UserResults } from './UserResults.tsx';
-import {BookResults} from "./BookResults.tsx";
+import { Box, Container } from '@chakra-ui/react';
+import type {isbns, VolumeShort} from "../../../../types/book.types.ts";
+import {useForm} from "react-hook-form";
+import {SearchBar} from "./SearchBar.tsx";
 
 export const SearchSection = () => {
-    const [searchQuery, setSearchQuery] = useState('');
-    const [searchType, setSearchType] = useState('books');
-    const [advancedFilters, setAdvancedFilters] = useState({
-        author: '',
-        isbn: '',
-        condition: '',
-        availability: '',
-        location: '',
-    });
+    /**
+     * Permet de récupérer le meilleur ISBN
+     * @param ids
+     */
+    function pickBestIsbn(ids?: isbns[]) {
+        if (!ids?.length) return "";
 
-    const {onOpen: onFiltersOpen, onClose: onFiltersClose} = useDisclosure();
+        const isbn13 = ids.find(i => i.type === "ISBN_13");
+        const isbn10 = ids.find(i => i.type === "ISBN_10");
+        if (isbn13) {
+            return isbn13.identifier;
+        } else if (isbn10) {
+            return isbn10.identifier;
+        } else {
+            return ids[0].identifier;
+        }
+    }
 
-
-    const clearFilters = () => {
-        setAdvancedFilters({
-            author: '',
-            isbn: '',
-            condition: '',
-            availability: '',
-            location: '',
-        });
-    };
-
-    const hasActiveFilters = Object.values(advancedFilters).some((v) => v !== '');
+    const { setValue } = useForm({ defaultValues: {
+        title: '',
+        authors: [{ name: '' }],
+        isbns: '',
+        }});
 
     return (
         <Box minH="100vh">
             <Container maxW="4xl" py={8}>
-                <SearchTabs
-                    value={searchType}
-                    onChange={setSearchType}
-                />
-
                 <SearchBar
-                    searchQuery={searchQuery}
-                    onSearchChange={setSearchQuery}
-                    onFiltersOpen={onFiltersOpen}
-                    activeFiltersCount={hasActiveFilters ? Object.values(advancedFilters).filter(v => v !== '').length : 0}
+                    limit={10}
+                    onSelect={(b: VolumeShort) => {
+                        setValue("title", b.title);
+
+                        setValue("authors", (b.authors ?? [""]).map(a => ({ name: a })));
+                        setValue("isbns", pickBestIsbn(b.isbns));
+                        console.log(b.authors)
+                        console.log(typeof b.authors?.at(0))
+                    }}
+
                 />
-
-                <AdvancedFilters
-                    onClose={onFiltersClose}
-                    filters={advancedFilters}
-                    onFiltersChange={setAdvancedFilters}
-                    onClearFilters={clearFilters}
-                    searchType={searchType}
-                    hasActiveFilters={hasActiveFilters} isOpen={false} />
-
-                {searchType === 'books' ? (
-                    <div>
-                        <BookResults />
-                    </div>
-                ) : (
-                    <div>
-                        <UserResults />
-                    </div>
-                )}
             </Container>
-
-            {/* Modal de détail du livre */}
-            <Drawer.Root placement={"end"} size="lg">
-                <Drawer.Backdrop />
-                <Drawer.Positioner>
-                    <Drawer.Content>
-                        <Drawer.Header>
-                            <Drawer.Title>Détails du livre</Drawer.Title>
-                            <Drawer.CloseTrigger />
-                        </Drawer.Header>
-                        <Drawer.Body>
-                            {/* Contenu du détail du livre */}
-                            <BookDetail />
-                        </Drawer.Body>
-                    </Drawer.Content>
-                </Drawer.Positioner>
-            </Drawer.Root>
         </Box>
     );
 }

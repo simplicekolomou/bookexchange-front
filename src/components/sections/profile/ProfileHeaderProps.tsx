@@ -14,7 +14,7 @@ interface ProfileHeaderProps {
     isOwnProfile: boolean;
     onBack: () => void;
     onMessage: () => void;
-    user: UserProfile | null;
+    user?: UserProfile;
     ratingsCount?: number | 0;
     averageRating?: number | 0;
 }

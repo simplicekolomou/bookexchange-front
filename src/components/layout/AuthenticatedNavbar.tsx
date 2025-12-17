@@ -6,9 +6,9 @@ import { UserMenu } from "./UserMenu.tsx";
 import { useTranslation } from "react-i18next";
 import { LogoWithText } from "./LogoWithText.tsx";
 import type {UserProfile} from "../../types/profile.types.ts";
+import { useGetMyBooksQuery } from "../../features/book/bookApi.ts";
 
 interface NavbarProps {
-    bookCount: number;
     title: string;
 }
 
@@ -18,13 +18,14 @@ export const AuthenticatedNavbar = ({ title }: NavbarProps) => {
     const user: UserProfile = JSON.parse(localStorage.getItem("auth_user")!);
     const showText = useBreakpointValue({ base: false, md: true }) ?? false;
     const { t } = useTranslation(["collections", "common"]);
+    const { data: books = [] } = useGetMyBooksQuery();
 
     const renderActionButtons = () => {
         const pathname = typeof window !== "undefined" ? window.location.pathname : "";
 
         const buttons: JSX.Element[] = [];
 
-        if (pathname !== "/search") {
+        if (!pathname.endsWith("/search")) {
             buttons.push(
                 <Button
                     key="search"
@@ -34,10 +35,11 @@ export const AuthenticatedNavbar = ({ title }: NavbarProps) => {
                     <Search size={16} />
                     {showText && <ChakraBox as="span" ms={2}>{t("common:actions.search")}</ChakraBox>}
                 </Button>
+
             );
         }
 
-        if (pathname !== "/add-book") {
+        if (!pathname.endsWith("/add-book")) {
             buttons.push(
                 <Button
                     key="add"
@@ -79,7 +81,7 @@ export const AuthenticatedNavbar = ({ title }: NavbarProps) => {
             borderRadius="md"
         >
             <Flex maxW="1200px" mx="auto" px={4} direction="row" align="center" justify="space-between" gap={2} wrap="nowrap">
-                <LogoWithText title={title} direction={"row"} nbBooks={0} />
+                <LogoWithText title={title} direction={"row"} nbBooks={books.length} />
 
                 <Flex gap={2} align="center" wrap="nowrap">
                     {renderActionButtons()}

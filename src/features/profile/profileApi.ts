@@ -1,5 +1,5 @@
 import {apiSlice} from "../../services/apiSlice.ts";
-import type {ChangePasswordData, UpdateProfileData} from "../../types/profile.types.ts";
+import type {UpdateProfileData, UserProfile} from "../../types/profile.types.ts";
 
 export const profileApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
@@ -36,15 +36,12 @@ export const profileApi = apiSlice.injectEndpoints({
             }),
             providesTags: ['Picture'],
         }),
-        changePassword: builder.mutation<void, { userId: string; data: ChangePasswordData }>({
-            query: ({ userId, data }) => ({
-                url: `/users/${userId}/password`,
-                method: 'PUT',
-                body: {
-                    currentPassword: data.currentPassword,
-                    newPassword: data.newPassword,
-                },
+        getUser: builder.query<UserProfile, { userId: string }>({
+            query: ({ userId }) => ({
+                url: `/users/${userId}`,
+                method: 'GET',
             }),
+            providesTags: ['Profile'],
         }),
     }),
 });
@@ -53,5 +50,5 @@ export const {
     useUpdateUserProfileMutation,
     useUpdateProfilePictureMutation,
     useGetProfilePictureQuery,
-    useChangePasswordMutation,
+    useGetUserQuery,
 } = profileApi;

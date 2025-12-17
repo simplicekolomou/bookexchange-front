@@ -104,7 +104,7 @@ export const Registration = () => {
         }
     }, [isRegisterSuccess, navigate]);
 
-    // Props réutilisables pour tous les Input, basés sur les tokens sémantiques du thème
+    // Props réutilisables pour tous les Inputs, basés sur les tokens sémantiques du thème
     const inputProps = {
         borderWidth: "2px",
         borderColor: "border.default",

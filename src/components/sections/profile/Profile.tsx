@@ -1,15 +1,20 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Box, Container } from '@chakra-ui/react';
 import { ProfileHeader } from './ProfileHeaderProps'
 import { ProfileTabs } from './ProfileTabs';
 import { ProfileContent } from './ProfileContent';
+import {useGetUserQuery} from "../../../features/profile/profileApi.ts";
 
 export const Profile = () => {
     const [activeTab, setActiveTab] = useState('collection');
     const navigate = useNavigate();
 
-    const user = JSON.parse(localStorage.getItem("auth_user")!);
+    //const loggedUser = JSON.parse(localStorage.getItem("auth_user")!);
+    const params = useParams<{ userId?: string }>();
+    console.log("Le params est :", params);
+    const userId = params.userId ?? "";
+    const { data: user } = useGetUserQuery({ userId });
 
     const handleBack = () => {
         navigate(-1);

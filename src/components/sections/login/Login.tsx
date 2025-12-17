@@ -16,7 +16,6 @@ export const Login = () => {
     const navigate = useNavigate();
     const [login, { isSuccess: isLoginSuccess }] = useLoginMutation();
     const [localError, setLocalError] = useState('');
-
     const [formData, setFormData] = useState({
         email: '',
         password: '',

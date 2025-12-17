@@ -16,6 +16,8 @@ export const UserMenu = () => {
     const navigate = useNavigate();
     const { profilePictureUrl } = useProfilePicture();
     const imageSrc = profilePictureUrl ?? defaultPicture;
+    const storedUser = localStorage.getItem("auth_user");
+    const user = storedUser ? JSON.parse(storedUser) : null;
 
     const handleLogout = async () => {
         dispatch(logout());
@@ -43,7 +45,7 @@ export const UserMenu = () => {
                     >
                         <Menu.Item value="profile" _hover={{ bg: "bg.subtle" }}>
                             <Link
-                                to={"/profile"}
+                                to={`/user/${user?.id}/profile`}
                                 className="link"
                             >
                                 <User size={16} color="currentColor" />
