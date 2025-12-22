@@ -104,6 +104,15 @@ function App() {
                     }
                 />
 
+                <Route
+                    path="/dms"
+                    element={
+                        <ProtectedRoute>
+                            <Message />
+                        </ProtectedRoute>
+                    }
+                />
+
                 {/* Route 404 - Redirection vers la home */}
                 <Route path="*" element={<NotFound404 />} />
             </Routes>

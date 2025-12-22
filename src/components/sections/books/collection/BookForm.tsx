@@ -83,7 +83,7 @@ const defaultValues: FormValues = {
  */
 function isValidISBN(isbn: string): boolean {
     const clean = isbn.replace(/[-\s]/g, "");
-    return isValidISBN10(clean) || isValidISBN13(clean);
+    return isValidISBN10(clean) || isValidISBN13(clean) || isbn.length === 0;
 }
 
 /**
