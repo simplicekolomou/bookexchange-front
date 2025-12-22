@@ -1,5 +1,3 @@
-import type {UserProfile} from "./profile.types.ts";
-
 export interface BookCopy {
     id: string;
     physicalState: string;
@@ -93,9 +91,4 @@ export interface AddBookRequest {
     coverPictureApiUrl: string | undefined;
     userUploadPicturePath: string;
     description: string;
-}
-
-export interface BookCopyAndOwner {
-    bookCopy: BookCopy;
-    owner: UserProfile
 }

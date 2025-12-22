@@ -80,7 +80,7 @@ export const Settings = () => {
             // mettre à jour le localStorage et le state Redux
             localStorage.setItem("auth_user", JSON.stringify(updatedUser));
             dispatch(profileUpdated({ profile: updatedUser }));
-
+            console.log("Mise à jour éffectuée............")
         } catch (error) {
             const status = (error as { status?: number })?.status;
             if (status === 400 || status === 401) {
@@ -92,6 +92,7 @@ export const Settings = () => {
     };
 
     useEffect(() => {
+        console.log("Dans le useEffect isUpdateSuccess =", isUpdateSuccess);
         if(isUpdateSuccess){
             setLocalError('')
             const user: UserProfile = JSON.parse(localStorage.getItem("auth_user")!);
@@ -366,7 +367,7 @@ export const Settings = () => {
                                 <Button
                                     colorScheme="blue"
                                     size="lg"
-                                    onClick={()=> navigate("/profile")}
+                                    onClick={()=> navigate(`/user/${user.id}/profile`)}
                                     flex={{ base: 1, sm: "none" }}
                                 >
                                     {t("profile:actions.profile")}

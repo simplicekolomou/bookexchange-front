@@ -1,11 +1,12 @@
 import {Box, Text, SimpleGrid, useBreakpointValue} from '@chakra-ui/react';
 import { BookOpen } from 'lucide-react';
-import type {BookCopyAndOwner} from '../../../../types/book.types.ts';
+import type {BookCopy} from '../../../../types/book.types.ts';
 import {BookCard} from "../../../layout/BookCard.tsx";
 
 interface BookResultsProps {
-    books: BookCopyAndOwner[]
-    //onBookSelect: (bookData: { book: BookCopy}) => void;
+    books: BookCopy[]
+    //onSelect: (bookData: { book: BookCopy}) => void;
+    //highlightIndex: number;
 }
 
 export const BookResults = ({ books }: BookResultsProps) => {
@@ -28,8 +29,8 @@ export const BookResults = ({ books }: BookResultsProps) => {
         <SimpleGrid columns={gridColumns} gap={4} w="full">
             {books.map((book) => (
                 <BookCard
-                    key={book.bookCopy.id}
-                    book={book.bookCopy}
+                    key={book.id}
+                    book={book}
                     viewMode="grid"
                 />
             ))}

@@ -7,6 +7,7 @@ import { logout } from "../../features/auth/authSlice";
 import defaultPicture from '../../assets/defaultPicture.svg';
 import { useProfilePicture } from "../../features/profile/hook/useProfilePicture";
 import {GrUpdate} from "react-icons/gr";
+import {apiSlice} from "../../services/apiSlice.ts";
 
 
 export const UserMenu = () => {
@@ -21,6 +22,8 @@ export const UserMenu = () => {
 
     const handleLogout = async () => {
         dispatch(logout());
+        // Dispatch resetApiState pour vider le cache de l'API
+        dispatch(apiSlice.util.resetApiState())
         navigate("/login");
     };
 

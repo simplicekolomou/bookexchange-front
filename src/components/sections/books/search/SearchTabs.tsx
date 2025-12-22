@@ -1,5 +1,6 @@
 import {Button, Tabs, Text} from '@chakra-ui/react';
 import { BookOpen, Users } from 'lucide-react';
+import {useTranslation} from "react-i18next";
 
 interface SearchTabsProps {
     value: string;
@@ -7,6 +8,7 @@ interface SearchTabsProps {
 }
 
 export const SearchTabs = ({ value, onChange }: SearchTabsProps) => {
+    const {t} = useTranslation("search");
     return (
         <Tabs.Root
             value={value}
@@ -20,22 +22,23 @@ export const SearchTabs = ({ value, onChange }: SearchTabsProps) => {
                 gap={2}
                 borderBottomWidth={0}
             >
-                <Button variant="solid">
-                    <Tabs.Trigger
-                        value="books"
+                <Tabs.Trigger asChild value="books">
+                    <Button
+                        variant={value === 'books' ? 'solid' : 'outline'}
                     >
                         <BookOpen size={16} />
-                        <Text ml={2}>Livres</Text>
-                    </Tabs.Trigger>
-                </Button>
-                <Button variant="solid">
-                    <Tabs.Trigger
-                        value="users"
+                        <Text as="span" fontWeight="bold">{t("tabs.books")}</Text>
+                    </Button>
+                </Tabs.Trigger>
+
+                <Tabs.Trigger asChild value="users">
+                    <Button
+                        variant={value === 'users' ? 'solid' : 'outline'}
                     >
                         <Users size={16} />
-                        <Text ml={2}>Utilisateurs</Text>
-                    </Tabs.Trigger>
-                </Button>
+                        <Text as="span" fontWeight="bold">{t("tabs.users")}</Text>
+                    </Button>
+                </Tabs.Trigger>
             </Tabs.List>
         </Tabs.Root>
     );

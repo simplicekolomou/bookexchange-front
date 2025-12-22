@@ -1,0 +1,23 @@
+{
+  "tabs": {
+    "books": "Books",
+    "users": "Users"
+  },
+  "titleBookSearch": "Search for a book",
+  "titleUserSearch": "Search for a user",
+  "searchBookPlaceholder": "Book to look for...",
+  "searchUserPlaceholder": "User to look for...",
+  "noResults": "No results found",
+  "tapToSearch": "Tap to search",
+  "bookAstuces": "Tip: Type Author-Title-Isbn for a combined search.",
+  "userAstuces": "Tip: type First name Last name for a combined search.",
+  "filter": {
+    "title": "Filter",
+    "disponibility": "Availability",
+    "new": "New",
+    "veryGood": "Very Good",
+    "good": "Good",
+    "decent": "Decent",
+    "state": "State"
+  }
+}

@@ -43,6 +43,20 @@ export const profileApi = apiSlice.injectEndpoints({
             }),
             providesTags: ['Profile'],
         }),
+
+        findUser: builder.query<UserProfile[], { firstName?: string, lastName?: string, size: number }>({
+            query: ({ firstName, lastName, size = 10 }) => ({
+                url: `/users/search`,
+                method: 'GET',
+                params: {
+                    ...(firstName ? { firstName } : {}),
+                    ...(lastName ? { lastName } : {}),
+                    page: 0,
+                    size
+                },
+            }),
+            providesTags: ['Profile'],
+        }),
     }),
 });
 
@@ -51,4 +65,5 @@ export const {
     useUpdateProfilePictureMutation,
     useGetProfilePictureQuery,
     useGetUserQuery,
+    useFindUserQuery,
 } = profileApi;

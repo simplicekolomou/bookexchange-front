@@ -1,10 +1,23 @@
 {
   "tabs": {
-    "books": "Books",
-    "users": "Users"
+    "books": "Livres",
+    "users": "Utilisateurs"
   },
-  "title": "Search for a book",
-  "searchPlaceholder": "Book to look for...",
-  "noResults": "No results found",
-  "tapToSearch": "Tap to search"
+  "titleBookSearch": "Rechercher un livre",
+  "titleUserSearch": "Rechercher un utilisateur",
+  "searchBookPlaceholder": "Livre à rechercher...",
+  "searchUserPlaceholder": "Utilisateur à rechercher...",
+  "noResults": "Aucun résultat trouvé",
+  "tapToSearch": "Tapper pour rechercher",
+  "bookAstuces": "Astuce : tapez Auteur-Titre-Isbn pour une recherche combinée.",
+  "userAstuces": "Astuce: taper Prénom Nom pour une recherche combinée.",
+  "filter": {
+    "title": "Filtres",
+    "disponibility": "Disponibilité",
+    "new": "Neuf",
+    "veryGood": "Très bon",
+    "good": "Bon",
+    "decent": "Décent",
+    "state": "État"
+  }
 }

@@ -1,21 +1,22 @@
 import {Box, SimpleGrid, Text, useBreakpointValue, } from '@chakra-ui/react';
 import { Users } from 'lucide-react';
-import type {BookCopyAndOwner} from "../../../../types/book.types.ts";
 import {UserCard} from "../../../layout/UserCard.tsx";
+import type {UserProfile} from "../../../../types/profile.types.ts";
 
 interface UserResultsProps {
-    books: BookCopyAndOwner[];
+    users: UserProfile[];
+    //highlightIndex: number;
     //onUserSelect: (userId: string) => void;
 }
 
-export const UserResults = ({books}: UserResultsProps) => {
+export const UserResults = ({users}: UserResultsProps) => {
     const gridColumns = useBreakpointValue({
         base: 1,
         sm: 2,
         md: 3,
         lg: 4
     });
-    if (books.length === 0) {
+    if (users.length === 0) {
         return (
             <Box textAlign="center" py={12}>
                 <Users size={64} color="var(--chakra-colors-gray-400)" style={{ margin: '0 auto 16px' }} />
@@ -30,10 +31,10 @@ export const UserResults = ({books}: UserResultsProps) => {
                 gap={4}
                 w="full"
             >
-                {books.map((book) => (
+                {users.map((user) => (
                     <UserCard
-                        key={book.bookCopy.id}
-                        bookAndOwner={book}
+                        key={user.id}
+                        user={user}
                         viewMode={"grid"}
                     />
                 ))}

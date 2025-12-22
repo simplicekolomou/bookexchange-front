@@ -1,4 +1,4 @@
-import type {AddBookRequest, BookCopyAndOwner, VolumeShort} from '../../types/book.types.ts';
+import type {AddBookRequest, VolumeShort} from '../../types/book.types.ts';
 import {apiSlice} from "../../services/apiSlice.ts";
 import type {BookCopy} from '../../types/book.types.ts';
 import type {UserProfile} from "../../types/profile.types.ts";
@@ -71,24 +71,21 @@ export const booksApi = apiSlice.injectEndpoints({
             }),
         }),
 
-        findBook: builder.query<VolumeShort[], { isbn?: string; author?: string; title?: string }>({
-            query: ({ isbn, author, title }) => ({
-                url: '/book-copies/search',
+        findBook: builder.query<BookCopy[], { isbn?: string; author?: string; title?: string; size?: number, availability?: string, bookState?: string }>({
+            query: ({ isbn, author, title, size, availability, bookState }) => ({
+                url: '/book-copies/search/book',
                 method: 'GET',
                 params: {
                     ...(isbn ? { isbn } : {}),
                     ...(author ? { author } : {}),
                     ...(title ? { title } : {}),
+                    ...(availability ? { availability } : {}),
+                    ...(bookState ? { bookState } : {}),
+                    page: 0,
+                    size,
                 },
             }),
             providesTags: ['Book'],
-        }),
-
-        findBookCopyAndOwner: builder.query<BookCopyAndOwner[], void>({
-            query: () => ({
-                url: '/book-copies/search/books-and-owners',
-                method: 'GET',
-            }),
         }),
     }),
     overrideExisting: false,
@@ -103,5 +100,4 @@ export const {
     useAddBookCopyMutation,
     useUpdateBookCopyMutation,
     useFindBookQuery,
-    useFindBookCopyAndOwnerQuery,
 } = booksApi;

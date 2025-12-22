@@ -1,45 +1,76 @@
-import {Card, Text, Flex, Heading, Image, LinkBox, LinkOverlay, IconButton} from "@chakra-ui/react";
+import {
+    Card,
+    Flex,
+    Image,
+    LinkBox,
+    LinkOverlay,
+    IconButton,
+    Heading,
+    Badge,
+    Text
+} from "@chakra-ui/react";
 import {Link as RouterLink} from "react-router-dom";
-import type {BookCopyAndOwner} from "../../types/book.types.ts";
-import {MessageCircle} from "lucide-react";
+import {SendHorizonalIcon} from "lucide-react";
+import type {UserProfile} from "../../types/profile.types.ts";
+import {useTranslation} from "react-i18next";
 
 interface UserCardProps {
-    bookAndOwner: BookCopyAndOwner;
-    viewMode?: 'grid' | 'list';
+    user: UserProfile
 }
-export const UserCard = ({bookAndOwner}: UserCardProps) => {
-    if(bookAndOwner){
+export const UserCard = ({user}: UserCardProps) => {
+    const {t} = useTranslation("profile");
+    if(user){
         return (
-            <LinkBox as={Card.Root} overflow="hidden" borderRadius="lg" shadow="sm" bg="white" h="100%">
+            <LinkBox as={Card.Root} overflow="hidden" borderRadius="lg" shadow="sm" bg="white" h="100%" w="3xs">
                 {/*@ts-expect-error Chakra LinkOverlay does not support "to" in TS*/}
-                <LinkOverlay as={RouterLink} to={`/user/${bookAndOwner.owner.id}/profile`}/>
+                <LinkOverlay as={RouterLink} to={`/user/${user.id}/profile`}/>
                 <Image
-                    src={bookAndOwner.bookCopy.coverPictureApiUrl}
-                    alt={bookAndOwner.owner.firstName}
+                    src={user.profilePicture}
+                    alt={user.firstName}
                     objectFit="cover"
                     w="full"
-                    h="180px"
-                    borderTopRadius="lg"
+                    h="44"
+                    borderRadius="md"
                 />
 
                 {/* Make the body stretch fully */}
                 <Card.Body p={4} display="flex" flexDirection="column" flex="1">
                     {/* Main content */}
                     <Flex direction="column" gap={2} flex="1">
-                        <Text>Appartient à : </Text>
-                        <Heading size="sm">{bookAndOwner.owner.firstName} {bookAndOwner.owner.lastName}</Heading>
+                        <Heading size="sm">{user.firstName} {user.lastName}</Heading>
+                        <Text>{user.bio}</Text>
+
+                        <hr/>
+
+                        <Flex direction="column" mt="auto">
+                            <Flex direction="row" gap={2}>
+                                {user.adress?.locality && (
+                                    <Badge
+                                        mt={1}
+                                        w="fit-content"
+                                        variant="subtle"
+                                        fontSize="80%"
+                                        fontStyle="italic"
+                                        border="1px Solid"
+                                        borderColor="accent.600"
+                                        color="accent.600"
+                                    >
+                                        {t("locality")} : {user.adress.locality}
+                                    </Badge>
+                                )}
+                            </Flex>
+
+                            <Flex justify="flex-end" gap={2} pt={2}>
+                                <IconButton
+                                    size="2xl"
+                                    variant="ghost"
+                                >
+                                    <SendHorizonalIcon />
+                                </IconButton>
+                            </Flex>
+                        </Flex>
                     </Flex>
                 </Card.Body>
-                {/* Actions */}
-                <Flex direction="column" gap={2} mb="auto">
-                    <IconButton
-                        aria-label="Envoyer un message"
-                        size="md"
-                        variant="ghost"
-                    >
-                        <MessageCircle />
-                    </IconButton>
-                </Flex>
             </LinkBox>
         );
     }

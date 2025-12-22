@@ -2,8 +2,8 @@ import type {User} from "./auth.types.ts";
 
 export interface UserProfile extends User {
     bio?: string
-    avatarUrl?: string
-    address?: Address
+    profilePicture?: string
+    adress?: Address
     isVisible: boolean
 }
 

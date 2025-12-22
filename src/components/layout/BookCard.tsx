@@ -101,7 +101,6 @@ export const BookCard = ({book, viewMode}: BookCardProps) => {
                             variant="ghost"
                         ><Trash/></IconButton>
                     </Flex>
-
                 </Flex>
             </LinkBox>
 
@@ -183,6 +182,5 @@ export const BookCard = ({book, viewMode}: BookCardProps) => {
                 </Flex>
             </Card.Body>
         </LinkBox>
-
     );
 };

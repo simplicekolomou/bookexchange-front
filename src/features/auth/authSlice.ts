@@ -28,6 +28,7 @@ const authSlice = createSlice({
             state.token = null
             state.isAuthenticated = false
 
+            // Action pour vider le cache de l'API
             apiSlice.util.resetApiState();
 
             localStorage.removeItem('auth_token')
