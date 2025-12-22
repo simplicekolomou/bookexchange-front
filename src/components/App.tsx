@@ -20,6 +20,7 @@ import {AddBookPage} from "./sections/books/collection/AddBookPage.tsx";
 import { EditBookPage } from './sections/books/collection/EditBookPage.tsx'
 import { Flex } from '@chakra-ui/react'
 import {UpdatePassword} from "./sections/profile/UpdatePassword.tsx";
+import {Message} from "./sections/Message.tsx";
 
 function App() {
     const { isAuthenticated } = useAppSelector((state) => state.auth)
