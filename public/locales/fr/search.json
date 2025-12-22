@@ -1,0 +1,10 @@
+{
+  "tabs": {
+    "books": "Books",
+    "users": "Users"
+  },
+  "title": "Search for a book",
+  "searchPlaceholder": "Book to look for...",
+  "noResults": "No results found",
+  "tapToSearch": "Tap to search"
+}
