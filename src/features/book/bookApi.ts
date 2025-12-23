@@ -9,31 +9,31 @@ export const booksApi = apiSlice.injectEndpoints({
             query: () => ({
                 url: '/book-copies/user/me',
                 method: 'GET',
-                providesTags: ['Book'],
-            })
+            }),
+            providesTags: ['Book'],
         }),
 
         getBookCopy: builder.query<BookCopy, { copyId: number }>({
             query: ({ copyId }) => ({
                 url: `/book-copies/${copyId}`,
-                method: "GET",
+                method: 'GET',
             }),
-            providesTags: ["Book"]
+            providesTags: ['Book']
         }),
 
         getBookOwner: builder.query<UserProfile, {userId: number}>({
             query: ({ userId }) => ({
                 url: `/users/${userId}`,
-                method: "GET",
+                method: 'GET',
             }),
         }),
 
         getUserBooks: builder.query<BookCopy[], { userId: number }>({
             query: ({ userId }) => ({
                 url: `/book-copies/user/${userId}`,
-                method: "GET",
+                method: 'GET',
             }),
-            providesTags: ["Book"],
+            providesTags: ['Book'],
         }),
 
         addBookCopy: builder.mutation<void, AddBookRequest>({

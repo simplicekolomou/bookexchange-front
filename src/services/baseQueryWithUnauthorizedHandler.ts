@@ -19,6 +19,16 @@ const baseQuery = fetchBaseQuery({
     },
 });
 
+/**
+ * Interceptes les réponses d'erreur pour gérer les statuts 401 et 403.
+ * En cas de réception de ces statuts, déclenche une action de déconnexion.
+ *
+ * @param args          Les arguments de la requête
+ * @param api           La base API RTK Query
+ * @param extraOptions  Les options supplémentaires
+ * @returns             Le résultat de la requête, ou déclenche une déconnexion en cas d'erreur 401/403
+ */
+
 export const baseQueryWithUnauthorizedHandler: BaseQueryFn<
     string | FetchArgs,
     unknown,
