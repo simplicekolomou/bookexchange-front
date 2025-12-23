@@ -12,7 +12,7 @@
   "bookAstuces": "Astuce : tapez Auteur-Titre-Isbn pour une recherche combinée.",
   "userAstuces": "Astuce: taper Prénom Nom pour une recherche combinée.",
   "filter": {
-    "title": "Filtres",
+    "title": "Filtre",
     "disponibility": "Disponibilité",
     "new": "Neuf",
     "veryGood": "Très bon",

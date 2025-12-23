@@ -5,8 +5,6 @@ import type {UserProfile} from "../../../../types/profile.types.ts";
 
 interface UserResultsProps {
     users: UserProfile[];
-    //highlightIndex: number;
-    //onUserSelect: (userId: string) => void;
 }
 
 export const UserResults = ({users}: UserResultsProps) => {
@@ -35,7 +33,6 @@ export const UserResults = ({users}: UserResultsProps) => {
                     <UserCard
                         key={user.id}
                         user={user}
-                        viewMode={"grid"}
                     />
                 ))}
             </SimpleGrid>
