@@ -47,7 +47,7 @@ export const SearchBar = ({ onSelect }: Props) => {
             </Box>
 
             {/* Affichage du BookCard ou UserCard lorsqu'un item est sélectionné */}
-            <Box mt={4}>
+            <Box mt={4} w={"50%"}>
                 {selected ? (
                     isUser(selected) ? (
                         <UserCard user={selected} />

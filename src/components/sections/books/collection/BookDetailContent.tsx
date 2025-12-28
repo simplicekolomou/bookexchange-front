@@ -1,12 +1,12 @@
 import {
     Box, Flex, Text, Button, Image,
     VStack, HStack,
-    Show
+    Show, Badge
 } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import type {BookCopy} from "../../../../types/book.types.ts";
-import {ArrowLeftIcon, PencilIcon} from "lucide-react";
+import {ArrowLeftIcon, PencilIcon, SendHorizonalIcon} from "lucide-react";
 import type {UserProfile} from "../../../../types/profile.types.ts";
 
 interface BookDetailProps {
@@ -22,7 +22,7 @@ export const BookDetailContent = ({book, owner, isUserOwner} : BookDetailProps) 
     console.log(book);
 
     return (
-        <Box maxW="900px" mx="auto" mt={8} bg="white" borderRadius="lg" shadow="sm">
+        <Box maxW="900px" mx="auto" mt={8} bg="white" borderRadius="lg" shadow="sm" mb={2}>
 
             {/* HEADER */}
             <Flex
@@ -126,9 +126,9 @@ export const BookDetailContent = ({book, owner, isUserOwner} : BookDetailProps) 
                         </Box>
 
                         {/* OWNER INFO */}
-                        <Box p={4} bg="gray.50" borderRadius="md">
+                        <Box p={4} bg="gray.50" borderRadius="md" display={"flex"} gap={2}>
                             <Text fontWeight="bold" color="accent.700" mb={2}>
-                                {t("addBook:book.owner")}
+                                {t("addBook:book.owner")} :
                             </Text>
                             <Show when={owner}>
                                 <Text fontSize="md">
@@ -140,6 +140,46 @@ export const BookDetailContent = ({book, owner, isUserOwner} : BookDetailProps) 
                                     {t("addBook:book.noOwner")}
                                 </Text>
                             </Show>
+
+                            <Box display="flex" alignItems="center" gap={2}>
+                                {/* TODO mettre à jour le lien pour le message */}
+                                <Show when={book.availabilityType === "FOR_TRADE" && owner}>
+                                    <Link to={"#"}>
+                                        <Badge
+                                            mt={1}
+                                            h={8}
+                                            w="fit-content"
+                                            variant="subtle"
+                                            fontSize="80%"
+                                            fontStyle="italic"
+                                            border="1px Solid"
+                                            borderColor="accent.600"
+                                            color="accent.600"
+                                            fontWeight="bold"
+                                            colorScheme={book.availabilityType === 'FOR_TRADE' ? 'green' : 'red'}
+                                        >
+                                            <Text>{t("addBook:book.exchangeButton")}</Text>
+                                            <SendHorizonalIcon />
+                                        </Badge>
+                                    </Link>
+
+                                    <Link to={`/user/${owner?.id}/profile`} >
+                                        <Badge
+                                            mt={1}
+                                            h={8}
+                                            w="fit-content"
+                                            variant="subtle"
+                                            fontSize="80%"
+                                            fontWeight="bold"
+                                            fontStyle="italic"
+                                            border="1px Solid"
+                                            borderColor="accent.600"
+                                        >
+                                            {t("addBook:book.ownerProfileLink")}
+                                        </Badge>
+                                    </Link>
+                                </Show>
+                            </Box>
                         </Box>
                     </Box>
                 </Flex>
