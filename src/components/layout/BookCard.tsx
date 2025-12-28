@@ -7,7 +7,7 @@ import {
     Flex,
     IconButton,
     useDisclosure,
-    Card, LinkBox, LinkOverlay
+    Card, LinkBox, LinkOverlay, Show
 } from '@chakra-ui/react';
 import {type BookCopy} from '../../types/book.types.ts';
 import {useTranslation} from "react-i18next";
@@ -23,6 +23,8 @@ export const BookCard = ({book, viewMode}: BookCardProps) => {
     const {onOpen} = useDisclosure();
     // I18n initialisation
     const {t} = useTranslation(["common", "addBook"]);
+    const userStore = JSON.parse(localStorage.getItem("auth_user") || "{}").id;
+    const userId = userStore ? Number(userStore): null;
 
     if (viewMode === 'list') {
         return (
@@ -88,18 +90,20 @@ export const BookCard = ({book, viewMode}: BookCardProps) => {
 
                     {/* Actions */}
                     <Flex direction="column" gap={2} mb="auto">
-                        <IconButton
-                            aria-label="Modifier le livre"
-                            size="sm"
-                            onClick={onOpen}
-                            variant="ghost"
-                        ><Edit/></IconButton>
-                        <IconButton
-                            aria-label="Supprimer le livre"
-                            size="sm"
-                            colorScheme="red"
-                            variant="ghost"
-                        ><Trash/></IconButton>
+                        <Show when={book.ownerId === userId}>
+                            <IconButton
+                                aria-label="Modifier le livre"
+                                size="sm"
+                                onClick={onOpen}
+                                variant="ghost"
+                            ><Edit/></IconButton>
+                            <IconButton
+                                aria-label="Supprimer le livre"
+                                size="sm"
+                                colorScheme="red"
+                                variant="ghost"
+                            ><Trash/></IconButton>
+                        </Show>
                     </Flex>
                 </Flex>
             </LinkBox>
@@ -166,17 +170,19 @@ export const BookCard = ({book, viewMode}: BookCardProps) => {
                         </Flex>
 
                         <Flex justify="flex-end" gap={2} pt={2}>
-                            <IconButton
-                                aria-label="Modifier le livre"
-                                size="sm"
-                                onClick={onOpen}
-                                variant="ghost"
-                            >
-                                <Edit />
-                            </IconButton>
-                            <IconButton aria-label="Supprimer le livre" size="sm" colorScheme="red" variant="ghost">
-                                <Trash />
-                            </IconButton>
+                            <Show when={book.ownerId === userId}>
+                                <IconButton
+                                    aria-label="Modifier le livre"
+                                    size="sm"
+                                    onClick={onOpen}
+                                    variant="ghost"
+                                >
+                                    <Edit />
+                                </IconButton>
+                                <IconButton aria-label="Supprimer le livre" size="sm" colorScheme="red" variant="ghost">
+                                    <Trash />
+                                </IconButton>
+                                </Show>
                         </Flex>
                     </Flex>
                 </Flex>

@@ -16,6 +16,8 @@
     "editionPlaceholder": "Première édition, 2020...",
     "owner": "Propriétaire",
     "noOwner": "Le propriétaire n'a pas été trouvé.",
+    "ownerProfileLink": "Voir le profil",
+    "exchangeButton": "Proposer un échange",
     "images": {
       "title": "Images",
       "coverImage": "Image de couverture (API)",
