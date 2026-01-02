@@ -20,12 +20,15 @@ import {AddBookPage} from "./sections/books/collection/AddBookPage.tsx";
 import { EditBookPage } from './sections/books/collection/EditBookPage.tsx'
 import { Flex } from '@chakra-ui/react'
 import {UpdatePassword} from "./sections/profile/UpdatePassword.tsx";
-import {Message} from "./sections/Message.tsx";
+import {Messaging} from "./sections/message/Messaging.tsx";
 
 function App() {
     const { isAuthenticated } = useAppSelector((state) => state.auth)
     const storedUser = localStorage.getItem("auth_user");
     const user = storedUser ? JSON.parse(storedUser) : null;
+    // useEffect(() => {
+    //     webSocketService.connect("http://localhost:8000/");
+    // }, []);
     return (
         <Flex className="App" direction="column" minH="100vh">
             {/* Navigation conditionnelle */}
@@ -109,7 +112,7 @@ function App() {
                     path="/dms"
                     element={
                         <ProtectedRoute>
-                            <Message />
+                            <Messaging />
                         </ProtectedRoute>
                     }
                 />

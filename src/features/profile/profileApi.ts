@@ -1,5 +1,6 @@
 import {apiSlice} from "../../services/apiSlice.ts";
 import type {UpdateProfileData, UserProfile} from "../../types/profile.types.ts";
+import type {PagedResponse} from "../../types/message.types.ts";
 
 export const profileApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
@@ -57,6 +58,18 @@ export const profileApi = apiSlice.injectEndpoints({
             }),
             providesTags: ['Profile'],
         }),
+
+        getAllUsers: builder.query<PagedResponse<UserProfile>, { page: number; size: number }>({
+            query: ({ page, size }) => ({
+                url: `/users/all`,
+                method: 'GET',
+                params: {
+                    page,
+                    size
+                }
+            }),
+            providesTags: ['Users'],
+        }),
     }),
 });
 
@@ -66,4 +79,5 @@ export const {
     useGetProfilePictureQuery,
     useGetUserQuery,
     useFindUserQuery,
+    useGetAllUsersQuery,
 } = profileApi;

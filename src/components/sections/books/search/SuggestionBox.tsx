@@ -19,21 +19,27 @@ import {useTranslation} from "react-i18next";
 import {FilterBox, type FilterValues} from "./FilterBox.tsx";
 
 interface Props {
-    size?: number;
     initialQuery?: string;
     onSelectItem: (item: BookCopy | UserProfile) => void;
     searchType: "books" | "users";
 }
 
-export const SuggestionBox = ({ size = 10, initialQuery = "", onSelectItem, searchType }: Props) => {
+export const SuggestionBox = ({ initialQuery = "", onSelectItem, searchType }: Props) => {
     const [inputValue, setInputValue] = useState(initialQuery);
     const {t} = useTranslation("search");
+    const [page, setPage] = useState(0);
+    const size = 10;
 
     // state des filtres dans le parent (SuggestionBox)
     const [filters, setFilters] = useState<FilterValues>({ availability: false, bookState: "" });
 
     // Debounce
     const debounced = useDebounced(inputValue, 400);
+
+    // reset page when query or filters or type change
+    useEffect(() => {
+        setPage(0);
+    }, [debounced, filters.availability, filters.bookState, searchType]);
 
     const bookQueryParams = (() => {
         const q = debounced.trim();
@@ -122,7 +128,7 @@ export const SuggestionBox = ({ size = 10, initialQuery = "", onSelectItem, sear
     useEffect(() => {
         // Remplir les collections selon le type de recherche
         if (searchType === "books") {
-            const items: BookCopy[] = (books ?? [])
+            const items: BookCopy[] = (books?.content ?? [])
                 .map((b) => {
                     const v = getVolume(b);
                     return v ? (v as unknown as BookCopy) : null;

@@ -358,6 +358,7 @@ export const tokens = {
         text: "fg.default",
         textMuted: "fg.muted",
         border: "border.default",
+        messageBox: "neutral.700",
     },
     spacing: {
         xs: "0.25rem",

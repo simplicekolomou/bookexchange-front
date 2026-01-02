@@ -11,7 +11,7 @@ export const apiSlice = createApi({
      */
     baseQuery: baseQueryWithUnauthorizedHandler,
     // Tags globaux pour l'invalidation des caches
-    tagTypes: ['User', 'Auth', 'Profile', 'Picture', 'Book'],
+    tagTypes: ['User', 'Auth', 'Profile', 'Picture', 'Book', 'Message', 'Chat', 'Users'],
     // Endpoints seront injectés dans les features
     endpoints: () => ({}),
 })

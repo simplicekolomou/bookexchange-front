@@ -2,6 +2,7 @@ import type {AddBookRequest, VolumeShort} from '../../types/book.types.ts';
 import {apiSlice} from "../../services/apiSlice.ts";
 import type {BookCopy} from '../../types/book.types.ts';
 import type {UserProfile} from "../../types/profile.types.ts";
+import type {PagedResponse} from "../../types/message.types.ts";
 
 export const booksApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
@@ -71,8 +72,8 @@ export const booksApi = apiSlice.injectEndpoints({
             }),
         }),
 
-        findBook: builder.query<BookCopy[], { isbn?: string; author?: string; title?: string; size?: number, availability?: string, bookState?: string }>({
-            query: ({ isbn, author, title, size, availability, bookState }) => ({
+        findBook: builder.query<PagedResponse<BookCopy>, { isbn?: string; author?: string; title?: string; size?: number, page?: number, availability?: string, bookState?: string }>({
+            query: ({ isbn, author, title, size, page, availability, bookState }) => ({
                 url: '/book-copies/search/book',
                 method: 'GET',
                 params: {
@@ -81,7 +82,7 @@ export const booksApi = apiSlice.injectEndpoints({
                     ...(title ? { title } : {}),
                     ...(availability ? { availability } : {}),
                     ...(bookState ? { bookState } : {}),
-                    page: 0,
+                    page,
                     size,
                 },
             }),
