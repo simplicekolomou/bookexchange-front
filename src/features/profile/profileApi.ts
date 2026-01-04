@@ -45,15 +45,15 @@ export const profileApi = apiSlice.injectEndpoints({
             providesTags: ['Profile'],
         }),
 
-        findUser: builder.query<UserProfile[], { firstName?: string, lastName?: string, size: number }>({
-            query: ({ firstName, lastName, size = 10 }) => ({
+        findUser: builder.query<PagedResponse<UserProfile>, { firstName?: string, lastName?: string, size: number, page: number }>({
+            query: ({ firstName, lastName, size, page }) => ({
                 url: `/users/search`,
                 method: 'GET',
                 params: {
                     ...(firstName ? { firstName } : {}),
                     ...(lastName ? { lastName } : {}),
-                    page: 0,
-                    size
+                    page,
+                    size,
                 },
             }),
             providesTags: ['Profile'],

@@ -10,13 +10,14 @@ import {
     Heading
 } from "@chakra-ui/react";
 import type { BookCopy } from "../../../../types/book.types";
-import React, { useEffect, useState } from "react";
 import type { UserProfile } from "../../../../types/profile.types";
 import { useFindUserQuery } from "../../../../features/profile/profileApi";
 import { useFindBookQuery } from "../../../../features/book/bookApi";
 import { skipToken } from "@reduxjs/toolkit/query/react";
-import {useTranslation} from "react-i18next";
-import {FilterBox, type FilterValues} from "./FilterBox.tsx";
+import { useTranslation } from "react-i18next";
+import { FilterBox, type FilterValues } from "./FilterBox";
+import React, { useEffect, useRef, useState } from "react";
+import type { PagedResponse } from "../../../../types/message.types.ts";
 
 interface Props {
     initialQuery?: string;
@@ -24,42 +25,64 @@ interface Props {
     searchType: "books" | "users";
 }
 
-export const SuggestionBox = ({ initialQuery = "", onSelectItem, searchType }: Props) => {
+export const SuggestionBox = ({
+                                  initialQuery = "",
+                                  onSelectItem,
+                                  searchType,
+                              }: Props) => {
+    const { t } = useTranslation("search");
+
     const [inputValue, setInputValue] = useState(initialQuery);
-    const {t} = useTranslation("search");
-    const [, setPage] = useState(0);
+    const [page, setPage] = useState(0);
+
+    const lastPageRef = useRef(false);
+    const loadingRef = useRef(false);
+    const shouldResetRef = useRef(true);
+    const contentRef = useRef<HTMLDivElement | null>(null);
+    const usersBufferRef = useRef<UserProfile[]>([]);
     const size = 10;
 
-    // state des filtres dans le parent (SuggestionBox)
-    const [filters, setFilters] = useState<FilterValues>({ availability: false, bookState: "" });
+    const [filters, setFilters] = useState<FilterValues>({
+        availability: false,
+        bookState: "",
+    });
 
-    // Debounce
     const debounced = useDebounced(inputValue, 400);
 
-    // reset page when query or filters or type change
+    // Reinitialisation de la pagination
+
     useEffect(() => {
         setPage(0);
+        lastPageRef.current = false;
+        loadingRef.current = false;
+        shouldResetRef.current = true;
     }, [debounced, filters.availability, filters.bookState, searchType]);
+
+    // query params
 
     const bookQueryParams = (() => {
         const q = debounced.trim();
         if (!q) return null;
 
         const clean = q.replace(/\s+/g, "").replace(/ISBN(?:-1[03])?:?/i, "");
-
         const isIsbn =
             /^\d{13}$/.test(clean.replace(/-/g, "")) ||
             /^\d{10}$/.test(clean.replace(/-/g, ""));
 
-        const availability = filters.availability ? { availability: String(filters.availability) } : {};
-        const bookState = filters.bookState ? { bookState: filters.bookState } : {};
+        const availability = filters.availability
+            ? { availability: String(filters.availability) }
+            : {};
+        const bookState = filters.bookState
+            ? { bookState: filters.bookState }
+            : {};
 
         if (isIsbn) {
             return {
                 isbn: clean.replace(/-/g, ""),
                 size,
+                page,
                 ...availability,
-                ...bookState
+                ...bookState,
             };
         }
 
@@ -69,34 +92,33 @@ export const SuggestionBox = ({ initialQuery = "", onSelectItem, searchType }: P
                 author: q.slice(0, dashIndex).trim(),
                 title: q.slice(dashIndex + 3).trim(),
                 size,
+                page,
                 ...availability,
-                ...bookState
+                ...bookState,
             };
         }
 
-        return {
-            title: q,
-            size,
-            ...availability,
-            ...bookState
-        };
+        return { title: q, size, page, ...availability, ...bookState };
     })();
 
     const userQueryParams = (() => {
         const q = debounced.trim();
         if (!q) return null;
         const parts = q.split(" ");
-        const firstName = parts.length > 0 ? parts[0] : undefined;
-        const lastName = parts.length > 1 ? parts.slice(1).join(" ") : undefined;
         return {
-            firstName: firstName || undefined,
-            lastName: lastName || undefined,
-            size
+            firstName: parts[0] || undefined,
+            lastName: parts.slice(1).join(" ") || undefined,
+            size,
+            page,
         };
     })();
 
-    const bookQueryArg = searchType !== "books" || !bookQueryParams ? skipToken : bookQueryParams;
-    const userQueryArg = searchType !== "users" || !userQueryParams ? skipToken : userQueryParams;
+    const bookQueryArg =
+        searchType !== "books" || !bookQueryParams ? skipToken : bookQueryParams;
+    const userQueryArg =
+        searchType !== "users" || !userQueryParams ? skipToken : userQueryParams;
+
+    // queries
 
     const {
         data: books,
@@ -112,52 +134,113 @@ export const SuggestionBox = ({ initialQuery = "", onSelectItem, searchType }: P
         error: userError,
     } = useFindUserQuery(userQueryArg);
 
-    // Chakra collection state
-    const { collection: booksCollection, set: setBooks } = useListCollection<BookCopy>({
-        initialItems: [],
-        itemToString: (item) => item.title,
-        itemToValue: (item) => item.id,
-    });
+    // collections
 
-    const { collection: usersCollection, set: setUsers } = useListCollection<UserProfile>({
-        initialItems: [],
-        itemToString: (item) => item.firstName + " " + item.lastName,
-        itemToValue: (item) => item.id.toString(),
-    });
+    const { collection: booksCollection, set: setBooks } =
+        useListCollection<BookCopy>({
+            initialItems: [],
+            itemToString: (item) => item.title,
+            itemToValue: (item) => item.id,
+        });
+
+    const { collection: usersCollection, set: setUsers } =
+        useListCollection<UserProfile>({
+            initialItems: [],
+            itemToString: (item) => `${item.firstName} ${item.lastName}`,
+            itemToValue: (item) => item.id.toString(),
+        });
+
+    // scroll
+
+    const handleScroll = (
+        e: React.UIEvent<HTMLDivElement>,
+        fetching: boolean
+    ) => {
+        const el = e.currentTarget;
+        contentRef.current = el;
+
+        if (lastPageRef.current || shouldResetRef.current || fetching || loadingRef.current) {
+            return;
+        }
+
+        if (el.scrollTop + el.clientHeight >= el.scrollHeight - 50) {
+            loadingRef.current = true;
+            setPage((p) => p + 1);
+        }
+    };
+
+    function getPageContent<T>(page: PagedResponse<T>): T[] {
+        if (!page) return [];
+        if (Array.isArray(page)) return page;
+        if (Array.isArray(page.content)) return page.content;
+        return [];
+    }
+
+    // accumulation des pages
 
     useEffect(() => {
-        // Remplir les collections selon le type de recherche
-        if (searchType === "books") {
-            const items: BookCopy[] = (books?.content ?? [])
-                .map((b) => {
-                    const v = getVolume(b);
-                    return v ? (v as unknown as BookCopy) : null;
-                })
-                .filter(Boolean) as BookCopy[];
-            setBooks(items);
-            setUsers([]);
-        } else {
-            const items: UserProfile[] = (users ?? []).map((u) => u as UserProfile);
-            setUsers(items);
-            setBooks([]);
-        }
-    }, [books, users, searchType, setBooks, setUsers]);
+        const container = contentRef.current;
+        const wasReset = shouldResetRef.current;
+        const prevScroll = wasReset ? 0 : container?.scrollTop ?? 0;
+        const prevScrollHeight = wasReset ? 0 : container?.scrollHeight ?? 0;
+        const deduceLast = (incoming: unknown[]) => incoming.length < size;
 
-    let errorMessage: string | null = null;
-    if (isBookError && bookError) {
-        if ("status" in bookError) {
-            errorMessage = typeof bookError.data === "string" ? bookError.data : `HTTP ${bookError.status}`;
-        } else {
-            errorMessage = bookError.message ?? "Network error";
+        if (searchType === "books" && books) {
+            const incoming = getPageContent(books);
+            const existing = wasReset ? [] : booksCollection.items ?? [];
+
+            const map = new Map(existing.map((b) => [b.id, b]));
+            incoming.forEach((b) => {
+                const vol = getVolume(b);
+                if (vol) map.set(vol.id, vol);
+            });
+
+            setBooks(Array.from(map.values()));
+
+            // Marque la dernière page si l'API l'indique ou si on reçoit moins d'items que la taille
+            lastPageRef.current = Boolean((books as PagedResponse<BookCopy>).last) || deduceLast(incoming);
+            shouldResetRef.current = false;
         }
-    }
-    if (isUserError && userError) {
-        if ("status" in userError) {
-            errorMessage = typeof userError.data === "string" ? userError.data : `HTTP ${userError.status}`;
-        } else {
-            errorMessage = userError.message ?? "Network error";
+
+        if (searchType === "users" && users) {
+            const incoming = getPageContent(users);
+            console.log("Les nouvelles users reçus :", incoming);
+            const existing = wasReset ? [] : usersCollection.items ?? [];
+
+            console.log("Nouvelle page users :", incoming);
+
+            if (wasReset) {
+                usersBufferRef.current = [];
+            }
+
+            const map = new Map(existing.map((u) => [u.id, u]));
+
+            incoming.forEach(u => {
+                if (u?.id != null) {
+                    map.set(String(u.id), u);
+                }
+            });
+
+            setUsers(Array.from(map.values()));
+
+            // Marque la dernière page si l'API l'indique ou si on reçoit moins d'items que la taille
+            lastPageRef.current = Boolean((users as PagedResponse<UserProfile>).last) || deduceLast(incoming);
+            loadingRef.current = false;
         }
-    }
+        shouldResetRef.current = false;
+
+        // Restaurer la position en tenant compte du changement de hauteur (pour garder la vue sur les mêmes items)
+        requestAnimationFrame(() => {
+            if (!wasReset && container) {
+                const newScrollHeight = container.scrollHeight ?? 0;
+                const heightDelta = newScrollHeight - prevScrollHeight;
+                // si la hauteur a augmenté à cause du chargement de la nouvelle page, on ajuste le scroll
+                container.scrollTop = Math.max(0, prevScroll + heightDelta);
+            }
+        });
+    }, [books, users, page, searchType, setBooks, setUsers]);
+
+    // helpers
 
     function getVolume(item: BookCopy | UserProfile): BookCopy | undefined {
         if (!item) return undefined;
@@ -167,32 +250,32 @@ export const SuggestionBox = ({ initialQuery = "", onSelectItem, searchType }: P
         return item as BookCopy;
     }
 
-    // renvoie l'item complet au parent:
     function selectItem(item: BookCopy | UserProfile) {
-        const volume = getVolume(item);
         if (searchType === "books") {
-            if (volume) {
-                setInputValue(volume.title);
-                onSelectItem(volume);
+            const v = getVolume(item);
+            if (v) {
+                setInputValue(v.title);
+                onSelectItem(v);
             }
         } else {
-            // item est un UserProfile ici
-            const user = item as UserProfile;
-            setInputValue(`${user.firstName ?? ""} ${user.lastName ?? ""}`.trim() || (user.email ?? ""));
-            onSelectItem(user);
+            const u = item as UserProfile;
+            setInputValue(`${u.firstName ?? ""} ${u.lastName ?? ""}`.trim());
+            onSelectItem(u);
         }
     }
 
-    function onKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            const list = searchType === "books" ? booksCollection.items : usersCollection.items;
-            if (list && list.length > 0) {
-                selectItem(list[0]);
-            }
-        } else if (e.key === "Escape") {
-            // clear input on escape
-            setInputValue("");
+    let errorMessage: string | null = null;
+    const error = searchType === "books" ? bookError : userError;
+    const isError = searchType === "books" ? isBookError : isUserError;
+
+    if (isError && error) {
+        if ("status" in error) {
+            errorMessage =
+                typeof error.data === "string"
+                    ? error.data
+                    : `HTTP ${error.status}`;
+        } else {
+            errorMessage = error.message ?? "Network error";
         }
     }
 
@@ -216,7 +299,7 @@ export const SuggestionBox = ({ initialQuery = "", onSelectItem, searchType }: P
                     positioning={{ sameWidth: false, placement: "bottom-end" }}
                 >
                     <Combobox.Control>
-                        <Combobox.Input placeholder={t("searchBookPlaceholder")} onKeyDown={onKeyDown} />
+                        <Combobox.Input placeholder={t("searchBookPlaceholder")} />
                         <Combobox.IndicatorGroup>
                             <Combobox.ClearTrigger />
                             <Combobox.Trigger />
@@ -233,6 +316,7 @@ export const SuggestionBox = ({ initialQuery = "", onSelectItem, searchType }: P
                                 borderColor="gray.200"
                                 boxShadow="md"
                                 zIndex={10}
+                                onScroll={(e) =>handleScroll(e, isBookFetching)}
                             >
                                 {isBookFetching ? (
                                     <HStack p="2">
@@ -306,7 +390,7 @@ export const SuggestionBox = ({ initialQuery = "", onSelectItem, searchType }: P
         </Box>
         );
     }
-    
+
     return (
         <Box>
             <Heading>
@@ -324,7 +408,7 @@ export const SuggestionBox = ({ initialQuery = "", onSelectItem, searchType }: P
                 positioning={{ sameWidth: false, placement: "bottom-end" }}
             >
                 <Combobox.Control>
-                    <Combobox.Input placeholder={t("searchUserPlaceholder")} onKeyDown={onKeyDown} />
+                    <Combobox.Input placeholder={t("searchUserPlaceholder")} />
                     <Combobox.IndicatorGroup>
                         <Combobox.ClearTrigger />
                         <Combobox.Trigger />
@@ -340,6 +424,7 @@ export const SuggestionBox = ({ initialQuery = "", onSelectItem, searchType }: P
                             borderColor="gray.200"
                             boxShadow="md"
                             zIndex={10}
+                            onScroll={(e) =>handleScroll(e, isUserFetching)}
                         >
                             {isUserFetching ? (
                                 <HStack p="2">
@@ -413,6 +498,16 @@ export const SuggestionBox = ({ initialQuery = "", onSelectItem, searchType }: P
                     {t("userAstuces")}
                 </Text>
             </Box>
+            {lastPageRef.current && (
+                <Text
+                    p="2"
+                    textAlign="center"
+                    fontSize="sm"
+                    color="gray.400"
+                >
+                    — Fin de page —
+                </Text>
+            )}
         </Box>
     );
 };

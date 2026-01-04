@@ -1,0 +1,15 @@
+{
+  "newGroup": "New group",
+  "messages": "Messages",
+  "groupName": "Name",
+  "serverError": "Server error, please try again later.",
+  "unAuthenticated": "You must be logged in to perform this action.",
+  "delete": {
+    "title": "Delete group",
+    "confirm": "Are you sure you want to delete "
+  },
+  "actions": {
+    "delete": "Delete",
+    "cancel": "Cancel"
+  }
+}

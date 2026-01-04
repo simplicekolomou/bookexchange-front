@@ -1,6 +1,3 @@
-import React, {useEffect, useState } from "react";
-import { useGetAllUsersQuery } from "../../../features/profile/profileApi";
-import type { UserProfile } from "../../../types/profile.types";
 import {
     Box,
     CheckboxCard,
@@ -13,20 +10,29 @@ import {
     Spinner,
     VStack
 } from "@chakra-ui/react";
+import React, {useEffect, useState } from "react";
+import { useGetAllUsersQuery } from "../../../features/profile/profileApi";
+import type { UserProfile } from "../../../types/profile.types";
 import {SendHorizonalIcon} from "lucide-react";
 import type {PagedResponse} from "../../../types/message.types.ts";
+import {useAddGroupChatMutation} from "../../../features/message/messageApi.ts";
+import {useTranslation} from "react-i18next";
 
 export interface ChatBoxProps{
     onClose: () => void;
     open: boolean;
 }
 export const GroupBox = ({ onClose, open }: ChatBoxProps) => {
-    const [page, setPage] = useState(0);
-    const size = 10;
-
-    const { data, isFetching } = useGetAllUsersQuery({ page, size });
     const [users, setUsers] = useState<UserProfile[]>([]);
     const [isLastPage, setIsLastPage] = useState(false);
+    const [page, setPage] = useState(0);
+    const size = 15;
+    const { data, isFetching } = useGetAllUsersQuery({ page, size });
+    const groupNameRef = React.useRef<HTMLInputElement | null>(null);
+    const [addGroup] = useAddGroupChatMutation();
+    const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+    const [localError, setLocalError] = useState<string | null>(null);
+    const {t} = useTranslation("message");
 
     // Accumulation des pages
     useEffect(() => {
@@ -60,6 +66,77 @@ export const GroupBox = ({ onClose, open }: ChatBoxProps) => {
         }
     };
 
+    const getCurrentUserId = (): string | null => {
+        const authRaw = localStorage.getItem('auth_user');
+        if (!authRaw) return null;
+
+        try {
+            const auth = JSON.parse(authRaw);
+            return String(auth.id);
+        } catch {
+            return null;
+        }
+    }
+    // Gestion de la sélection des utilisateurs
+    const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const target = e.target as HTMLInputElement;
+        const card = target.closest('[data-checkboxcard-id]') as HTMLElement | null;
+        const userId = card?.getAttribute('data-checkboxcard-id');
+
+        if (!userId) return;
+
+        setSelectedUserIds(prev => {
+            // Récupérer et normaliser l'id courant en string de manière sûre
+            const currentUserId: string | null = getCurrentUserId();
+
+            let next: string[];
+            if (target.checked) {
+                next = prev.includes(userId) ? prev : [...prev, userId];
+            } else {
+                next = prev.filter(id => id !== userId);
+            }
+
+            // S'assurer que l'id du user courant (string) est toujours présent si disponible
+            if (currentUserId && !next.includes(currentUserId)) {
+                next = [...next, currentUserId];
+            }
+            return next;
+        });
+    };
+
+
+    // Gestion de la sélection des utilisateurs
+    const handleCreateGroupButton = async () => {
+        setLocalError(null);
+        const name = groupNameRef.current?.value?.trim() || "Groupe sans nom";
+        if (!selectedUserIds || selectedUserIds.length === 0) {
+            console.warn("Aucun utilisateur sélectionné");
+            return;
+        }
+
+        try {
+            const payload = {
+                name,
+                members: selectedUserIds.map(id => ({
+                    notification: true,
+                    endUserId: Number(id)
+                }))
+            };
+
+            console.log("Payload création groupe :", JSON.stringify(payload, null, 2));
+
+            await addGroup(payload).unwrap();
+            onClose();
+        } catch (error) {
+            const status = (error as { status?: number })?.status;
+            if (status === 401) {
+                setLocalError(t("unAuthenticated"));
+            } else {
+                setLocalError(t("serverError"));
+            }
+        }
+    };
+
     return (
         <Drawer.Root
             open={open}
@@ -75,10 +152,20 @@ export const GroupBox = ({ onClose, open }: ChatBoxProps) => {
                         color="gray.300"
                         h={{ base: "90%", md: "100%" }}
                     >
-                        <Drawer.Header borderBottomWidth="1px" flexWrap="wrap" display="flex">
+                        <Drawer.Header
+                            borderBottomWidth="1px"
+                            flexWrap="wrap"
+                            display="flex"
+                        >
                             <Drawer.Title>
-                                Nom
-                                <Input w={"60%"} h={"8"} ml={1}/>
+                                {t("groupName")}
+                                <Input
+                                    ref={groupNameRef}
+                                    w={"60%"}
+                                    h={"8"}
+                                    ml={1}
+                                    name={"groupName"}
+                                />
                             </Drawer.Title>
                         </Drawer.Header>
 
@@ -89,8 +176,14 @@ export const GroupBox = ({ onClose, open }: ChatBoxProps) => {
                         >
                             <VStack align="stretch">
                                 {users.map(user => (
-                                    <CheckboxCard.Root key={user.id} size="sm">
-                                        <CheckboxCard.HiddenInput />
+                                    <CheckboxCard.Root
+                                        key={user.id}
+                                        size="sm"
+                                        data-checkboxcard-id={user.id}
+                                    >
+                                        <CheckboxCard.HiddenInput
+                                            onChange={handleCheckboxChange}
+                                        />
                                         <CheckboxCard.Control>
                                             <CheckboxCard.Content>
                                                 <CheckboxCard.Label>
@@ -115,8 +208,12 @@ export const GroupBox = ({ onClose, open }: ChatBoxProps) => {
                         </Drawer.Body>
 
                         <Drawer.Footer borderTopWidth="1px">
-                            <IconButton aria-label="Créer">
+                            <IconButton
+                                aria-label="Créer"
+                                onClick={handleCreateGroupButton}
+                            >
                                 <SendHorizonalIcon />
+                                {localError && <Box color="red.500" ml={2}>{localError}</Box>}
                             </IconButton>
                             <Drawer.CloseTrigger asChild bg={"gray.300"}>
                                 <CloseButton size="sm" onClick={onClose} />

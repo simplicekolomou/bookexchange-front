@@ -1,7 +1,6 @@
-import {Box, Heading, VStack, Spinner, Text, Button} from "@chakra-ui/react";
+import {Box, VStack, Spinner, Text, Button} from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { useGetChatsQuery } from "../../../features/message/messageApi.ts";
 import type { GroupChat } from "../../../types/message.types.ts";
 import {ChatBox} from "./ChatBox.tsx";
 import {MessageCard} from "./MessageCard.tsx";
@@ -9,9 +8,10 @@ import {me, mockUsers} from "../../../types/mock.ts";
 import {useTranslation} from "react-i18next";
 import {subscribeToPush} from "../../../services/notification.ts";
 import {MessageTabs} from "./MessageTabs.tsx";
+import {useGetGroupChatsQuery} from "../../../features/message/messageApi.ts";
 
 export const Messaging = () => {
-    const { data: chats = [], isLoading, isError } = useGetChatsQuery();
+    const { data: chats = [], isLoading, isError } = useGetGroupChatsQuery();
     const [activeGroup, setActiveGroup] = useState<GroupChat | null>(null);
     const [value, setValue] = useState('messages');
     const show = 'Notification' in window && Notification.permission !== 'granted' && Notification.permission !== 'denied';
@@ -65,7 +65,6 @@ export const Messaging = () => {
 
     return (
         <Box>
-            <Heading size="md" mb={3}>Messages</Heading>
             <Button
                 visibility={show && open ? 'visible' : 'hidden'}
                 onClick={() => {
