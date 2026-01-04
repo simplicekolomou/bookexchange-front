@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { Trash2 } from "lucide-react";
 import { useDeleteGroupMutation } from "../../../features/message/messageApi.ts";
 import { DeleteDialog } from "./DeleteDialog";
+import {useTranslation} from "react-i18next";
 
 type MessageCardProps = {
     group: GroupChat;
@@ -16,6 +17,7 @@ export const MessageCard = ({ group, onSelected, isActive = false }: MessageCard
     const [deleteGroup] = useDeleteGroupMutation();
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    const {t} = useTranslation("message");
 
     const handleActivate = () => onSelected(group);
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -62,7 +64,7 @@ export const MessageCard = ({ group, onSelected, isActive = false }: MessageCard
                             <Text>{group.name}</Text>
                         </Box>
                         <Trash2
-                            size={16}
+                            size={20}
                             onClick={(e: React.MouseEvent) => {
                                 e.stopPropagation(); // empêche la sélection du groupe
                                 setDialogOpen(true);
@@ -89,10 +91,10 @@ export const MessageCard = ({ group, onSelected, isActive = false }: MessageCard
                     await handleConfirmDelete();
                     onSelected(null); // désélectionner et revenir sur Messaging après suppression
                 }}
-                title="Supprimer le groupe"
-                body={`Voulez-vous vraiment supprimer "${group.name}" ?`}
-                confirmLabel={isDeleting ? "Suppression..." : "Supprimer"}
-                cancelLabel="Annuler"
+                title={t("delete.title")}
+                body={`${t("delete.confirm")} "${group.name}" ?`}
+                confirmLabel={isDeleting ? "Suppression..." : t("actions.delete")}
+                cancelLabel={t("actions.cancel")}
             />
         </>
     );

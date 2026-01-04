@@ -1,5 +1,15 @@
 {
   "newGroup": "Nouveau groupe",
   "messages": "Messages",
-  "groupName": "Nom"
+  "groupName": "Nom",
+    "serverError": "Erreur du serveur, veuillez réessayer plus tard.",
+    "unAuthenticated": "Vous devez être connecté pour effectuer cette action.",
+  "delete": {
+    "title": "Supprimer le groupe",
+    "confirm": "Voulez-vous vraiment supprimer "
+  },
+  "actions": {
+    "delete": "Supprimer",
+    "cancel": "Annuler"
+  }
 }

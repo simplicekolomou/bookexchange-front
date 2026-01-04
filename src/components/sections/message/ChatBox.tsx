@@ -14,7 +14,7 @@ import { SendHorizonalIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { tokens } from "../../ui/theme.ts";
 import { webSocketService } from "../../../features/message/webSocket/webSocket.ts";
-import {useGetGroupChatsQuery} from "../../../features/message/messageApi.ts";
+import {useGetMessagesByGroupChatQuery} from "../../../features/message/messageApi.ts";
 
 interface ChatBoxProps {
     chatGroup: GroupChat | null;
@@ -27,7 +27,7 @@ export const ChatBox = ({ chatGroup, onClose, open }: ChatBoxProps) => {
     const chatId = chatGroup?.id;
 
     // passez chatId, et skip quand absent
-    const { data: messages = [] } = useGetGroupChatsQuery(chatId!, {
+    const { data: messages = [] } = useGetMessagesByGroupChatQuery(chatId!, {
         skip: !chatId,
     });
 
