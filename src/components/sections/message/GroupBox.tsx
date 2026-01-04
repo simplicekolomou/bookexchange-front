@@ -15,12 +15,14 @@ import {
 } from "@chakra-ui/react";
 import {SendHorizonalIcon} from "lucide-react";
 import type {PagedResponse} from "../../../types/message.types.ts";
+import {useTranslation} from "react-i18next";
 
 export interface ChatBoxProps{
     onClose: () => void;
     open: boolean;
 }
 export const GroupBox = ({ onClose, open }: ChatBoxProps) => {
+    const {t} = useTranslation("message");
     const [page, setPage] = useState(0);
     const size = 10;
 
@@ -33,7 +35,6 @@ export const GroupBox = ({ onClose, open }: ChatBoxProps) => {
         if (!data) return;
 
         const newUsers = (data as PagedResponse<UserProfile>).content ?? [];
-        console.log("New users fetched: ", newUsers);
 
         setUsers(prev => {
             const map = new Map(prev.map(u => [u.id, u]));
@@ -77,7 +78,7 @@ export const GroupBox = ({ onClose, open }: ChatBoxProps) => {
                     >
                         <Drawer.Header borderBottomWidth="1px" flexWrap="wrap" display="flex">
                             <Drawer.Title>
-                                Nom
+                                {t('groupName')}
                                 <Input w={"60%"} h={"8"} ml={1}/>
                             </Drawer.Title>
                         </Drawer.Header>

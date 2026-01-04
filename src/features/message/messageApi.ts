@@ -1,28 +1,56 @@
 import {apiSlice} from "../../services/apiSlice.ts";
 import type {GroupChat, Message} from "../../types/message.types.ts";
-import {mockChats, mockMessagesByGroup} from "../../types/mock.ts";
+import {mockMessagesByGroup} from "../../types/mock.ts";
 
 export const messageApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
-        getChats: builder.query<GroupChat[], void>({
-            queryFn: async () => {
-                console.log("[messageApi] queryFn getChats -> returning mockChats", mockChats);
-                return { data: mockChats };
-            },
-            providesTags: ['Chat']
+        getMessages: builder.query<GroupChat, void>({
+            query: () => ({
+                url: `/groups/user/messages`,
+                method: 'GET',
+            }),
+            providesTags: ['Group'],
         }),
 
-        getMessagesByChat: builder.query<Message[], string>({
+        getGroupChats: builder.query<GroupChat[], void>({
+            query: () => ({
+                url: `/groups/user/me`,
+                method: 'GET',
+            }),
+            providesTags: ['Group'],
+        }),
+
+        getMessagesByGroupChat: builder.query<Message[], string>({
             queryFn: async (chatId) => {
-                console.log("[messageApi] queryFn getMessagesByChat -> returning mock for", chatId, mockMessagesByGroup[chatId]);
                 return { data: mockMessagesByGroup[chatId] ?? [] };
             },
             providesTags: (_result, _error, chatId) => [{ type: "Message" as const, id: chatId }],
         }),
+
+        addGroupChat: builder.mutation<void, {name: string, members: { notification: boolean; endUserId: number }[] }>({
+            query: ({name, members }) => ({
+                url: '/groups',
+                method: 'POST',
+                body: { name, members },
+            }),
+            invalidatesTags: ['Group'],
+        }),
+
+        deleteGroup : builder.mutation<void, string>({
+            query: (groupId) => ({
+                url: `/groups/${groupId}`,
+                method: 'DELETE',
+            }),
+            invalidatesTags: ['Group'],
+        }),
+
     }),
 });
 
 export const {
-    useGetChatsQuery,
-    useGetMessagesByChatQuery
+    useGetGroupChatsQuery,
+    useGetMessagesByGroupChatQuery,
+    useAddGroupChatMutation,
+    useGetMessagesQuery,
+    useDeleteGroupMutation,
 } = messageApi;
