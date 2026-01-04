@@ -14,7 +14,7 @@ export const Messaging = () => {
     const { data: chats = [], isLoading, isError } = useGetGroupChatsQuery();
     const [activeGroup, setActiveGroup] = useState<GroupChat | null>(null);
     const [value, setValue] = useState('messages');
-    const show = 'Notification' in window
+    const show = 'Notification' in window && Notification.permission !== 'granted' && Notification.permission !== 'denied';
     const [open, setOpen] = useState(true)
     const {t} = useTranslation("notification");
 
