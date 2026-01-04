@@ -27,7 +27,7 @@ interface Props {
 export const SuggestionBox = ({ initialQuery = "", onSelectItem, searchType }: Props) => {
     const [inputValue, setInputValue] = useState(initialQuery);
     const {t} = useTranslation("search");
-    const [page, setPage] = useState(0);
+    const [, setPage] = useState(0);
     const size = 10;
 
     // state des filtres dans le parent (SuggestionBox)
