@@ -31,11 +31,6 @@ export interface AuthState {
     user?: User | null
 }
 
-
-export interface ForgotPasswordRequest {
-    email: string;
-}
-
 export interface ResetPasswordRequest {
     token: string | null;
     password: string;

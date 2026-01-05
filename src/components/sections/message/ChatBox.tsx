@@ -77,7 +77,7 @@ export const ChatBox = ({ chatGroup, onClose, open }: ChatBoxProps) => {
                         <Drawer.Body flex="1" overflowY="auto">
                             <VStack align="stretch" gap={3}>
                                 {messages.map((msg) => {
-                                    const isMe = msg.sender.id === myId;
+                                    const isMe = msg.senderId === myId;
                                     return (
                                         <Box
                                             key={msg.id}
@@ -108,6 +108,7 @@ export const ChatBox = ({ chatGroup, onClose, open }: ChatBoxProps) => {
                                     onChange={(e) => setMessage(e.target.value)}
                                     onKeyDown={(e) => e.key === "Enter" && handleSendMessage(message)}
                                     aria-label="Écrire un message"
+                                    color={tokens.colors.surface}
                                 />
                                 <IconButton
                                     aria-label="Envoyer"
