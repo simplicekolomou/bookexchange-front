@@ -109,9 +109,8 @@ export const GroupBox = ({ onClose, open }: ChatBoxProps) => {
     // Gestion de la sélection des utilisateurs
     const handleCreateGroupButton = async () => {
         setLocalError(null);
-        const name = groupNameRef.current?.value?.trim() || "Groupe sans nom";
+        const name = groupNameRef.current?.value?.trim();
         if (!selectedUserIds || selectedUserIds.length === 0) {
-            console.warn("Aucun utilisateur sélectionné");
             return;
         }
 

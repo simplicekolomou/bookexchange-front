@@ -20,7 +20,7 @@ export const messageApi = apiSlice.injectEndpoints({
             providesTags: ['Group'],
         }),
 
-        addGroupChat: builder.mutation<GroupChat, {name: string, members: { notification: boolean; endUserId: number }[] }>({
+        addGroupChat: builder.mutation<GroupChat, {name?: string, members: { notification: boolean; endUserId: number }[] }>({
             query: ({name, members }) => ({
                 url: '/groups',
                 method: 'POST',
