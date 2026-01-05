@@ -70,6 +70,14 @@ export const profileApi = apiSlice.injectEndpoints({
             }),
             providesTags: ['Users'],
         }),
+
+        getCurrentUser: builder.query<UserProfile, void>({
+            query: () => ({
+                url: `/users/me`,
+                method: 'GET',
+            }),
+            providesTags: ['Profile'],
+        }),
     }),
 });
 
@@ -80,4 +88,5 @@ export const {
     useGetUserQuery,
     useFindUserQuery,
     useGetAllUsersQuery,
+    useGetCurrentUserQuery
 } = profileApi;

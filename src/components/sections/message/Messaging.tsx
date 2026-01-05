@@ -4,32 +4,40 @@ import { useLocation } from "react-router-dom";
 import type { GroupChat } from "../../../types/message.types.ts";
 import {ChatBox} from "./ChatBox.tsx";
 import {MessageCard} from "./MessageCard.tsx";
-import {me, mockUsers} from "../../../types/mock.ts";
 import {useTranslation} from "react-i18next";
 import {subscribeToPush} from "../../../services/notification.ts";
 import {MessageTabs} from "./MessageTabs.tsx";
-import {useGetGroupChatsQuery} from "../../../features/message/messageApi.ts";
+import {
+    useGetGroupChatsQuery,
+    useGetMyMessagesQuery
+} from "../../../features/message/messageApi.ts";
+import {useGetUserQuery} from "../../../features/profile/profileApi.ts";
+import {getCurrentUser} from "./hook/utils.ts";
 
 export const Messaging = () => {
-    const { data: chats = [], isLoading, isError } = useGetGroupChatsQuery();
+    const { data: groupChats = [], isLoading: isGroupLoading, isError: isGroupError } = useGetGroupChatsQuery();
+    const { data: chats = [], isLoading: isChatsLoading, isError: isChatsError } = useGetMyMessagesQuery();
     const [activeGroup, setActiveGroup] = useState<GroupChat | null>(null);
     const [value, setValue] = useState('messages');
     const show = 'Notification' in window
     const [open, setOpen] = useState(true)
     const {t} = useTranslation("notification");
-
     const location = useLocation();
+    const params = new URLSearchParams(location.search);
+    const userId = params.get("user") ?? undefined;
+    const { data: targetUser } = useGetUserQuery({ userId: userId ?? "" }, { skip: !userId });
 
-    // ouvre le chat ciblé par le paramètre `user` quand les chats sont prêts
+
+
+    const me = getCurrentUser();
+
+    // ouvre le chat ciblé par le paramètre `user` quand les groupChats sont prêts
     useEffect(() => {
-        const params = new URLSearchParams(location.search);
-        const userId = params.get("user");
         if (!userId) return;
+        if (!me) return;
 
         // cherche un chat existant contenant l'utilisateur
-        const found = chats.find(c =>
-            c.chatType === "ONE_TO_ONE" &&
-            c.members.length === 2 &&
+        const found = groupChats.find(c =>
             c.members.some(m => m.id === userId) &&
             c.members.some(m => m.id === me.id)
         );
@@ -39,14 +47,12 @@ export const Messaging = () => {
         }
 
         // pas de chat existant -> créer un chat DM temporaire à partir des mocks
-        const user = mockUsers[userId];
-        if (user) {
+        if (targetUser) {
             const tempId = `dm-${userId}`;
             const synthetic: GroupChat = {
                 id: tempId,
-                chatType: "ONE_TO_ONE",
-                name: `${user.firstName} ${user.lastName}`,
-                members: [me, user],
+                name: `${targetUser.firstName} ${targetUser.lastName}`,
+                members: [me, targetUser],
                 myMembership: {
                     id: `m-temp-${tempId}`,
                     notification: true,
@@ -58,10 +64,9 @@ export const Messaging = () => {
             };
             setActiveGroup(synthetic);
         }
-    }, [chats, location.search]);
+    }, [groupChats, location.search, userId, targetUser, me]);
 
-    if (isLoading) return <Spinner />;
-    if (isError) return <Text>Erreur de chargement des discussions</Text>;
+    if (isGroupLoading || isChatsLoading) return <Spinner />;
 
     return (
         <Box>
@@ -77,8 +82,20 @@ export const Messaging = () => {
                 value={value}
                 onChange={(val) => setValue(val)}
             />
+            {(isGroupError && isChatsError) && (
+                <Text>Erreur de chargement des discussions</Text>
+            )}
             <VStack align="stretch" gap={2}>
-                {chats.map((chat) => (
+                {groupChats.map((group) => (
+                    <MessageCard
+                        key={group.id}
+                        group={group}
+                        isActive={!!activeGroup && activeGroup.id === group.id}
+                        onSelected={(g) => setActiveGroup(g)}
+                    />
+                ))}
+
+                {chats.map((chat) =>(
                     <MessageCard
                         key={chat.id}
                         group={chat}

@@ -2,6 +2,7 @@
   "newGroup": "New group",
   "messages": "Messages",
   "groupName": "Name",
+  "sendMessage": "Send message",
   "serverError": "Server error, please try again later.",
   "unAuthenticated": "You must be logged in to perform this action.",
   "delete": {

@@ -16,8 +16,8 @@ type MessageCardProps = {
 export const MessageCard = ({ group, onSelected, isActive = false }: MessageCardProps) => {
     const [deleteGroup] = useDeleteGroupMutation();
     const [isDialogOpen, setDialogOpen] = useState(false);
-    const [isDeleting, setIsDeleting] = useState(false);
     const {t} = useTranslation("message");
+    const [localError, setLocalError] = useState<string | null>(null);
 
     const handleActivate = () => onSelected(group);
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -29,12 +29,14 @@ export const MessageCard = ({ group, onSelected, isActive = false }: MessageCard
 
     const handleConfirmDelete = async () => {
         try {
-            setIsDeleting(true);
             await deleteGroup(group.id).unwrap();
-        } catch (err) {
-            console.log(err);
-        } finally {
-            setIsDeleting(false);
+        } catch (error) {
+            const status = (error as { status?: number })?.status;
+            if (status === 500) {
+                setLocalError(t("unAuthenticated"));
+            } else {
+                setLocalError(t("serverError"));
+            }
         }
     };
 
@@ -58,6 +60,13 @@ export const MessageCard = ({ group, onSelected, isActive = false }: MessageCard
                 position="relative"
                 flexDirection="column"
             >
+                {
+                    localError && (
+                        <Box color="red.500" mb={2}>
+                            {localError}
+                        </Box>
+                    )
+                }
                 <Flex flexDirection="column">
                     <Flex justifyContent="space-between" alignItems="center">
                         <Box fontWeight="bold">
@@ -93,7 +102,7 @@ export const MessageCard = ({ group, onSelected, isActive = false }: MessageCard
                 }}
                 title={t("delete.title")}
                 body={`${t("delete.confirm")} "${group.name}" ?`}
-                confirmLabel={isDeleting ? "Suppression..." : t("actions.delete")}
+                confirmLabel={t("actions.delete")}
                 cancelLabel={t("actions.cancel")}
             />
         </>

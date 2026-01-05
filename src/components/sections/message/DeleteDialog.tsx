@@ -14,10 +14,10 @@ export const DeleteDialog = ({
                                  isOpen,
                                  onClose,
                                  onConfirm,
-                                 title = "Are you sure?",
-                                 body = "Êtes-vous sûr de vouloir supprimer ce groupe ?",
-                                 confirmLabel = "Delete",
-                                 cancelLabel = "Cancel",
+                                 title,
+                                 body,
+                                 confirmLabel,
+                                 cancelLabel,
                              }: DeleteDialogProps) => {
     return (
         <Dialog.Root

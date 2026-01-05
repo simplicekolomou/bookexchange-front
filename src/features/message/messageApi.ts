@@ -4,7 +4,7 @@ import {mockMessagesByGroup} from "../../types/mock.ts";
 
 export const messageApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
-        getMessages: builder.query<GroupChat, void>({
+        getMyMessages: builder.query<GroupChat[], void>({
             query: () => ({
                 url: `/groups/user/messages`,
                 method: 'GET',
@@ -27,7 +27,7 @@ export const messageApi = apiSlice.injectEndpoints({
             providesTags: (_result, _error, chatId) => [{ type: "Message" as const, id: chatId }],
         }),
 
-        addGroupChat: builder.mutation<void, {name: string, members: { notification: boolean; endUserId: number }[] }>({
+        addGroupChat: builder.mutation<GroupChat, {name: string, members: { notification: boolean; endUserId: number }[] }>({
             query: ({name, members }) => ({
                 url: '/groups',
                 method: 'POST',
@@ -44,6 +44,14 @@ export const messageApi = apiSlice.injectEndpoints({
             invalidatesTags: ['Group'],
         }),
 
+        findGroupByMembers: builder.query<GroupChat, number>({
+            query: (idUser) => ({
+                url: `/groups/oneToOne/${idUser}`,
+                method: "GET",
+            }),
+            providesTags: ['Group'],
+        }),
+
     }),
 });
 
@@ -51,6 +59,8 @@ export const {
     useGetGroupChatsQuery,
     useGetMessagesByGroupChatQuery,
     useAddGroupChatMutation,
-    useGetMessagesQuery,
+    useGetMyMessagesQuery,
     useDeleteGroupMutation,
+    useFindGroupByMembersQuery,
+    useLazyFindGroupByMembersQuery
 } = messageApi;

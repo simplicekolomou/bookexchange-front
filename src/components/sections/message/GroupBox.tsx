@@ -39,7 +39,6 @@ export const GroupBox = ({ onClose, open }: ChatBoxProps) => {
         if (!data) return;
 
         const newUsers = (data as PagedResponse<UserProfile>).content ?? [];
-        console.log("New users fetched: ", newUsers);
 
         setUsers(prev => {
             const map = new Map(prev.map(u => [u.id, u]));
@@ -100,6 +99,8 @@ export const GroupBox = ({ onClose, open }: ChatBoxProps) => {
             if (currentUserId && !next.includes(currentUserId)) {
                 next = [...next, currentUserId];
             }
+
+            console.log("Utilisateurs sélectionnés : ", next);
             return next;
         });
     };
@@ -123,9 +124,8 @@ export const GroupBox = ({ onClose, open }: ChatBoxProps) => {
                 }))
             };
 
-            console.log("Payload création groupe :", JSON.stringify(payload, null, 2));
-
             await addGroup(payload).unwrap();
+            setSelectedUserIds([]);
             onClose();
         } catch (error) {
             const status = (error as { status?: number })?.status;

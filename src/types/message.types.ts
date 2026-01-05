@@ -43,7 +43,6 @@ export interface MembershipDTO {
 
 export interface GroupChat {
     id: string;
-    chatType: ChatType
     name: string;
     members: UserProfile[];
     myMembership: MembershipDTO;
@@ -56,8 +55,6 @@ export interface PagedResponse<T> {
     last?: boolean;
     totalPages?: number;
 }
-
-export type ChatType = 'ONE_TO_ONE' | 'GROUP';
 
 export interface Message {
     id: string;
@@ -82,7 +79,6 @@ export function mapGroupChat(
 
     return {
         id: dto.id,
-        chatType: others.length === 1 ? 'ONE_TO_ONE' : 'GROUP',
         name:
             others.length === 1
                 ? `${others[0].firstName} ${others[0].lastName}`

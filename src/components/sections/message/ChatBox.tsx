@@ -17,7 +17,7 @@ import { webSocketService } from "../../../features/message/webSocket/webSocket.
 import {useGetMessagesByGroupChatQuery} from "../../../features/message/messageApi.ts";
 
 interface ChatBoxProps {
-    chatGroup: GroupChat | null;
+    chatGroup?: GroupChat | null;
     onClose: () => void;
     open: boolean;
 }
@@ -52,6 +52,10 @@ export const ChatBox = ({ chatGroup, onClose, open }: ChatBoxProps) => {
 
         setMessage(""); // reset input
     };
+
+    if (!chatGroup) {
+        return null;
+    }
 
     return (
         <Drawer.Root

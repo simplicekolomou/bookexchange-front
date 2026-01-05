@@ -1,4 +1,4 @@
-import { Box } from "@chakra-ui/react";
+import {Box, useBreakpointValue} from "@chakra-ui/react";
 import { useState } from "react";
 import type { BookCopy } from "../../../../types/book.types";
 import type { UserProfile } from "../../../../types/profile.types";
@@ -14,6 +14,7 @@ type Props = {
 export const SearchBar = ({ onSelect }: Props) => {
     const [searchType, setSearchType] = useState<"books" | "users">("books");
     const [selected, setSelected] = useState<BookCopy | UserProfile | null>(null);
+    const viewMode = useBreakpointValue<"grid" | "list">({ base: "grid", md: "list" }) ?? "list";
 
     function handleSelectItem(item: BookCopy | UserProfile) {
         setSelected(item);
@@ -47,12 +48,12 @@ export const SearchBar = ({ onSelect }: Props) => {
             </Box>
 
             {/* Affichage du BookCard ou UserCard lorsqu'un item est sélectionné */}
-            <Box mt={4} w={"50%"}>
+            <Box mt={4} w={"50%"} mx="auto" display="flex" justifyContent="center" alignItems="center">
                 {selected ? (
                     isUser(selected) ? (
                         <UserCard user={selected} />
                     ) : (
-                        <BookCard book={selected as BookCopy} viewMode="list" />
+                        <BookCard book={selected as BookCopy} viewMode={viewMode} />
                     )
                 ) : null}
             </Box>
