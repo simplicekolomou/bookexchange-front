@@ -19,7 +19,7 @@ export const Messaging = () => {
     const { data: chats = [], isLoading: isChatsLoading, isError: isChatsError } = useGetMyMessagesQuery();
     const [activeGroup, setActiveGroup] = useState<GroupChat | null>(null);
     const [value, setValue] = useState('messages');
-    const show = 'Notification' in window
+    const show = 'Notification' in window && Notification.permission !== 'granted' && Notification.permission !== 'denied';
     const [open, setOpen] = useState(true)
     const {t} = useTranslation("notification");
     const location = useLocation();
