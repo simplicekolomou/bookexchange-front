@@ -498,16 +498,6 @@ export const SuggestionBox = ({
                     {t("userAstuces")}
                 </Text>
             </Box>
-            {lastPageRef.current && (
-                <Text
-                    p="2"
-                    textAlign="center"
-                    fontSize="sm"
-                    color="gray.400"
-                >
-                    — Fin de page —
-                </Text>
-            )}
         </Box>
     );
 };

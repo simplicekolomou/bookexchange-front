@@ -6,7 +6,8 @@ export function getCurrentUser(): UserProfile | null {
     if (!authRaw) return null;
     try {
         const parsed = JSON.parse(authRaw);
-        me = (parsed?.user as UserProfile) ?? null;
+        console.log("parsed: ", parsed);
+        me = (parsed as UserProfile) ?? null;
     } catch {
         me = null;
     }

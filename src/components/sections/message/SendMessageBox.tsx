@@ -7,108 +7,107 @@ import {
     VStack,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import {useGetAllUsersQuery, useGetCurrentUserQuery} from "../../../features/profile/profileApi.ts";
+import {useGetAllUsersQuery, useGetCurrentUserQuery, useGetUserQuery} from "../../../features/profile/profileApi.ts";
 import {useTranslation} from "react-i18next";
 import type {UserProfile} from "../../../types/profile.types.ts";
 import type {GroupChat, PagedResponse} from "../../../types/message.types.ts";
-import {ChatBox} from "./ChatBox.tsx";
 import {useAddGroupChatMutation, useLazyFindGroupByMembersQuery} from "../../../features/message/messageApi.ts";
+import {useLocation} from "react-router-dom";
+
 interface SendMessageBoxProps {
-    open: boolean;
-    onClose: () => void;
-    onGroupSelected: (group: GroupChat) => void; // <-- nouveau
+    open?: boolean;
+    onClose?: () => void;
+    onGroupSelected?: (group: GroupChat) => void;
 }
-export const SendMessageBox = ({ onClose, open }: SendMessageBoxProps) => {
-    const [users, setUsers] = useState<UserProfile[]>([]);
+
+export const SendMessageBox = ({ onClose, open, onGroupSelected }: SendMessageBoxProps) => {
+    const [localUsersForPagination, setLocalUsersForPagination] = useState<UserProfile[]>([]);
     const [page, setPage] = useState(0);
     const size = 15;
-    const {data, isFetching} = useGetAllUsersQuery({page, size});
+    const {data: loadedUsers, isFetching} = useGetAllUsersQuery({page, size});
     const [isLastPage, setIsLastPage] = useState(false);
     const {t} = useTranslation("message");
-    const [activeChotBox, setActiveChotBox] = useState(false);
     const [addGroup] = useAddGroupChatMutation();
     const [localError, setLocalError] = useState<string | null>(null);
-    const [currentGroup, setCurrentGroup] = useState<GroupChat | null>(null);
     const [triggerFindGroup] = useLazyFindGroupByMembersQuery();
     const { data: currentUser } = useGetCurrentUserQuery();
+    const location = useLocation();
+    const params = new URLSearchParams(location.search);
+    const userId = params.get("user") ?? undefined;
+    const { data: targetUser } = useGetUserQuery({ userId: userId ?? "" }, { skip: !userId });
 
     const handleUserClick = async (user: UserProfile) => {
         setLocalError(null);
 
-        // 1. D'abord, chercher si un groupe existe déjà
         try {
-            console.log("Dans le try catch")
-            // Supposons que vous ayez un endpoint pour chercher un groupe par membres
+            // essayer de trouver un groupe existant
             try {
                 const existingGroup = await triggerFindGroup(Number(user.id)).unwrap();
-                // 2. Si trouvé, utiliser le groupe existant
-                setCurrentGroup(existingGroup);
-                onClose();
-            }catch (error){
-                const status = (error as { status?: number })?.status;
-                if (status === 404) {
-                    console.log("Aucun groupe existant, création d'un nouveau...");
-                    // 3. Sinon, créer un nouveau groupe
-                    try {
-                        console.log("Le user cliqué :", user);
-                        if(currentUser){
-                            console.log("L'utilisateur courant :", currentUser);
-                        }else{
-                            console.log("Utilisateur courant introuvable");
-                        }
-
-                        const payload = {
-                            name: `${user.firstName} ${user.lastName}`,
-                            members: [
-                                { notification: true, endUserId: Number(user.id) },
-                                { notification: true, endUserId: Number(currentUser!.id) }
-                            ]
-                        };
-                        console.log("Payload pour le nouveau groupe :", payload);
-                        const newGroup: GroupChat = await addGroup(payload).unwrap();
-
-                        console.log("Le nouveau groupe a été créé avec l'ID :", newGroup);
-
-                        // 4. Ouvrir le nouveau groupe
-                        setCurrentGroup(newGroup);
-                        onClose();
-                    } catch (error) {
-                        const status = (error as { status?: number })?.status;
-                        if (status === 401) {
-                            setLocalError(t("unAuthenticated"));
-                        } else {
-                            setLocalError(t("serverError"));
-                        }
-                    }
-                } else {
-                    setLocalError(t("serverError"));
+                if (onGroupSelected) {
+                    onGroupSelected(existingGroup);
                 }
+                if (onClose) {
+                    onClose();
+                }
+                return;
+            } catch (error) {
+                const status = (error as { status?: number })?.status;
+                if (status !== 404) {
+                    setLocalError(t("serverError"));
+                    return;
+                }
+                // si 404 => on continue pour créer
+            }
+
+            // créer un nouveau groupe si pas trouvé
+            const payload = {
+                name: `${user.firstName} ${user.lastName}`,
+                members: [
+                    { notification: true, endUserId: Number(user.id) },
+                    { notification: true, endUserId: Number(currentUser!.id) }
+                ]
+            };
+            const newGroup: GroupChat = await addGroup(payload).unwrap();
+            if (onGroupSelected) {
+                onGroupSelected(newGroup);
+            }
+            if (onClose) {
+                onClose();
             }
         } catch (error) {
-            console.log("Aucun groupe existant, création d'un nouveau...", error);
+            const status = (error as { status?: number })?.status;
+            if (status === 401) {
+                setLocalError(t("unAuthenticated"));
+            } else {
+                setLocalError(t("serverError"));
+            }
         }
     };
 
     useEffect(() => {
-        if (currentGroup) {
-            setActiveChotBox(true);
-        }
-    }, [currentGroup]);
+        if (!userId || !targetUser) return;
+
+        const openConversation = async () => {
+            await handleUserClick(targetUser);
+        };
+
+        openConversation();
+    }, [userId, targetUser]);
 
     useEffect(() => {
-        if(!data) return;
-        const newUsers = (data as PagedResponse<UserProfile>).content ?? [];
+        if(!loadedUsers) return;
+        const newUsers = (loadedUsers as PagedResponse<UserProfile>).content ?? [];
 
-        setUsers(prev => {
+        setLocalUsersForPagination(prev => {
             const map = new Map(prev.map(u => [u.id, u]));
             newUsers.forEach((u: UserProfile) => map.set(u.id, u));
             return Array.from(map.values());
         });
 
-        setIsLastPage((data as PagedResponse<UserProfile>).last ?? false);
+        setIsLastPage((loadedUsers as PagedResponse<UserProfile>).last ?? false);
         loadingRef.current = false;
 
-    }, [data, open]);
+    }, [loadedUsers, open]);
 
     // Scroll handler
     const loadingRef = React.useRef(false);
@@ -123,13 +122,15 @@ export const SendMessageBox = ({ onClose, open }: SendMessageBoxProps) => {
     };
 
 
-    if (!users) return null;
+    if (!localUsersForPagination) return null;
 
     return (
         <>
             <Drawer.Root
                 open={open}
-                onOpenChange={(isOpen) => { if (!isOpen) onClose(); }}
+                onOpenChange={(isOpen) => { if (!isOpen) if (onClose) {
+                    onClose();
+                } }}
             >
                 {localError && (
                     <Box color="red.500" p={2} textAlign="center">
@@ -152,7 +153,7 @@ export const SendMessageBox = ({ onClose, open }: SendMessageBoxProps) => {
                                 display="flex"
                             >
                                 <Drawer.Title>
-                                    {t("users")}
+                                    {t("sendMessage")}
                                 </Drawer.Title>
                             </Drawer.Header>
 
@@ -162,7 +163,7 @@ export const SendMessageBox = ({ onClose, open }: SendMessageBoxProps) => {
                                 onScroll={handleScroll}
                             >
                                 <VStack align="stretch">
-                                    {users.map(user => (
+                                    {localUsersForPagination.map(user => (
                                         <Box
                                             key={user.id}
                                             gap={2}
@@ -198,11 +199,6 @@ export const SendMessageBox = ({ onClose, open }: SendMessageBoxProps) => {
                     </Drawer.Positioner>
                 </Portal>
             </Drawer.Root>
-            <ChatBox
-                chatGroup={ currentGroup }
-                onClose={() => setActiveChotBox(false)}
-                open={activeChotBox}
-            />
         </>
     );
 }

@@ -21,34 +21,38 @@ import { EditBookPage } from './sections/books/collection/EditBookPage.tsx'
 import { Flex } from '@chakra-ui/react'
 import {UpdatePassword} from "./sections/profile/UpdatePassword.tsx";
 import {Messaging} from "./sections/message/Messaging.tsx";
+import {SendMessageBox} from "./sections/message/SendMessageBox.tsx";
 
 function App() {
-    const { isAuthenticated } = useAppSelector((state) => state.auth)
+    const {isAuthenticated} = useAppSelector((state) => state.auth)
     const storedUser = localStorage.getItem("auth_user");
     const user = storedUser ? JSON.parse(storedUser) : null;
-    // useEffect(() => {
-    //     webSocketService.connect("http://localhost:8000/");
-    // }, []);
     return (
         <Flex className="App" direction="column" minH="100vh">
             {/* Navigation conditionnelle */}
             {!isAuthenticated ? (
-                <UnAuthenticatedNavbar />
+                <UnAuthenticatedNavbar/>
             ) : (
-                <AuthenticatedNavbar title="Ma Collection" />
+                <AuthenticatedNavbar title="Ma Collection"/>
             )}
 
             {/* Routes principales */}
             <Routes>
                 {/* Routes publiques */}
-                <Route path="/" element={isAuthenticated && user ? <Navigate to={`/user/${user.id}/collection`} replace /> : <Home />} />
-                <Route path="/login" element={isAuthenticated && user ? <Navigate to={`/user/${user.id}/collection`} replace /> : <Login />} />
-                <Route path="/registration" element={isAuthenticated && user ? <Navigate to={`/user/${user.id}/collection`} replace /> : <Registration />} />
-                <Route path="/forgotPassword" element={<ForgotPassword />} />
-                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/"
+                       element={isAuthenticated && user ? <Navigate to={`/user/${user.id}/collection`} replace/> :
+                           <Home/>}/>
+                <Route path="/login"
+                       element={isAuthenticated && user ? <Navigate to={`/user/${user.id}/collection`} replace/> :
+                           <Login/>}/>
+                <Route path="/registration"
+                       element={isAuthenticated && user ? <Navigate to={`/user/${user.id}/collection`} replace/> :
+                           <Registration/>}/>
+                <Route path="/forgotPassword" element={<ForgotPassword/>}/>
+                <Route path="/reset-password" element={<ResetPassword/>}/>
 
 
-                <Route path="/user/:userId/collection" element={<CollectionPage />} />
+                <Route path="/user/:userId/collection" element={<CollectionPage/>}/>
 
                 <Route
                     path={"/bookCopy/:bookCopyId"}
@@ -62,7 +66,7 @@ function App() {
                     path="/search"
                     element={
                         <ProtectedRoute>
-                            <SearchSection />
+                            <SearchSection/>
                         </ProtectedRoute>
                     }
                 />
@@ -70,22 +74,22 @@ function App() {
                     path="/add-book"
                     element={
                         <ProtectedRoute>
-                            <AddBookPage />
+                            <AddBookPage/>
                         </ProtectedRoute>
                     }
                 />
                 <Route
                     path="/edit-book/:bookCopyId"
                     element={
-                    <ProtectedRoute>
-                        <EditBookPage />
-                    </ProtectedRoute>} />
+                        <ProtectedRoute>
+                            <EditBookPage/>
+                        </ProtectedRoute>}/>
 
                 <Route
                     path="/user/:userId/profile"
                     element={
                         <ProtectedRoute>
-                            <Profile />
+                            <Profile/>
                         </ProtectedRoute>
                     }
                 />
@@ -94,7 +98,7 @@ function App() {
                     path="/settings"
                     element={
                         <ProtectedRoute>
-                            <Settings />
+                            <Settings/>
                         </ProtectedRoute>
                     }
                 />
@@ -103,7 +107,7 @@ function App() {
                     path="/update-password"
                     element={
                         <ProtectedRoute>
-                            <UpdatePassword />
+                            <UpdatePassword/>
                         </ProtectedRoute>
                     }
                 />
@@ -112,7 +116,16 @@ function App() {
                     path="/dms"
                     element={
                         <ProtectedRoute>
-                            <Messaging />
+                            <Messaging/>
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/send-message"
+                    element={
+                        <ProtectedRoute>
+                            <SendMessageBox />
                         </ProtectedRoute>
                     }
                 />

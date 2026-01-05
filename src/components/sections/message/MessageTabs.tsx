@@ -1,8 +1,6 @@
-import {Button, Tabs, Text} from '@chakra-ui/react';
-import {GroupIcon, MessageCircle, Users} from 'lucide-react';
-import {useTranslation} from "react-i18next";
-import {GroupBox} from "./GroupBox.tsx";
-import {SendMessageBox} from "./SendMessageBox.tsx";
+import { Button, Tabs, Text } from '@chakra-ui/react';
+import { GroupIcon, MessageCircle, Users } from 'lucide-react';
+import { useTranslation } from "react-i18next";
 
 interface SearchTabsProps {
     value: string;
@@ -10,11 +8,14 @@ interface SearchTabsProps {
 }
 
 export const MessageTabs = ({ value, onChange }: SearchTabsProps) => {
-    const {t} = useTranslation("message");
+    const { t } = useTranslation("message");
     return (
         <Tabs.Root
             value={value}
-            onValueChange={({ value }) => onChange(value)}
+            onValueChange={(details) => {
+                const newValue: string = typeof details === 'string' ? details : details?.value ?? '';
+                onChange(newValue);
+            }}
             mb={3}
             mt={2}
         >
@@ -37,37 +38,28 @@ export const MessageTabs = ({ value, onChange }: SearchTabsProps) => {
                     </Button>
                 </Tabs.Trigger>
 
-                <Tabs.Trigger asChild value="group">
+                <Tabs.Trigger asChild value="groups">
                     <Button
                         width="full"
                         justifyContent="center"
-                        variant={value === 'group' ? 'solid' : 'outline'}
+                        variant={value === 'groups' ? 'solid' : 'outline'}
                     >
                         <GroupIcon size={16} />
                         <Text as="span" fontWeight="bold">{t("newGroup")}</Text>
                     </Button>
                 </Tabs.Trigger>
 
-                <Tabs.Trigger asChild value="users">
+                <Tabs.Trigger asChild value="sendMessage">
                     <Button
                         width="full"
                         justifyContent="center"
-                        variant={value === 'users' ? 'solid' : 'outline'}
-                        onClick={() => onChange('users')}
+                        variant={value === 'sendMessage' ? 'solid' : 'outline'}
                     >
                         <Users size={16} />
                         <Text as="span" fontWeight="bold">{t("sendMessage")}</Text>
                     </Button>
                 </Tabs.Trigger>
             </Tabs.List>
-            <GroupBox
-                open={value === 'group'}
-                onClose={() => onChange('messages')}
-            />
-            <SendMessageBox
-                open={value === 'users'}
-                onClose={() => onChange('messages')}
-            />
         </Tabs.Root>
     );
 };

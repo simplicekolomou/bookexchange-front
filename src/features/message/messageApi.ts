@@ -1,15 +1,15 @@
 import {apiSlice} from "../../services/apiSlice.ts";
 import type {GroupChat, Message} from "../../types/message.types.ts";
-import {mockMessagesByGroup} from "../../types/mock.ts";
 
 export const messageApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
-        getMyMessages: builder.query<GroupChat[], void>({
-            query: () => ({
-                url: `/groups/user/messages`,
+
+        getMessagesByGroupChat: builder.query<Message[], string>({
+            query: (groupChatId) => ({
+                url: `/messages/group/${groupChatId}`,
                 method: 'GET',
             }),
-            providesTags: ['Group'],
+            providesTags: ['Message'],
         }),
 
         getGroupChats: builder.query<GroupChat[], void>({
@@ -18,13 +18,6 @@ export const messageApi = apiSlice.injectEndpoints({
                 method: 'GET',
             }),
             providesTags: ['Group'],
-        }),
-
-        getMessagesByGroupChat: builder.query<Message[], string>({
-            queryFn: async (chatId) => {
-                return { data: mockMessagesByGroup[chatId] ?? [] };
-            },
-            providesTags: (_result, _error, chatId) => [{ type: "Message" as const, id: chatId }],
         }),
 
         addGroupChat: builder.mutation<GroupChat, {name: string, members: { notification: boolean; endUserId: number }[] }>({
@@ -52,6 +45,14 @@ export const messageApi = apiSlice.injectEndpoints({
             providesTags: ['Group'],
         }),
 
+        sendMessage: builder.mutation<void, { groupChatId: string, content: string }>({
+            query: ({ groupChatId, content }) => ({
+                url: `/messages/group/${groupChatId}`,
+                method: 'POST',
+                body: { content },
+            }),
+            invalidatesTags: ['Message'],
+        }),
     }),
 });
 
@@ -59,8 +60,8 @@ export const {
     useGetGroupChatsQuery,
     useGetMessagesByGroupChatQuery,
     useAddGroupChatMutation,
-    useGetMyMessagesQuery,
     useDeleteGroupMutation,
     useFindGroupByMembersQuery,
-    useLazyFindGroupByMembersQuery
+    useLazyFindGroupByMembersQuery,
+    useSendMessageMutation
 } = messageApi;

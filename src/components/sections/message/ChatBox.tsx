@@ -13,8 +13,8 @@ import type { GroupChat } from "../../../types/message.types.ts";
 import { SendHorizonalIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { tokens } from "../../ui/theme.ts";
-import { webSocketService } from "../../../features/message/webSocket/webSocket.ts";
-import {useGetMessagesByGroupChatQuery} from "../../../features/message/messageApi.ts";
+import {useGetMessagesByGroupChatQuery, useSendMessageMutation} from "../../../features/message/messageApi.ts";
+import {getCurrentUser} from "./hook/utils.ts";
 
 interface ChatBoxProps {
     chatGroup?: GroupChat | null;
@@ -22,16 +22,16 @@ interface ChatBoxProps {
     open: boolean;
 }
 export const ChatBox = ({ chatGroup, onClose, open }: ChatBoxProps) => {
-    const [message, setMessage] = useState("");
     const bottomRef = useRef<HTMLDivElement | null>(null);
     const chatId = chatGroup?.id;
-
-    // passez chatId, et skip quand absent
-    const { data: messages = [] } = useGetMessagesByGroupChatQuery(chatId!, {
+    const [sendMessage] = useSendMessageMutation();
+    const { data: messages } = useGetMessagesByGroupChatQuery(chatId!, {
         skip: !chatId,
     });
 
-    const myId = chatGroup?.myMembership?.user.id;
+    const myId = getCurrentUser()!.id;
+    const [message, setMessage] = useState("");
+    console.log("Mon ID est : ", myId);
 
     useEffect(() => {
         if (open) bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -39,23 +39,19 @@ export const ChatBox = ({ chatGroup, onClose, open }: ChatBoxProps) => {
 
     if (!chatGroup) return null;
 
-    const handleSendMessage = (text: string) => {
+    const handleSendMessage = async (text: string) => {
         if (!text.trim()) return;
-
         if (!chatGroup) return;
-
-        // Message pour un chat existant
-        webSocketService.sendMessage({
-            groupChatId: chatGroup.id,
-            content: text,
-        });
-
-        setMessage(""); // reset input
+        try {
+            await sendMessage({ groupChatId: chatGroup.id, content: text.trim() }).unwrap();
+            setMessage("");
+        } catch (error) {
+            console.error(error);
+        }
     };
 
-    if (!chatGroup) {
-        return null;
-    }
+    console.log("Les messages chargés sont : ", messages);
+    if(!messages) return null;
 
     return (
         <Drawer.Root

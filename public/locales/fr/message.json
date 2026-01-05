@@ -2,8 +2,8 @@
   "newGroup": "Nouveau groupe",
   "messages": "Messages",
   "groupName": "Nom",
-    "serverError": "Erreur du serveur, veuillez réessayer plus tard.",
-    "unAuthenticated": "Vous devez être connecté pour effectuer cette action.",
+  "serverError": "Erreur du serveur, veuillez réessayer plus tard.",
+  "unAuthenticated": "Vous devez être connecté pour effectuer cette action.",
   "sendMessage": "Envoyer un message",
   "delete": {
     "title": "Supprimer le groupe",

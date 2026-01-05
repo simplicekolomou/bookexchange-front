@@ -25,7 +25,7 @@ export const UserCard = ({user}: UserCardProps) => {
         // navigue vers la page de messaging en précisant l'utilisateur ciblé
         // et transmet l'ID dans l'état pour que ChatBox puisse ouvrir la conversation
         // et envoyer un message automatiquement si nécessaire.
-        navigate(`/dms?user=${encodeURIComponent(idUser)}`, { state: { recipientId: idUser, sendNow: true } });
+        navigate(`/send-message?user=${encodeURIComponent(idUser)}`, { state: { recipientId: idUser, sendNow: true } });
     }
 
     if(user){
