@@ -1,5 +1,5 @@
 
-import { useUpdatePasswordMutation } from "../../../features/auth/authApi.ts";
+import { useUpdatePasswordMutation } from "../../../features/auth/api/authApi.ts";
 import {Button, Input, VStack, Text, Flex, Box, Alert} from "@chakra-ui/react";
 import React, {type FormEvent, useState} from "react";
 import {useNavigate} from "react-router-dom";

@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
-import type {AuthResponse, AuthState} from '../../types/auth.types'
+import type {AuthResponse, AuthState} from './types/auth.types.ts'
 import {apiSlice} from "../../services/apiSlice.ts";
 
 const token = localStorage.getItem('auth_token')
@@ -9,6 +9,7 @@ const initialState: AuthState = {
     token: initialToken,
     isAuthenticated: !!initialToken,
     isLoading: false,
+    user: null,
 }
 
 const authSlice = createSlice({

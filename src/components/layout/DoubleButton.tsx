@@ -38,7 +38,7 @@ export const DoubleButton = () => {
                 className={`btn ${activeButton === "register" ? "" : "inactive"}`}
                 onClick={() => goto("/Registration", "register")}
             >
-                {t("registration.action")}
+                {t("forgotPassword.action")}
             </Button>
         </Flex>
     )

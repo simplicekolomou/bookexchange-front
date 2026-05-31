@@ -1,4 +1,4 @@
-import type {User} from "./auth.types.ts";
+import type {User} from "../features/auth/types/auth.types.ts";
 
 export interface UserProfile extends User {
     bio?: string

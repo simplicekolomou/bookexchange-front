@@ -1,4 +1,4 @@
-import type { UserProfile } from "./profile.types.ts"
+import type { UserProfile } from "../../../types/profile.types.ts"
 
 export interface User {
     id: string

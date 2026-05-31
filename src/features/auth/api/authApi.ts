@@ -1,9 +1,9 @@
-import { apiSlice } from '../../services/apiSlice'
+import { apiSlice } from '../../../services/apiSlice.ts'
 import type {
     LoginCredentials,
     RegisterCredentials,
     AuthResponse, ResetPasswordRequest,
-} from '../../types/auth.types'
+} from '../types/auth.types.ts'
 
 // Injecter les endpoints dans l'apiSlice de base
 export const authApi = apiSlice.injectEndpoints({

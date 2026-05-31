@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 import {useEffect, useState} from "react";
 import { useTranslation } from "react-i18next";
 import * as React from "react";
-import { useRegisterMutation } from "../../../features/auth/authApi.ts";
+import { useRegisterMutation } from "../../../features/auth/api/authApi.ts";
 import { useAppDispatch } from "../../../app/hooks.ts";
 import { setCredentials } from "../../../features/auth/authSlice.ts";
 import {tokens} from "../../ui/theme.ts";
@@ -82,10 +82,10 @@ export const Registration = () => {
         } catch (error) {
             const status = (error as { status?: number })?.status;
             if(status === 400) {
-                setLocalError(t("registration.existingEmail"));
+                setLocalError(t("forgotPassword.existingEmail"));
                 return;
             }else {
-                setLocalError(t("registration.serverError"));
+                setLocalError(t("forgotPassword.serverError"));
             }
         }
     };
@@ -138,7 +138,7 @@ export const Registration = () => {
                             fontSize="3xl"
                             mb={tokens.spacing.xl}
                         >
-                            {t("registration.title")}
+                            {t("forgotPassword.title")}
                         </Heading>
 
                         {/* Boutons de navigation */}
@@ -148,7 +148,7 @@ export const Registration = () => {
                         <Card.Root className="login-card">
                             <Card.Header pb={4}>
                                 <Card.Description textAlign="center" color="fg.muted">
-                                    {t("registration.description")}
+                                    {t("forgotPassword.description")}
                                 </Card.Description>
                             </Card.Header>
 
@@ -248,9 +248,9 @@ export const Registration = () => {
                                     colorScheme="blue"
                                     width="full"
                                     size="lg"
-                                    loadingText={t("registration.loading")}
+                                    loadingText={t("forgotPassword.loading")}
                                 >
-                                    {t("registration.action")}
+                                    {t("forgotPassword.action")}
                                 </Button>
                             </Card.Footer>
                         </Card.Root>

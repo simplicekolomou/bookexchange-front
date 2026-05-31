@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import * as React from "react";
 import { useAppDispatch } from "../../../app/hooks.ts";
-import { setCredentials } from "../../../features/auth/authSlice.ts";
-import { useLoginMutation } from "../../../features/auth/authApi.ts";
-import { tokens } from "../../ui/theme.ts";
-import {DoubleButton} from "../../layout/DoubleButton.tsx";
+import { setCredentials } from "../authSlice.ts";
+import { useLoginMutation } from "../api/authApi.ts";
+import { tokens } from "../../../components/ui/theme.ts";
+import {DoubleButton} from "../../../components/layout/DoubleButton.tsx";
 import type {UserProfile} from "../../../types/profile.types.ts";
 
 export const Login = () => {
