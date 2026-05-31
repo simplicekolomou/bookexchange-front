@@ -9,9 +9,9 @@ import {
     Image,
     useListCollection, Box,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
-import type {VolumeShort} from "../../../types/book.types.ts";
-import { useGetBookSuggestionsQuery } from "../../../features/book/bookApi.ts"; // adjust path if needed
+import {useEffect, useMemo, useState} from "react";
+import type {VolumeShort} from "../../../../types/book.types.ts";
+import { useGetBookSuggestionsQuery } from "../../api/bookApi.ts"; // adjust path if needed
 
 type Props = {
     lang?: string;              // default "fre"
@@ -39,7 +39,7 @@ export function BookSearchCombobox({
     const debounced = useDebounced(inputValue, 400);
 
     // Compute query args (title/author) from debounced input
-    const searchArgs = (() => {
+    const searchArgs = useMemo(() => {
         const q = debounced.trim();
         if (!q) return null;
 
@@ -53,7 +53,7 @@ export function BookSearchCombobox({
             lang,
             limit,
         };
-    })();
+    }, [debounced, lang, limit]);
 
     // 🔁 Call backend via RTK Query
     const {

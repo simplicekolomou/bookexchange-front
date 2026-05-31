@@ -29,10 +29,15 @@ export default function LoginForm() {
                 <Heading as="h1" fontSize="3xl" mb={tokens.spacing.xl}>
                     {t("login.title")}
                 </Heading>
+
                 <DoubleButton />
 
                 <Fieldset.Content>
-                    <Card.Root className="login-card">
+                    <Card.Root
+                        borderColor="border.default"
+                        borderWidth="1px"
+                        borderRadius="md"
+                    >
                         <Card.Header>
                             <Card.Description textAlign="center">
                                 {t("login.description")}
@@ -49,11 +54,13 @@ export default function LoginForm() {
 
                             <Stack gap={tokens.spacing.md}>
                                 <Field.Root invalid={!!errors.email}>
-                                    <Field.Label>{t("field.email")}</Field.Label>
+                                    <Field.Label >{t("field.email")}</Field.Label>
+                                    <Field.RequiredIndicator />
                                     <Input
                                         type="email"
                                         {...register("email")}
                                         bg="transparent"
+                                        borderColor={errors.email ? "red.500" : "gray.300"}
                                     />
                                     {errors.email && (
                                         <Field.ErrorText>{errors.email.message}</Field.ErrorText>
@@ -66,6 +73,7 @@ export default function LoginForm() {
                                         type="password"
                                         {...register("password")}
                                         bg="transparent"
+                                        borderColor={errors.password ? "red.500" : "gray.300"}
                                     />
                                     {errors.password && (
                                         <Field.ErrorText>{errors.password.message}</Field.ErrorText>

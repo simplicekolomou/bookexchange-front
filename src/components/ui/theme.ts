@@ -252,6 +252,14 @@ const customConfig = defineConfig({
                     },
                 },
             },
+
+            fieldset: {
+                base: {
+                    borderWidth: "1px",
+                    borderColor: "border.default",
+                    borderRadius: "md",
+                },
+            },
         },
     },
 

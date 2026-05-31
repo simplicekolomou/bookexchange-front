@@ -12,7 +12,7 @@ import {
 import type { BookCopy } from "../../../../types/book.types";
 import type { UserProfile } from "../../../../types/profile.types";
 import { useFindUserQuery } from "../../../../features/profile/profileApi";
-import { useFindBookQuery } from "../../../../features/book/bookApi";
+import { useFindBookQuery } from "../../../../features/book/api/bookApi.ts";
 import { skipToken } from "@reduxjs/toolkit/query/react";
 import { useTranslation } from "react-i18next";
 import { FilterBox, type FilterValues } from "./FilterBox";

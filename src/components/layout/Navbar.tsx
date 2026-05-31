@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { LogoWithText } from "./LogoWithText";
 import { UserMenu } from "./UserMenu";
 import {useAppSelector} from "../../app/hooks.ts";
-import {useGetMyBooksQuery} from "../../features/book/bookApi.ts";
+import {useGetMyBooksQuery} from "../../features/book/api/bookApi.ts";
 
 export const Navbar = () => {
     const navigate = useNavigate();

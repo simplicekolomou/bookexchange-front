@@ -29,7 +29,7 @@ export const DoubleButton = () => {
             <Button
                 variant={activeButton === "login" ? "solid" : "outline"}
                 className={`btn ${activeButton === "login" ? "" : "inactive"}`}
-                onClick={() => goto("../../features/auth/components/LoginForm", "login")}
+                onClick={() => goto("/Login", "login")}
             >
                 {t("login.action")}
             </Button>

@@ -6,7 +6,7 @@ import {ResetPassword} from "../features/resetPassword/components/ResetPassword.
 import {BookDetailPage} from "../components/sections/books/collection/BookDetailPage.tsx";
 import {ProtectedRoute} from "../routes/ProtectedRoute.tsx";
 import {SearchSection} from "../components/sections/books/search/SearchSection.tsx";
-import {AddBookPage} from "../components/sections/books/collection/AddBookPage.tsx";
+import {AddBookPage} from "../features/book/addbook/pages/AddBookPage.tsx";
 import {EditBookPage} from "../components/sections/books/collection/EditBookPage.tsx";
 import {Profile} from "../components/sections/profile/Profile.tsx";
 import {Settings} from "../components/sections/profile/Settings.tsx";
@@ -16,7 +16,7 @@ import {SendMessageBox} from "../components/sections/message/SendMessageBox.tsx"
 import {CollectionPage} from "../components/sections/books/collection/CollectionPage.tsx";
 import {NotFound404} from "../components/layout/NotFound404.tsx";
 import MainLayout from "../components/layout/MainLayout.tsx";
-import LoginForm from "../features/auth/components/LoginForm.tsx";
+import Login from "../features/auth/pages/Login.tsx";
 
 export const router = createBrowserRouter(
     [
@@ -29,7 +29,7 @@ export const router = createBrowserRouter(
                 },
                 {
                     path: "/login",
-                    element: <LoginForm/>
+                    element: <Login/>
                 },
                 {
                     path: "/registration",

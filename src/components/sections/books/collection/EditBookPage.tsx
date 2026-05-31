@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useGetBookCopyQuery } from "../../../../features/book/bookApi.ts";
-import { BookForm } from "./BookForm.tsx";
+import { useGetBookCopyQuery } from "../../../../features/book/api/bookApi.ts";
+import { BookForm } from "../../../../features/book/addbook/components/BookForm.tsx";
 
 export const EditBookPage = () => {
     const navigate = useNavigate();

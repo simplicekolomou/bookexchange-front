@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useGetMyBooksQuery, useGetUserBooksQuery } from "../../../../../features/book/bookApi.ts";
+import { useGetMyBooksQuery, useGetUserBooksQuery } from "../../../../../features/book/api/bookApi.ts";
 import { useMemo, useState } from "react";
 import type {UserProfile} from "../../../../../types/profile.types.ts";
 

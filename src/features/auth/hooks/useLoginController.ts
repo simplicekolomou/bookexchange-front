@@ -16,8 +16,7 @@ export const useLoginController = () => {
     const [login, { isSuccess: isLoginSuccess }] = useLoginMutation();
     const [localError, setLocalError] = useState("");
 
-    // Schéma Zod construit avec les traductions (réactif grâce à t)
-    const loginSchema = z.object({
+    const schema = z.object({
         email: z
             .string()
             .nonempty(t("validation.emailRequired"))
@@ -28,10 +27,10 @@ export const useLoginController = () => {
             .min(6, t("validation.passwordMinLength")),
     });
 
-    type LoginForm = z.infer<typeof loginSchema>;
+    type LoginForm = z.infer<typeof schema>;
 
     const form = useForm<LoginForm>({
-        resolver: zodResolver(loginSchema),
+        resolver: zodResolver(schema),
         defaultValues: {
             email: "",
             password: "",

@@ -1,6 +1,5 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import './index.css'
 import { Provider  as UIProvider} from "./components/ui/provider"
 import "./i18n"
 import {store} from "./app/store";
