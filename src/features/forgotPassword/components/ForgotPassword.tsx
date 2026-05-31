@@ -190,7 +190,7 @@ export const ForgotPassword = ()=> {
                 <Flex justify="center" align="center" gap={1}>
                     <ArrowLeft size={16} color="#718096" />
                     <Link
-                        to="/Login"
+                        to="/LoginForm"
                     >
                         {t("forgotPassword.backToLogin")}
                     </Link>

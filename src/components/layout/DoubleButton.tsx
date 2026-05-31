@@ -14,7 +14,7 @@ export const DoubleButton = () => {
     };
 
     useEffect(() => {
-        if(window.location.pathname === "/Login") {
+        if(window.location.pathname === "/LoginForm") {
             setActiveButton("login");
         } else if(window.location.pathname === "/Registration") {
             setActiveButton("register");
@@ -29,7 +29,7 @@ export const DoubleButton = () => {
             <Button
                 variant={activeButton === "login" ? "solid" : "outline"}
                 className={`btn ${activeButton === "login" ? "" : "inactive"}`}
-                onClick={() => goto("/Login", "login")}
+                onClick={() => goto("../../features/auth/components/LoginForm", "login")}
             >
                 {t("login.action")}
             </Button>

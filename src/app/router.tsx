@@ -1,6 +1,5 @@
 import {createBrowserRouter} from "react-router-dom";
 import {Home} from "../components/sections/Home.tsx";
-import {Login} from "../features/auth/components/Login.tsx";
 import {Registration} from "../components/sections/register/Registration.tsx";
 import {ForgotPassword} from "../features/forgotPassword/components/ForgotPassword.tsx";
 import {ResetPassword} from "../features/resetPassword/components/ResetPassword.tsx";
@@ -17,6 +16,7 @@ import {SendMessageBox} from "../components/sections/message/SendMessageBox.tsx"
 import {CollectionPage} from "../components/sections/books/collection/CollectionPage.tsx";
 import {NotFound404} from "../components/layout/NotFound404.tsx";
 import MainLayout from "../components/layout/MainLayout.tsx";
+import LoginForm from "../features/auth/components/LoginForm.tsx";
 
 export const router = createBrowserRouter(
     [
@@ -29,7 +29,7 @@ export const router = createBrowserRouter(
                 },
                 {
                     path: "/login",
-                    element: <Login/>
+                    element: <LoginForm/>
                 },
                 {
                     path: "/registration",
