@@ -1,25 +1,29 @@
-import {tokens} from "../ui/theme.ts";
-import {Button, Flex} from "@chakra-ui/react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {useEffect, useState} from "react";
-import {useNavigate} from "react-router-dom";
-import {useTranslation} from "react-i18next";
+import { useTranslation } from "react-i18next";
+import {Button, Flex} from "@chakra-ui/react";
+import {tokens} from "../ui/theme.ts";
 
 export const DoubleButton = () => {
     const [activeButton, setActiveButton] = useState('login');
     const navigate = useNavigate();
+    const location = useLocation();
     const { t } = useTranslation("auth");
+
     const goto = (link: string, button: string) => {
         setActiveButton(button);
         navigate(link);
     };
 
+    // Met à jour l'état selon l'URL actuelle (sans dépendance sur activeButton)
     useEffect(() => {
-        if(window.location.pathname === "/LoginForm") {
+        if (location.pathname === "/LoginForm") {
             setActiveButton("login");
-        } else if(window.location.pathname === "/Registration") {
+        } else if (location.pathname === "/RegisterForm") {
             setActiveButton("register");
         }
-    }, [activeButton]);
+    }, [location.pathname]); // ← ne dépend que de l'URL
+
     return (
         <Flex
             mb={tokens.spacing.md}
@@ -36,7 +40,7 @@ export const DoubleButton = () => {
             <Button
                 variant={activeButton === "register" ? "solid" : "outline"}
                 className={`btn ${activeButton === "register" ? "" : "inactive"}`}
-                onClick={() => goto("/Registration", "register")}
+                onClick={() => goto("/Register", "register")}
             >
                 {t("forgotPassword.action")}
             </Button>

@@ -29,7 +29,7 @@ export const Navbar = () => {
         const pathname = location.pathname;
         const buttons = [];
 
-        if (!pathname.endsWith("/search")) {
+        if (user && !pathname.endsWith("/search")) {
             buttons.push(
                 <Button key="search" onClick={() => navigate("/search")} variant="solid">
                     <Search size={16} />
@@ -38,7 +38,7 @@ export const Navbar = () => {
             );
         }
 
-        if (!pathname.endsWith("/add-book")) {
+        if (user && !pathname.endsWith("/add-book")) {
             buttons.push(
                 <Button key="add" onClick={() => navigate("/add-book")} variant="solid">
                     <Plus size={16} />

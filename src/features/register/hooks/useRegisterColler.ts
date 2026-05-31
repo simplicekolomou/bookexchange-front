@@ -1,0 +1,122 @@
+import { useMemo, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useTranslation } from "react-i18next";
+import { useAppDispatch } from "../../../app/hooks";
+import { useRegisterMutation } from "../../auth/api/authApi";
+import { setCredentials } from "../../auth/authSlice";
+import type { UserProfile } from "../../../types/profile.types";
+
+export const useRegisterColler = () => {
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
+    const { t } = useTranslation("auth");
+    const [localError, setLocalError] = useState("");
+    const [registerUser, { isSuccess: isRegisterSuccess }] = useRegisterMutation();
+
+    // Schéma Zod avec messages localisés (recréé si la langue change)
+    const schema = useMemo(
+        () =>
+            z
+                .object({
+                    firstName: z
+                        .string()
+                        .min(1, t("validation.firstNameRequired"))
+                        .max(50, t("validation.firstNameLength")),
+                    lastName: z
+                        .string()
+                        .min(1, t("validation.lastNameRequired"))
+                        .max(50, t("validation.lastNameLength")),
+                    email: z
+                        .string()
+                        .min(1, t("validation.emailRequired"))
+                        .email(t("validation.invalidEmail")),
+                    password: z
+                        .string()
+                        .min(1, t("validation.passwordRequired"))
+                        .min(6, t("validation.passwordMinLength")),
+                    confirmPassword: z
+                        .string()
+                        .min(1, t("validation.confirmPasswordRequired")),
+                })
+                .refine((data) => data.password === data.confirmPassword, {
+                    message: t("validation.passwordsMustMatch"),
+                    path: ["confirmPassword"],
+                }),
+        [t]
+    );
+
+    type RegisterForm = z.infer<typeof schema>;
+
+    const form = useForm<RegisterForm>({
+        resolver: zodResolver(schema),
+        defaultValues: {
+            firstName: "",
+            lastName: "",
+            email: "",
+            password: "",
+            confirmPassword: "",
+        },
+    });
+
+    // Réinitialise l’erreur locale dès que l’utilisateur modifie un champ
+    useEffect(() => {
+        const subscription = form.watch(() => setLocalError(""));
+        return () => subscription.unsubscribe();
+    }, [form.watch]);
+
+    const onSubmit = async (data: RegisterForm) => {
+        setLocalError("");
+        const newUser = {
+            email: data.email.trim(),
+            firstName: data.firstName.trim(),
+            lastName: data.lastName.trim(),
+            password: data.password,
+        };
+
+        try {
+            const result = await registerUser(newUser).unwrap();
+            dispatch(setCredentials(result));
+        } catch (error) {
+            const status = (error as { status?: number })?.status;
+            if (status === 400 || status === 409) {
+                setLocalError(t("registration.emailAlreadyExists"));
+            } else {
+                setLocalError(t("registration.serverError"));
+            }
+        }
+    };
+
+    // Redirection après succès
+    useEffect(() => {
+        if (isRegisterSuccess) {
+            const user: UserProfile = JSON.parse(localStorage.getItem("auth_user")!);
+            navigate(`/user/${user.id}/collection`, { replace: true });
+        }
+    }, [isRegisterSuccess, navigate]);
+
+    // Props de style communes pour les inputs (utilisant les tokens Chakra)
+    const inputProps = {
+        borderWidth: "2px",
+        borderColor: "border.default",
+        borderRadius: "md",
+        bg: "bg.surface",
+        color: "fg.default",
+        _placeholder: { color: "fg.placeholder" },
+        _hover: { borderColor: "colorPalette.emphasized" },
+        _focus: {
+            borderColor: "colorPalette.emphasized",
+            boxShadow: "0 0 0 4px rgba(59,130,246,0.12)",
+            outline: "none",
+        },
+    } as const;
+
+    return {
+        form,
+        onSubmit,
+        localError,
+        inputProps,
+    };
+};

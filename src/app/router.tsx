@@ -1,6 +1,5 @@
 import {createBrowserRouter} from "react-router-dom";
 import {Home} from "../components/sections/Home.tsx";
-import {Registration} from "../components/sections/register/Registration.tsx";
 import {ForgotPassword} from "../features/forgotPassword/components/ForgotPassword.tsx";
 import {ResetPassword} from "../features/resetPassword/components/ResetPassword.tsx";
 import {BookDetailPage} from "../components/sections/books/collection/BookDetailPage.tsx";
@@ -17,6 +16,7 @@ import {CollectionPage} from "../components/sections/books/collection/Collection
 import {NotFound404} from "../components/layout/NotFound404.tsx";
 import MainLayout from "../components/layout/MainLayout.tsx";
 import Login from "../features/auth/pages/Login.tsx";
+import Register from "../features/register/pages/Register.tsx";
 
 export const router = createBrowserRouter(
     [
@@ -32,8 +32,8 @@ export const router = createBrowserRouter(
                     element: <Login/>
                 },
                 {
-                    path: "/registration",
-                    element: <Registration/>
+                    path: "/register",
+                    element: <Register />
                 },
                 {
                     path: "/forgotPassword",
@@ -47,12 +47,16 @@ export const router = createBrowserRouter(
                     element: <ProtectedRoute />,
                     children: [
                         {
+                            path: "/collection",
+                            element: <CollectionPage />
+                        },
+                        {
                             path: "/search",
                             element: <SearchSection/>
                         },
                         {
                             path: "/add-book",
-                            element: <AddBookPage/>
+                            element: <AddBookPage />
                         },
                         {
                             path: "/edit-book/:bookCopyId",
