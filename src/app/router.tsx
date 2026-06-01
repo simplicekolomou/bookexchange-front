@@ -2,7 +2,7 @@ import {createBrowserRouter} from "react-router-dom";
 import {Home} from "../features/home/Home.tsx";
 import {ForgotPassword} from "../features/forgotPassword/components/ForgotPassword.tsx";
 import {ResetPassword} from "../features/resetPassword/components/ResetPassword.tsx";
-import {BookDetailPage} from "../features/book/collection/components/BookDetailPage.tsx";
+import {BookDetailPage} from "../features/book/details/pages/BookDetailPage.tsx";
 import {ProtectedRoute} from "../routes/ProtectedRoute.tsx";
 import {SearchPage} from "../features/book/search/pages/SearchPage.tsx";
 import {AddBookPage} from "../features/book/addbook/pages/AddBookPage.tsx";

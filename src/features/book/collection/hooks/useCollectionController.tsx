@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import { useGetMyBooksQuery, useGetUserBooksQuery } from "../../api/bookApi.ts";
 import { useMemo, useState } from "react";
 import type {UserProfile} from "../../../profile/types/profile.types.ts";
+import {useBreakpointValue} from "@chakra-ui/react";
 
 export const useCollectionController = () => {
     const { userId } = useParams();
@@ -58,9 +59,11 @@ export const useCollectionController = () => {
         ]
     );
 
+    const gridColumns = useBreakpointValue({ base: 1, sm: 2, md: 3, lg: 4 });
+
     return {
         isMyCollection,
-        books: filteredBooks,
+        filteredBooks,
         searchQuery,
         setSearchQuery,
         viewMode,
@@ -69,5 +72,6 @@ export const useCollectionController = () => {
         setFilter,
         isLoading,
         isError,
+        gridColumns,
     };
 };

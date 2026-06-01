@@ -19,7 +19,6 @@ interface BookDetailProps {
 export const BookDetailContent = ({book, owner, isUserOwner} : BookDetailProps) => {
     const navigate = useNavigate();
     const { t } = useTranslation(["addBook", "common"]);
-    console.log(book);
 
     return (
         <Box maxW="900px" mx="auto" mt={8} bg="white" borderRadius="lg" shadow="sm" mb={2}>

@@ -9,13 +9,14 @@ export const CollectionPage = () => {
 
     return (
         <CollectionContent
-            books={controller.books}
+            filteredBooks={controller.filteredBooks}
             searchQuery={controller.searchQuery}
             viewMode={controller.viewMode}
             filter={controller.filter}
             onSearchChange={controller.setSearchQuery}
             onViewModeChange={controller.setViewMode}
             onFilterChange={controller.setFilter}
+            gridColumns={controller.gridColumns}
         />
     );
 };

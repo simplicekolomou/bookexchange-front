@@ -1,4 +1,4 @@
-import {Box, Flex, Input, Button, SimpleGrid, VStack, Text, useBreakpointValue} from '@chakra-ui/react';
+import {Box, Flex, Input, Button, SimpleGrid, VStack, Text} from '@chakra-ui/react';
 import type {BookCopy} from '../../types/book.types.ts';
 import {BookCard} from '../../../../components/ui/BookCard.tsx';
 import {Search, BookOpen, Grid3x3, List} from 'lucide-react';
@@ -7,17 +7,19 @@ import {Link} from "react-router-dom";
 import React from "react";
 
 interface CollectionContentProps {
-    books: BookCopy[];
+    filteredBooks: BookCopy[];
     searchQuery: string;
     viewMode: 'grid' | 'list';
     filter: 'all' | 'available';
     onSearchChange: (query: string) => void;
     onViewModeChange: (mode: 'grid' | 'list') => void;
     onFilterChange: (filter: 'all' | 'available') => void;
+    gridColumns?: number;
 }
 
 export const CollectionContent = ({
-                                      books,
+                                      filteredBooks,
+                                      gridColumns,
                                       searchQuery,
                                       viewMode,
                                       filter,
@@ -25,31 +27,10 @@ export const CollectionContent = ({
                                       onViewModeChange,
                                       onFilterChange,
                                   }: CollectionContentProps) => {
-    const gridColumns = useBreakpointValue({
-        base: 1,
-        sm: 2,
-        md: 3,
-        lg: 4
-    });
-
-    const filteredBooks = books.filter((book) => {
-        const search = searchQuery.toLowerCase();
-
-        const matchesSearch =
-            book.title.toLowerCase().includes(search) ||
-            book.authors.some(author => author.toLowerCase().includes(search));
-
-        const matchesFilter =
-            filter === 'all' || book.availabilityType !== 'NONE';
-
-        return matchesSearch && matchesFilter;
-    });
-
+    const {t} = useTranslation("collections");
     const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         onSearchChange(e.target.value);
     };
-
-    const {t} = useTranslation("collections");
 
     return (
         <Box maxW="1200px" mx="auto" px={4} py={8}>
