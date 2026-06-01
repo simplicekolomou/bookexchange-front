@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type {NotificationSettings, UserProfile, ProfileStats} from "../../types/profile.types.ts";
+import type {NotificationSettings, UserProfile, ProfileStats} from "./types/profile.types.ts";
 
 export interface ProfileState {
     profile: UserProfile | null;

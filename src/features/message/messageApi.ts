@@ -1,7 +1,7 @@
-import {apiSlice} from "../../services/apiSlice.ts";
-import type {GroupChat, Message} from "../../types/message.types.ts";
+import {baseApi} from "../../services/baseApi.ts";
+import type {GroupChat, Message} from "./types/message.types.ts";
 
-export const messageApi = apiSlice.injectEndpoints({
+export const messageApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
 
         getMessagesByGroupChat: builder.query<Message[], string>({

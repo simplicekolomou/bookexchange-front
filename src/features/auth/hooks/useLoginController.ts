@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useLoginMutation } from "../api/authApi";
 import { useEffect, useState } from "react";
 import { setCredentials } from "../authSlice";
-import type { UserProfile } from "../../../types/profile.types";
+import type { UserProfile } from "../../profile/types/profile.types.ts";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {email, z} from "zod";

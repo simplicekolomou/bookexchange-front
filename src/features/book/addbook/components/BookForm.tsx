@@ -20,7 +20,7 @@ import { Controller } from "react-hook-form";
 import { useAddbookController, type BookFormProps } from "../hooks/useAddbookController";
 import { useTranslation } from "react-i18next";
 import {BookSearchCombobox} from "./BookSearchCombobox.tsx";
-import type {VolumeShort} from "../../../../types/book.types.ts";
+import type {VolumeShort} from "../../types/book.types.ts";
 
 export const BookForm = ({ mode, initialData, onSubmitSuccess, bookId }: BookFormProps) => {
     const { t } = useTranslation(["common", "addBook"]);

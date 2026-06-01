@@ -9,8 +9,8 @@ import {
     Fieldset,
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
-import { tokens } from "../../../components/ui/theme";
-import { DoubleButton } from "../../../components/layout/DoubleButton";
+import { tokens } from "../../../theme/theme.ts";
+import { DoubleButton } from "../../../components/ui/DoubleButton.tsx";
 import { useLoginController } from "../hooks/useLoginController";
 import { useTranslation } from "react-i18next";
 

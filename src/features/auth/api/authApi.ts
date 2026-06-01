@@ -1,12 +1,12 @@
-import { apiSlice } from '../../../services/apiSlice.ts'
+import { baseApi } from '../../../services/baseApi.ts'
 import type {
     LoginCredentials,
     RegisterCredentials,
     AuthResponse, ResetPasswordRequest,
 } from '../types/auth.types.ts'
 
-// Injecter les endpoints dans l'apiSlice de base
-export const authApi = apiSlice.injectEndpoints({
+// Injecter les endpoints dans l'baseApi de base
+export const authApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         login: builder.mutation<AuthResponse, LoginCredentials>({
             query: (credentials) => ({

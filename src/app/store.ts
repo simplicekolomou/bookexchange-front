@@ -1,6 +1,6 @@
 import {configureStore} from "@reduxjs/toolkit";
 import { setupListeners } from '@reduxjs/toolkit/query'
-import { apiSlice } from '../services/apiSlice'
+import { baseApi } from '../services/baseApi.ts'
 import authReducer from '../features/auth/authSlice'
 import {
     persistStore,
@@ -25,7 +25,7 @@ const persistedAuthReducer = persistReducer(authPersistConfig, authReducer)
 
 export const store = configureStore({
     reducer: {
-        [apiSlice.reducerPath]: apiSlice.reducer,
+        [baseApi.reducerPath]: baseApi.reducer,
         auth: persistedAuthReducer,
         profile: persistedAuthReducer,
     },
@@ -34,7 +34,7 @@ export const store = configureStore({
             serializableCheck: {
                 ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
             },
-        }).concat(apiSlice.middleware),
+        }).concat(baseApi.middleware),
         devTools: import.meta.env.MODE !== 'production',
 })
 

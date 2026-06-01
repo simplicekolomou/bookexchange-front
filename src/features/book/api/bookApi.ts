@@ -1,10 +1,10 @@
-import type {AddBookRequest, VolumeShort} from '../../../types/book.types.ts';
-import {apiSlice} from "../../../services/apiSlice.ts";
-import type {BookCopy} from '../../../types/book.types.ts';
-import type {UserProfile} from "../../../types/profile.types.ts";
-import type {PagedResponse} from "../../../types/message.types.ts";
+import type {AddBookRequest, VolumeShort} from '../types/book.types.ts';
+import {baseApi} from "../../../services/baseApi.ts";
+import type {BookCopy} from '../types/book.types.ts';
+import type {UserProfile} from "../../profile/types/profile.types.ts";
+import type {PagedResponse} from "../../message/types/message.types.ts";
 
-export const booksApi = apiSlice.injectEndpoints({
+export const booksApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         getMyBooks: builder.query<BookCopy[], void>({
             query: () => ({

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import {useGetProfilePictureQuery} from "../profileApi.ts";
+import {useGetProfilePictureQuery} from "../api/profileApi.ts";
 
 export const useProfilePicture = () => {
     const { data: profilePictureUrl, refetch, error } = useGetProfilePictureQuery();

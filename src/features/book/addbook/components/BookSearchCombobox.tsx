@@ -10,7 +10,7 @@ import {
     useListCollection, Box,
 } from "@chakra-ui/react";
 import {useEffect, useMemo, useState} from "react";
-import type {VolumeShort} from "../../../../types/book.types.ts";
+import type {VolumeShort} from "../../types/book.types.ts";
 import { useGetBookSuggestionsQuery } from "../../api/bookApi.ts"; // adjust path if needed
 
 type Props = {

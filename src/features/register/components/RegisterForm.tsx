@@ -9,8 +9,8 @@ import {
     Alert,
     Fieldset,
 } from "@chakra-ui/react";
-import { tokens } from "../../../components/ui/theme";
-import { DoubleButton } from "../../../components/layout/DoubleButton";
+import { tokens } from "../../../theme/theme.ts";
+import { DoubleButton } from "../../../components/ui/DoubleButton.tsx";
 import { useTranslation } from "react-i18next";
 import { useRegisterColler } from "../hooks/useRegisterColler"; // ajustez le chemin
 

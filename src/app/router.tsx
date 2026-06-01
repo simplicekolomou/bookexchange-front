@@ -1,19 +1,19 @@
 import {createBrowserRouter} from "react-router-dom";
-import {Home} from "../components/sections/Home.tsx";
+import {Home} from "../features/home/Home.tsx";
 import {ForgotPassword} from "../features/forgotPassword/components/ForgotPassword.tsx";
 import {ResetPassword} from "../features/resetPassword/components/ResetPassword.tsx";
-import {BookDetailPage} from "../components/sections/books/collection/BookDetailPage.tsx";
+import {BookDetailPage} from "../features/book/collection/components/BookDetailPage.tsx";
 import {ProtectedRoute} from "../routes/ProtectedRoute.tsx";
-import {SearchSection} from "../components/sections/books/search/SearchSection.tsx";
+import {SearchPage} from "../features/book/search/pages/SearchPage.tsx";
 import {AddBookPage} from "../features/book/addbook/pages/AddBookPage.tsx";
-import {EditBookPage} from "../components/sections/books/collection/EditBookPage.tsx";
-import {Profile} from "../components/sections/profile/Profile.tsx";
-import {Settings} from "../components/sections/profile/Settings.tsx";
-import {UpdatePassword} from "../components/sections/profile/UpdatePassword.tsx";
-import {Messaging} from "../components/sections/message/Messaging.tsx";
-import {SendMessageBox} from "../components/sections/message/SendMessageBox.tsx";
-import {CollectionPage} from "../components/sections/books/collection/CollectionPage.tsx";
-import {NotFound404} from "../components/layout/NotFound404.tsx";
+import {EditBookPage} from "../features/book/editbook/pages/EditBookPage.tsx";
+import {Profile} from "../features/profile/components/Profile.tsx";
+import {Settings} from "../features/profile/components/Settings.tsx";
+import {UpdatePassword} from "../features/updatePassword/components/UpdatePassword.tsx";
+import {Messaging} from "../features/message/sendMessage/pages/Messaging.tsx";
+import {SendMessageBox} from "../features/message/sendMessage/components/SendMessageBox.tsx";
+import {CollectionPage} from "../features/book/collection/pages/CollectionPage.tsx";
+import {NotFound404} from "../components/ui/NotFound404.tsx";
 import MainLayout from "../components/layout/MainLayout.tsx";
 import Login from "../features/auth/pages/Login.tsx";
 import Register from "../features/register/pages/Register.tsx";
@@ -52,7 +52,7 @@ export const router = createBrowserRouter(
                         },
                         {
                             path: "/search",
-                            element: <SearchSection/>
+                            element: <SearchPage/>
                         },
                         {
                             path: "/add-book",

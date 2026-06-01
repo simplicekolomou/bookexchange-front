@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { useAppDispatch } from "../../../app/hooks";
 import { useRegisterMutation } from "../../auth/api/authApi";
 import { setCredentials } from "../../auth/authSlice";
-import type { UserProfile } from "../../../types/profile.types";
+import type { UserProfile } from "../../profile/types/profile.types.ts";
 
 export const useRegisterColler = () => {
     const navigate = useNavigate();

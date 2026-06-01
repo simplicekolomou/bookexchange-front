@@ -13,7 +13,7 @@ import { Mail, ArrowLeft, CheckCircle } from 'lucide-react';
 import {Link} from "react-router-dom";
 import {useForgotPasswordMutation} from "../../auth/api/authApi.ts";
 import {useTranslation} from "react-i18next";
-import {tokens} from "../../../components/ui/theme.ts";
+import {tokens} from "../../../theme/theme.ts";
 
 export const ForgotPassword = ()=> {
     const [isSubmitted, setIsSubmitted] = useState(false);

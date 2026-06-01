@@ -8,9 +8,9 @@ import {
     useAddBookCopyMutation,
     useUpdateBookCopyMutation,
 } from "../../api/bookApi.ts";
-import { toaster } from "../../../../components/toaster/toasterInstance.tsx";
-import { Availability, BookStateLabel } from "../../../../types/book.types.ts";
-import type { isbns } from "../../../../types/book.types.ts";
+import { toaster } from "../../../../components/ui/toasterInstance.tsx";
+import { Availability, BookStateLabel } from "../../types/book.types.ts";
+import type { isbns } from "../../types/book.types.ts";
 
 // -------------------------------------------------------------------
 // 1. Types & paramètres du hook

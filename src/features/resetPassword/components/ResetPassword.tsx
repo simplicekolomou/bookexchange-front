@@ -4,7 +4,7 @@ import {Button, Input, VStack, Text, Flex, Box, Alert} from "@chakra-ui/react";
 import React, {type FormEvent, useState} from "react";
 import {useNavigate, useSearchParams} from "react-router-dom";
 import {CheckCircle} from "lucide-react";
-import {tokens} from "../../../components/ui/theme.ts";
+import {tokens} from "../../../theme/theme.ts";
 import {useAppDispatch} from "../../../app/hooks.ts";
 import {setCredentials} from "../../auth/authSlice.ts";
 import {useTranslation} from "react-i18next";

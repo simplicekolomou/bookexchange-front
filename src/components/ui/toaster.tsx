@@ -8,7 +8,7 @@ import {
     Toast,
     Button,
 } from "@chakra-ui/react"
-import {toaster} from "../toaster/toasterInstance.tsx";
+import {toaster} from "./toasterInstance.tsx";
 
 /**
  * Dans Chakra UI V3, le système de toaster est devenu completement paramétrable et c'est ici que cela est donc géré.

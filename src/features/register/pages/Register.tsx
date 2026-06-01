@@ -1,4 +1,4 @@
-import {tokens} from "../../../components/ui/theme.ts";
+import {tokens} from "../../../theme/theme.ts";
 import {RegisterForm} from "../components/RegisterForm.tsx";
 import {Box, Flex} from "@chakra-ui/react";
 
