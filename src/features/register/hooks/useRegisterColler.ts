@@ -1,8 +1,8 @@
-import { useMemo, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import {email, z} from "zod";
 import { useTranslation } from "react-i18next";
 import { useAppDispatch } from "../../../app/hooks";
 import { useRegisterMutation } from "../../auth/api/authApi";
@@ -17,36 +17,29 @@ export const useRegisterColler = () => {
     const [registerUser, { isSuccess: isRegisterSuccess }] = useRegisterMutation();
 
     // Schéma Zod avec messages localisés (recréé si la langue change)
-    const schema = useMemo(
-        () =>
-            z
-                .object({
-                    firstName: z
-                        .string()
-                        .min(1, t("validation.firstNameRequired"))
-                        .max(50, t("validation.firstNameLength")),
-                    lastName: z
-                        .string()
-                        .min(1, t("validation.lastNameRequired"))
-                        .max(50, t("validation.lastNameLength")),
-                    email: z
-                        .string()
-                        .min(1, t("validation.emailRequired"))
-                        .email(t("validation.invalidEmail")),
-                    password: z
-                        .string()
-                        .min(1, t("validation.passwordRequired"))
-                        .min(6, t("validation.passwordMinLength")),
-                    confirmPassword: z
-                        .string()
-                        .min(1, t("validation.confirmPasswordRequired")),
-                })
-                .refine((data) => data.password === data.confirmPassword, {
-                    message: t("validation.passwordsMustMatch"),
-                    path: ["confirmPassword"],
-                }),
-        [t]
-    );
+    const schema = z.object({
+        firstName: z
+            .string()
+            .min(2, t("validation.firstNameMinLength"))
+            .max(100, t("validation.firstNameMaxLength")),
+        lastName: z
+            .string()
+            .min(2, t("validation.lastNameMinLength"))
+            .max(60, t("validation.lastNameMaxLength")),
+        email: z
+            .string()
+            .min(2, t("validation.requiredEmail"))
+            .pipe(email(t("validation.invalidEmail"))),
+        password: z
+            .string()
+            .min(6, t("validation.passwordMinLength")),
+        confirmPassword: z
+            .string()
+        })
+        .refine((data) => data.password === data.confirmPassword, {
+            message: t("validation.passwordsMustMatch"),
+            path: ["confirmPassword"],
+        });
 
     type RegisterForm = z.infer<typeof schema>;
 
@@ -62,10 +55,10 @@ export const useRegisterColler = () => {
     });
 
     // Réinitialise l’erreur locale dès que l’utilisateur modifie un champ
-    useEffect(() => {
+    /* useEffect(() => {
         const subscription = form.watch(() => setLocalError(""));
         return () => subscription.unsubscribe();
-    }, [form.watch]);
+    }, [form.watch]);*/
 
     const onSubmit = async (data: RegisterForm) => {
         setLocalError("");

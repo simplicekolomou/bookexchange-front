@@ -47,8 +47,8 @@ export default function LoginForm() {
                         <Card.Body>
                             {localError && (
                                 <Alert.Root status="error" mb={tokens.spacing.md}>
-                                    <Alert.Indicator />
-                                    <Alert.Title>{localError}</Alert.Title>
+                                    <Alert.Indicator color="red.500" fontWeight="bold"/>
+                                    <Alert.Title color="red.500" fontWeight="bold">{localError}</Alert.Title>
                                 </Alert.Root>
                             )}
 
@@ -58,25 +58,29 @@ export default function LoginForm() {
                                     <Field.RequiredIndicator />
                                     <Input
                                         type="email"
+                                        autoComplete="email"
+                                        aria-label="Email"
                                         {...register("email")}
                                         bg="transparent"
-                                        borderColor={errors.email ? "red.500" : "gray.300"}
+                                        borderColor={errors.email ? "red.500" : "gray.200"}
                                     />
                                     {errors.email && (
-                                        <Field.ErrorText>{errors.email.message}</Field.ErrorText>
+                                        <Field.ErrorText color="red.500" fontWeight="bold">{errors.email.message}</Field.ErrorText>
                                     )}
                                 </Field.Root>
 
                                 <Field.Root invalid={!!errors.password}>
                                     <Field.Label>{t("field.password")}</Field.Label>
                                     <Input
+                                        aria-label="Password"
+                                        autoComplete="current-password"
                                         type="password"
                                         {...register("password")}
                                         bg="transparent"
-                                        borderColor={errors.password ? "red.500" : "gray.300"}
+                                        borderColor={errors.password ? "red.500" : "gray.200"}
                                     />
                                     {errors.password && (
-                                        <Field.ErrorText>{errors.password.message}</Field.ErrorText>
+                                        <Field.ErrorText color="red.500" fontWeight="bold">{errors.password.message}</Field.ErrorText>
                                     )}
                                 </Field.Root>
                             </Stack>

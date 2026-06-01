@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useForm, useFieldArray, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import {url, z} from "zod";
 import { useTranslation } from "react-i18next";
 import { createListCollection } from "@chakra-ui/react";
 import {
@@ -17,7 +17,7 @@ import type { isbns } from "../../../../types/book.types.ts";
 // -------------------------------------------------------------------
 export interface BookFormProps {
     mode: "add" | "edit";
-    initialData?: Partial<FormValues>;
+    initialData?: Partial<BookForm>;
     onSubmitSuccess?: () => void;
     bookId?: number; // requis en mode "edit"
 }
@@ -38,23 +38,42 @@ const authorSchema = z.object({
     name: z.string().min(1, { message: "Author name is required" }),
 });
 
-const formSchema = z.object({
-    title: z.string().min(1, { message: "Title is required" }),
-    authors: z.array(authorSchema).min(1, "At least one author is required"),
+const bookFormSchema = z.object({
+    title: z
+        .string()
+        .min(1, { message: "Title is required" }),
+    authors: z
+        .array(authorSchema)
+        .min(1, "At least one author is required"),
     isbns: z
         .string()
         .refine(isValidISBN, { message: "Invalid ISBN (must be ISBN-10 or ISBN-13)" }),
-    bookState: z.enum(conditionEnum, { message: "Invalid book state" }),
-    format: z.string().min(1, "Format is required"),
-    edition: z.string().min(1, "Edition is required"),
-    coverImage: z.string().url().optional().or(z.literal("")),
-    userCoverImage: z.instanceof(File).nullable(),
-    description: z.string().min(1, "Description is required"),
-    isAvailable: z.boolean(),
-    availability: z.enum(availabilityEnum, { message: "Invalid availability" }),
+    bookState: z
+        .enum(conditionEnum, { message: "Invalid book state" }),
+    format: z
+        .string()
+        .min(1, "Format is required"),
+    edition: z
+        .string()
+        .min(1, "Edition is required"),
+    coverImage: z
+        .string()
+        .pipe(url())
+        .optional()
+        .or(z.literal("")),
+    userCoverImage: z
+        .instanceof(File)
+        .nullable(),
+    description: z
+        .string()
+        .min(1, "Description is required"),
+    isAvailable: z
+        .boolean(),
+    availability: z
+        .enum(availabilityEnum, { message: "Invalid availability" }),
 });
 
-type FormValues = z.infer<typeof formSchema>;
+type BookForm = z.infer<typeof bookFormSchema>;
 
 // -------------------------------------------------------------------
 // 3. Fonctions de validation ISBN (conservées)
@@ -97,21 +116,6 @@ export const useAddbookController = ({
                                      }: BookFormProps) => {
     const { t } = useTranslation(["common", "addBook"]);
 
-    // Valeurs par défaut (fusion avec initialData)
-    const defaultValues: FormValues = {
-        title: initialData?.title ?? "",
-        authors: initialData?.authors ?? [{ name: "" }],
-        isbns: initialData?.isbns ?? "",
-        bookState: initialData?.bookState ?? conditionEnum[0],
-        format: initialData?.format ?? "",
-        edition: initialData?.edition ?? "",
-        coverImage: initialData?.coverImage ?? undefined,
-        userCoverImage: null,
-        description: initialData?.description ?? "",
-        isAvailable: initialData?.isAvailable ?? false,
-        availability: initialData?.availability ?? availabilityEnum[0],
-    };
-
     const {
         control,
         register,
@@ -120,9 +124,21 @@ export const useAddbookController = ({
         formState: { errors, isSubmitting },
         setValue,
         watch,
-    } = useForm<FormValues>({
-        resolver: zodResolver(formSchema),
-        defaultValues,
+    } = useForm<BookForm>({
+        resolver: zodResolver(bookFormSchema),
+        defaultValues: {
+            title: initialData?.title ?? "",
+            authors: initialData?.authors ?? [{ name: "" }],
+            isbns: initialData?.isbns ?? "",
+            bookState: initialData?.bookState ?? conditionEnum[0],
+            format: initialData?.format ?? "",
+            edition: initialData?.edition ?? "",
+            coverImage: initialData?.coverImage ?? undefined,
+            userCoverImage: null,
+            description: initialData?.description ?? "",
+            isAvailable: initialData?.isAvailable ?? false,
+            availability: initialData?.availability ?? availabilityEnum[0],
+        }
     });
 
     const [addBookCopy] = useAddBookCopyMutation();
@@ -142,7 +158,7 @@ export const useAddbookController = ({
     }, [fields, append]);
 
     // Soumission
-    const onSubmit: SubmitHandler<FormValues> = async (data) => {
+    const onSubmit: SubmitHandler<BookForm> = async (data) => {
         try {
             const bookData = {
                 id: bookId,
@@ -176,7 +192,7 @@ export const useAddbookController = ({
             });
 
             onSubmitSuccess?.();
-            if (mode === "add") reset(defaultValues);
+            if (mode === "add") reset();
         } catch (error) {
             console.error("Failed to save book:", error);
             toaster.create({
@@ -192,7 +208,7 @@ export const useAddbookController = ({
     };
 
     // Reset manuel
-    const handleReset = () => reset(defaultValues);
+    const handleReset = () => reset();
 
     // Collections pour les Select Chakra
     const conditionCollection = createListCollection({

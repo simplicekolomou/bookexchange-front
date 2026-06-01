@@ -16,7 +16,7 @@ import { useRegisterColler } from "../hooks/useRegisterColler"; // ajustez le ch
 
 export const RegisterForm = () => {
     const { t } = useTranslation("auth");
-    const { onSubmit, localError, form, inputProps } = useRegisterColler();
+    const { onSubmit, localError, form } = useRegisterColler();
     const {
         register,
         handleSubmit,
@@ -29,10 +29,7 @@ export const RegisterForm = () => {
                 <Heading as="h1" fontSize="3xl" mb={tokens.spacing.xl}>
                     {t("registration.title")}
                 </Heading>
-
-
                 <DoubleButton />
-
                 <Fieldset.Content>
                     <Card.Root
                         borderColor="border.default"
@@ -48,8 +45,8 @@ export const RegisterForm = () => {
                         <Card.Body>
                             {localError && (
                                 <Alert.Root status="error" mb={tokens.spacing.md}>
-                                    <Alert.Indicator />
-                                    <Alert.Title>{localError}</Alert.Title>
+                                    <Alert.Indicator color="red.500"/>
+                                    <Alert.Title color="red.500" fontWeight="bold">{localError}</Alert.Title>
                                 </Alert.Root>
                             )}
 
@@ -59,12 +56,13 @@ export const RegisterForm = () => {
                                         <Field.Label>{t("field.firstName")} *</Field.Label>
                                         <Input
                                             type="text"
+                                            autoComplete="first-name"
                                             placeholder={t("field.firstNamePlaceholder")}
                                             {...register("firstName")}
-                                            {...inputProps}
+                                            borderColor={errors.firstName ? "red.500" : "gray.200"}
                                         />
                                         {errors.firstName && (
-                                            <Field.ErrorText>{errors.firstName.message}</Field.ErrorText>
+                                            <Field.ErrorText color="red.500" fontWeight="bold">{errors.firstName.message}</Field.ErrorText>
                                         )}
                                     </Field.Root>
 
@@ -72,12 +70,13 @@ export const RegisterForm = () => {
                                         <Field.Label>{t("field.lastName")} *</Field.Label>
                                         <Input
                                             type="text"
+                                            autoComplete="last-name"
                                             placeholder={t("field.lastNamePlaceholder")}
                                             {...register("lastName")}
-                                            {...inputProps}
+                                            borderColor={errors.lastName ? "red.500" : "gray.200"}
                                         />
                                         {errors.lastName && (
-                                            <Field.ErrorText>{errors.lastName.message}</Field.ErrorText>
+                                            <Field.ErrorText color="red.500" fontWeight="bold">{errors.lastName.message}</Field.ErrorText>
                                         )}
                                     </Field.Root>
                                 </Flex>
@@ -86,12 +85,13 @@ export const RegisterForm = () => {
                                     <Field.Label>{t("field.email")} *</Field.Label>
                                     <Input
                                         type="email"
+                                        autoComplete="email"
                                         placeholder={t("field.emailPlaceholder")}
                                         {...register("email")}
-                                        {...inputProps}
+                                        borderColor={errors.email ? "red.500" : "gray.200"}
                                     />
                                     {errors.email && (
-                                        <Field.ErrorText>{errors.email.message}</Field.ErrorText>
+                                        <Field.ErrorText color="red.500" fontWeight="bold">{errors.email.message}</Field.ErrorText>
                                     )}
                                 </Field.Root>
 
@@ -99,12 +99,13 @@ export const RegisterForm = () => {
                                     <Field.Label>{t("field.password")} *</Field.Label>
                                     <Input
                                         type="password"
+                                        autoComplete="current-password"
                                         placeholder={t("field.passwordPlaceholder")}
                                         {...register("password")}
-                                        {...inputProps}
+                                        borderColor={errors.password ? "red.500" : "gray.200"}
                                     />
                                     {errors.password && (
-                                        <Field.ErrorText>{errors.password.message}</Field.ErrorText>
+                                        <Field.ErrorText color="red.500" fontWeight="bold">{errors.password.message}</Field.ErrorText>
                                     )}
                                 </Field.Root>
 
@@ -112,12 +113,13 @@ export const RegisterForm = () => {
                                     <Field.Label>{t("field.passwordConfirmation")} *</Field.Label>
                                     <Input
                                         type="password"
+                                        autoComplete="current-password"
                                         placeholder={t("field.passwordConfirmationPlaceholder")}
                                         {...register("confirmPassword")}
-                                        {...inputProps}
+                                        borderColor={errors.confirmPassword ? "red.500" : "gray.200"}
                                     />
                                     {errors.confirmPassword && (
-                                        <Field.ErrorText>{errors.confirmPassword.message}</Field.ErrorText>
+                                        <Field.ErrorText color="red.500" fontWeight="bold">{errors.confirmPassword.message}</Field.ErrorText>
                                     )}
                                 </Field.Root>
                             </Stack>

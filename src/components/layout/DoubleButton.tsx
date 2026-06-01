@@ -1,28 +1,21 @@
-import { useLocation, useNavigate } from "react-router-dom";
-import {useEffect, useState} from "react";
+import { useNavigate } from "react-router-dom";
+import {useState} from "react";
 import { useTranslation } from "react-i18next";
 import {Button, Flex} from "@chakra-ui/react";
 import {tokens} from "../ui/theme.ts";
 
 export const DoubleButton = () => {
-    const [activeButton, setActiveButton] = useState('login');
+    const pathName = window.location.pathname.toLowerCase();
+    const [activeButton, setActiveButton] = useState(pathName);
     const navigate = useNavigate();
-    const location = useLocation();
     const { t } = useTranslation("auth");
 
-    const goto = (link: string, button: string) => {
-        setActiveButton(button);
+    const goto = (link: string,) => {
         navigate(link);
     };
 
-    // Met à jour l'état selon l'URL actuelle (sans dépendance sur activeButton)
-    useEffect(() => {
-        if (location.pathname === "/LoginForm") {
-            setActiveButton("login");
-        } else if (location.pathname === "/RegisterForm") {
-            setActiveButton("register");
-        }
-    }, [location.pathname]); // ← ne dépend que de l'URL
+    const variantLogin = activeButton.includes("login") ? "solid" : "outline";
+    const variantRegister = activeButton.includes("register") ? "solid" : "outline";
 
     return (
         <Flex
@@ -31,18 +24,26 @@ export const DoubleButton = () => {
             justify="center"
         >
             <Button
-                variant={activeButton === "login" ? "solid" : "outline"}
-                className={`btn ${activeButton === "login" ? "" : "inactive"}`}
-                onClick={() => goto("/Login", "login")}
+                variant={variantLogin}
+                onClick={() => {
+                        goto("/Login");
+                        setActiveButton("login");
+                    }
+                }
+                width="40%"
             >
                 {t("login.action")}
             </Button>
             <Button
-                variant={activeButton === "register" ? "solid" : "outline"}
-                className={`btn ${activeButton === "register" ? "" : "inactive"}`}
-                onClick={() => goto("/Register", "register")}
+                variant={variantRegister}
+                onClick={() => {
+                        goto("/Register");
+                        setActiveButton("register");
+                    }
+                }
+                width="40%"
             >
-                {t("forgotPassword.action")}
+                {t("registration.action")}
             </Button>
         </Flex>
     )

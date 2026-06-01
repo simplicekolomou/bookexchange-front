@@ -1,35 +1,33 @@
 import { Box, Flex, Button, useBreakpointValue } from "@chakra-ui/react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Search, Plus, BookOpen, Send, LogIn } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { LogoWithText } from "./LogoWithText";
 import { UserMenu } from "./UserMenu";
-import {useAppSelector} from "../../app/hooks.ts";
-import {useGetMyBooksQuery} from "../../features/book/api/bookApi.ts";
+import { useGetMyBooksQuery } from "../../features/book/api/bookApi";
+import type {User} from "../../features/auth/types/auth.types.ts";
 
 export const Navbar = () => {
     const navigate = useNavigate();
-    const location = useLocation();
     const { t } = useTranslation(["common", "collections"]);
+    const pathname = window.location.pathname;
+    const isAuthenticated = true;
 
-    // Auth depuis le store
-    const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
-    const user = useAppSelector((state) => state.auth.user);
+    const user: User = localStorage.getItem("auth_user") as unknown as User;
 
-    // Nombre de livres (uniquement si connecté)
+    console.log("user", user);
+
     const { data: books = [] } = useGetMyBooksQuery(undefined, {
         skip: !isAuthenticated,
     });
 
-    // Visibilité du texte selon la taille d'écran
     const showText = useBreakpointValue({ base: false, md: true }) ?? false;
 
-    // Boutons visibles uniquement pour les utilisateurs connectés
+    // Boutons affichés UNIQUEMENT si l'utilisateur est connecté
     const renderAuthenticatedButtons = () => {
-        const pathname = location.pathname;
         const buttons = [];
 
-        if (user && !pathname.endsWith("/search")) {
+        if (user && !pathname.startsWith("/search")) {
             buttons.push(
                 <Button key="search" onClick={() => navigate("/search")} variant="solid">
                     <Search size={16} />
@@ -38,7 +36,7 @@ export const Navbar = () => {
             );
         }
 
-        if (user && !pathname.endsWith("/add-book")) {
+        if (user && !pathname.startsWith("/add-book")) {
             buttons.push(
                 <Button key="add" onClick={() => navigate("/add-book")} variant="solid">
                     <Plus size={16} />
@@ -47,7 +45,7 @@ export const Navbar = () => {
             );
         }
 
-        if (user && !pathname.endsWith("/collection")) {
+        if (user && !pathname.startsWith(`/user/${user.id}/collection`)) {
             buttons.push(
                 <Button
                     key="collection"
@@ -60,7 +58,7 @@ export const Navbar = () => {
             );
         }
 
-        if (pathname !== "/dms") {
+        if (user && !pathname.startsWith("/dms")) {
             buttons.push(
                 <Button
                     key="dms"
@@ -103,14 +101,12 @@ export const Navbar = () => {
                 gap={2}
                 wrap="nowrap"
             >
-                {/* Logo + titre (le nombre de livres est donné si connecté) */}
                 <LogoWithText
                     title={t("common:brand.title")}
                     direction="row"
                     nbBooks={isAuthenticated ? books.length : undefined}
                 />
 
-                {/* Partie droite : boutons d'action + menu utilisateur (si connecté) */}
                 <Flex gap={2} align="center" wrap="nowrap">
                     {isAuthenticated ? (
                         <>
@@ -118,10 +114,7 @@ export const Navbar = () => {
                             <UserMenu />
                         </>
                     ) : (
-                        <Button
-                            variant="solid"
-                            onClick={() => navigate("/login")}
-                        >
+                        <Button variant="solid" onClick={() => navigate("/login")}>
                             {t("common:actions.start")} <LogIn size={16} style={{ marginLeft: 8 }} />
                         </Button>
                     )}

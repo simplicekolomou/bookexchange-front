@@ -19,12 +19,11 @@ export const useLoginController = () => {
     const schema = z.object({
         email: z
             .string()
-            .nonempty(t("validation.emailRequired"))
-            .pipe(email(t("validation.emailInvalid"))),
+            .nonempty(t("validation.requiredEmail"))
+            .pipe(email(t("validation.invalidEmail"))),
         password: z
             .string()
-            .nonempty(t("validation.passwordRequired"))
-            .min(6, t("validation.passwordMinLength")),
+            .nonempty(t("validation.requiredPassword"))
     });
 
     type LoginForm = z.infer<typeof schema>;
