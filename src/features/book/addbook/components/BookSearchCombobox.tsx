@@ -7,108 +7,46 @@ import {
     Span,
     Spinner,
     Image,
-    useListCollection, Box,
+    Box,
 } from "@chakra-ui/react";
-import {useEffect, useMemo, useState} from "react";
 import type {VolumeShort} from "../../types/book.types.ts";
-import { useGetBookSuggestionsQuery } from "../../api/bookApi.ts"; // adjust path if needed
+import { useAddbookController } from "../hooks/useAddbookController.ts";
+import {tokens} from "../../../../theme/theme.ts";
 
 type Props = {
-    lang?: string;              // default "fre"
-    limit?: number;             // default 10
-    initialQuery?: string;
     onSelect: (item: VolumeShort) => void;
 };
 
-export function BookSearchCombobox({
-                                       lang = "fre",
-                                       limit = 5,
-                                       initialQuery = "",
-                                       onSelect,
-                                   }: Props) {
-    const [inputValue, setInputValue] = useState(initialQuery);
-
-    // Chakra collection state
-    const { collection, set } = useListCollection<VolumeShort>({
-        initialItems: [],
-        itemToString: (item) => item.title,
-        itemToValue: (item) => item.id,
-    });
-
-    // Debounce
-    const debounced = useDebounced(inputValue, 400);
-
-    // Compute query args (title/author) from debounced input
-    const searchArgs = useMemo(() => {
-        const q = debounced.trim();
-        if (!q) return null;
-
-        const dash = q.indexOf(" - ");
-        const author = dash > 0 ? q.slice(0, dash).trim() : undefined;
-        const title = dash > 0 ? q.slice(dash + 3).trim() : q;
-
-        return {
-            title: title || undefined,
-            author: author || undefined,
-            lang,
-            limit,
-        };
-    }, [debounced, lang, limit]);
-
-    // 🔁 Call backend via RTK Query
-    const {
-        data,
-        isFetching,
-        isError,
-        error,
-    } = useGetBookSuggestionsQuery(searchArgs!, {
-        skip: !searchArgs, // don't call if query empty
-    });
-
-    // Sync RTK Query data into Chakra collection
-    useEffect(() => {
-        if (!searchArgs) {
-            set([]);
-            return;
-        }
-        if (data) {
-            set(data);
-        } else if (!isFetching && !data) {
-            set([]);
-        }
-    }, [data, isFetching, searchArgs, set]);
-
-    // Normalize error message
-    let errorMessage: string | null = null;
-    if (isError && error) {
-        if ("status" in error) {
-            errorMessage = typeof error.data === "string"
-                ? error.data
-                : `HTTP ${error.status}`;
-        } else {
-            errorMessage = error.message ?? "Network error";
-        }
-    }
+export function BookSearchCombobox({ onSelect }: Props) {
+    const controller = useAddbookController();
 
     return (
         <Combobox.Root
-            collection={collection}
+            collection={controller.collection}
             placeholder="Rechercher un livre"
             openOnClick={true}
-            inputValue={inputValue}                               // <— control value
+            inputValue={controller.inputValue}
             onInputValueChange={(e) => {
-                if (e.reason === "input-change") {                       // <— only update when user types
-                    setInputValue(e.inputValue);
+                if (e.reason === "input-change") {
+                    controller.setInputValue(e.inputValue);
                 }
             }}
             positioning={{ sameWidth: false, placement: "bottom-end" }}
         >
             <Combobox.Label>Rechercher un livre</Combobox.Label>
             <Combobox.Control>
-                <Combobox.Input placeholder="Livre à chercher" />
-                <Combobox.IndicatorGroup>
+                <Combobox.Input
+                    placeholder="Livre à chercher"
+                    borderColor="gray.200"
+                />
+                <Combobox.IndicatorGroup
+                    background ={tokens.colors.primary}
+                    borderRadius = "5px"
+                >
                     <Combobox.ClearTrigger />
-                    <Combobox.Trigger />
+                    <Combobox.Trigger
+                        color="white"
+                    />
                 </Combobox.IndicatorGroup>
             </Combobox.Control>
 
@@ -116,32 +54,32 @@ export function BookSearchCombobox({
                 <Combobox.Positioner>
                     <Combobox.Content
                         minW="lg"
-                        bg="white"                   // 👈 force light background
-                        color="gray.800"             // 👈 readable text
+                        bg="white"
+                        color="gray.800"
                         border="1px solid"
                         borderColor="gray.200"
                         boxShadow="md"
-                        zIndex={10}                  // ensures it stays above everything
+                        zIndex={10}                  
                     >
-                        {isFetching ? (
+                        {controller.isFetching ? (
                             <HStack p="2">
                                 <Spinner size="xs" borderWidth="1px" />
                                 <Span>Recherche…</Span>
                             </HStack>
-                        ) : errorMessage ? (
+                        ) : controller.errorMessage ? (
                             <Span p="2" color="fg.error">
-                                {errorMessage}
+                                {controller.errorMessage}
                             </Span>
-                        ) : collection.items?.length ? (
-                            collection.items.map((book: VolumeShort) => (
+                        ) : controller.collection.items?.length ? (
+                            controller.collection.items.map((book: VolumeShort) => (
                                 <Combobox.Item
                                     bg="white"
-                                    _hover={{ bg: "gray.100" }}      // 👈 light grey hover
-                                    _focus={{ bg: "gray.100" }}      // 👈 same for keyboard nav
+                                    _hover={{ bg: "gray.100" }}
+                                    _focus={{ bg: "gray.100" }}
                                     key={book.id}
                                     item={book}
                                     onPointerDown={(e) => {
-                                        // prevent blur before click on some browsers
+                                        // prévenir le blur de l'input qui fermerait le combobox avant le click
                                         e.preventDefault();
                                     }}
                                     onClick={() => onSelect(book)}
@@ -178,7 +116,7 @@ export function BookSearchCombobox({
                                     <Combobox.ItemIndicator />
                                 </Combobox.Item>
                             ))
-                        ) : debounced ? (
+                        ) : controller.debouncedController.debounced ? (
                             <Span p="2" color="fg.muted">
                                 Aucun résultat
                             </Span>
@@ -192,14 +130,4 @@ export function BookSearchCombobox({
             </Portal>
         </Combobox.Root>
     );
-}
-
-/* ---------- small debounce hook ---------- */
-function useDebounced<T>(value: T, delay = 500) {
-    const [v, setV] = useState(value);
-    useEffect(() => {
-        const t = setTimeout(() => setV(value), delay);
-        return () => clearTimeout(t);
-    }, [value, delay]);
-    return v;
 }

@@ -32,7 +32,7 @@ export const EditBookPage = () => {
             mode="edit"
             initialData={initialData}
             onSubmitSuccess={() => {
-                navigate(`/bookCopy/${bookCopyId}`, { state: { reload: true }})
+                navigate(`/${bookCopyId}/details`, { state: { reload: true }})
             }}
             bookId={Number(bookCopyId)}
         />

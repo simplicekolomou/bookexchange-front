@@ -16,7 +16,6 @@ interface CollectionContentProps {
     onFilterChange: (filter: 'all' | 'available') => void;
     gridColumns?: number;
 }
-
 export const CollectionContent = ({
                                       filteredBooks,
                                       gridColumns,
@@ -28,6 +27,7 @@ export const CollectionContent = ({
                                       onFilterChange,
                                   }: CollectionContentProps) => {
     const {t} = useTranslation("collections");
+
     const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         onSearchChange(e.target.value);
     };
@@ -63,6 +63,7 @@ export const CollectionContent = ({
                         pl="40px"
                         size="lg"
                         borderRadius="md"
+                        borderColor="gray.200"
                     />
                 </Box>
 

@@ -47,10 +47,6 @@ export const router = createBrowserRouter(
                     element: <ProtectedRoute />,
                     children: [
                         {
-                            path: "/collection",
-                            element: <CollectionPage />
-                        },
-                        {
                             path: "/search",
                             element: <SearchPage/>
                         },
@@ -87,7 +83,7 @@ export const router = createBrowserRouter(
                             element: <CollectionPage/>
                         },
                         {
-                            path: "/bookCopy/:bookCopyId",
+                            path: "/:bookCopyId/details",
                             element: <BookDetailPage/>
                         }
                     ],

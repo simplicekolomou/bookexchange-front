@@ -15,8 +15,15 @@ export const AddBookPage = () => {
                 </Heading>
 
                 {/* Formulaire */}
-                <Box bg="white" borderRadius="lg" p={{ base: 4, md: 6 }} boxShadow="sm" border="1px" borderColor="gray.100">
-                        <BookForm mode="add" bookId={undefined}/>
+                <Box
+                    bg="white"
+                    borderRadius="lg"
+                    p={{ base: 4, md: 6 }}
+                    boxShadow="sm"
+                    border="1px"
+                    borderColor="gray.100"
+                >
+                    <BookForm mode="add"/>
                 </Box>
             </Container>
             <Toaster/>

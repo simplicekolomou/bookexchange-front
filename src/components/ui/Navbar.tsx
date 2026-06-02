@@ -13,9 +13,8 @@ export const Navbar = () => {
     const pathname = window.location.pathname;
     const isAuthenticated = true;
 
-    const user: User = localStorage.getItem("auth_user") as unknown as User;
+    const user: User = JSON.parse(localStorage.getItem("auth_user") ?? "null");
 
-    console.log("user", user);
 
     const { data: books = [] } = useGetMyBooksQuery(undefined, {
         skip: !isAuthenticated,
@@ -50,7 +49,10 @@ export const Navbar = () => {
                 <Button
                     key="collection"
                     variant="solid"
-                    onClick={() => navigate(`/user/${user.id}/collection`)}
+                    onClick={() => {
+                        console.log("Navigating to collection for user ID:", user.id);
+                        navigate(`/user/${user.id}/collection`)}
+                    }
                 >
                     <BookOpen size={16} />
                     {showText && <Box as="span" ms={2}>{t("common:actions.collection")}</Box>}

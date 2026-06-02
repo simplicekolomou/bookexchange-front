@@ -27,7 +27,10 @@
     },
     "description": "Description",
     "descriptionPlaceholder": "Notes personnelles sur ce livre...",
-    "noDescription": "Pas de description fournie."
+    "noDescription": "Pas de description fournie.",
+    "actions": {
+      "addAuthor": "Ajouter un auteur"
+    }
   },
   "availability": {
     "title": "Disponible pour la communauté",
@@ -47,5 +50,15 @@
       "GOOD" : "Bon",
       "DECENT" : "Décent"
     }
+  },
+  "validation": {
+    "requiredTitle": "Le titre est requis.",
+    "requiredAuthor": "L'auteur est requis.",
+    "invalidISBN": "Le format de l'ISBN est invalide. Exemple : ISBN-10 or ISBN-13.",
+    "invalidFormat": "Le format doit être Broché, Poche, Relié, etc.",
+    "invalidEdition": "L'édition est requise.",
+    "invalidBookState": "L'état du livre doit être Neuf, Très bon, Bon ou Décent.",
+    "requiredDescription": "La description est requise.",
+    "invalidAvailability": "La disponibilité doit être A échanger, A vendre, A donner ou Pour garder."
   }
 }

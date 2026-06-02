@@ -10,7 +10,7 @@ i18n
     .use(initReactI18next)
     .init({
         supportedLngs: ["en", "fr"],
-        ns: ["common", "auth", "collections", "home", "profile", "userMenu"], // your namespaces
+        ns: ["common", "auth", "collections", "home", "profile", "userMenu", "addBook", "message", "notification", "search"], // your namespaces
         defaultNS: "common",
         debug: import.meta.env.DEV,
         interpolation: {
