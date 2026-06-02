@@ -5,8 +5,8 @@ import {ResetPassword} from "../features/resetPassword/components/ResetPassword.
 import {BookDetailPage} from "../features/book/details/pages/BookDetailPage.tsx";
 import {ProtectedRoute} from "../routes/ProtectedRoute.tsx";
 import {SearchPage} from "../features/book/search/pages/SearchPage.tsx";
-import {AddBookPage} from "../features/book/addbook/pages/AddBookPage.tsx";
-import {EditBookPage} from "../features/book/editbook/pages/EditBookPage.tsx";
+import {AddBookPage} from "../features/book/addbook/addpages/AddBookPage.tsx";
+import {EditBookPage} from "../features/book/addbook/editpages/EditBookPage.tsx";
 import {Profile} from "../features/profile/components/Profile.tsx";
 import {Settings} from "../features/profile/components/Settings.tsx";
 import {UpdatePassword} from "../features/updatePassword/components/UpdatePassword.tsx";

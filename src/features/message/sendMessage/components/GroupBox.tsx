@@ -34,7 +34,7 @@ export const GroupBox = ({ onClose, open }: ChatBoxProps) => {
     const [localError, setLocalError] = useState<string | null>(null);
     const {t} = useTranslation("message");
 
-    // Accumulation des pages
+    // Accumulation des addpages
     useEffect(() => {
         if (!data) return;
 

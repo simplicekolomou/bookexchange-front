@@ -46,20 +46,22 @@ export const BookForm = ({ mode, initialData, onSubmitSuccess, bookId }: BookFor
     return (
         <>
             {/* Search Bar */}
-            <Box marginBottom={"1em"}>
-                <BookSearchCombobox
-                    onSelect={(b: VolumeShort) => {
-                        setValue("title", b.title);
-                        setValue("authors", (b.authors ?? [""]).map(a => ({ name: a })));
-                        setValue("isbns", pickBestIsbn(b.isbns));
-                        setValue("edition", b.publishedDate);
-                        setValue("coverImage", b.coverUrl);
-                    }}
-                />
-                <Text mt={1} fontSize="xs" color="gray.500">
-                    Astuce : tapez <b>Auteur - Titre</b> pour une recherche combinée.
-                </Text>
-            </Box>
+            {mode === "add" && (
+                <Box marginBottom={"1em"}>
+                    <BookSearchCombobox
+                        onSelect={(b: VolumeShort) => {
+                            setValue("title", b.title);
+                            setValue("authors", (b.authors ?? [""]).map(a => ({ name: a })));
+                            setValue("isbns", pickBestIsbn(b.isbns));
+                            setValue("edition", b.publishedDate);
+                            setValue("coverImage", b.coverUrl);
+                        }}
+                    />
+                    <Text mt={1} fontSize="xs" color="gray.500">
+                        Astuce : tapez <b>Auteur - Titre</b> pour une recherche combinée.
+                    </Text>
+                </Box>
+            )}
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
                 <VStack gap={6} align="stretch">
                     {/* Informations de base */}
@@ -112,6 +114,7 @@ export const BookForm = ({ mode, initialData, onSubmitSuccess, bookId }: BookFor
 
                                     <Button
                                         m="auto"
+                                        width="40%"
                                         onClick={() => append({ name: '' })}
                                     >
                                         {t("addBook:book.actions.addAuthor")}
@@ -337,7 +340,7 @@ export const BookForm = ({ mode, initialData, onSubmitSuccess, bookId }: BookFor
                             <Button
                                 variant="outline"
                                 onClick={handleReset}
-                                size="lg"
+                                width="30%"
                                 flex={{ base: 1, sm: "none" }}
                             >
                                 {t("common:actions.reset")}
@@ -345,11 +348,11 @@ export const BookForm = ({ mode, initialData, onSubmitSuccess, bookId }: BookFor
                         </Show>
                         <Button
                             type="submit"
-                            size="lg"
+                            width="30%"
                             flex={{ base: 1, sm: "none" }}
                             loading={isSubmitting}
                         >
-                            {mode === "add" ? t("common:actions.add") : t("common:actions.edit")}
+                            {mode === "add" ? t("common:actions.add") : t("common:actions.save")}
                         </Button>
                     </Flex>
                 </VStack>

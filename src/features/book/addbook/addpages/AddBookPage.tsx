@@ -7,11 +7,11 @@ export const AddBookPage = () => {
     const { t } = useTranslation(["common", "addBook"]);
 
     return (
-        <Box className="add-book-container">
-            <Container maxW="4xl" py={8}>
+        <Box mb={5}>
+            <Container maxW="4xl">
                 {/* En-tête du formulaire */}
-                <Heading as="h1" fontSize="3xl" mb="6" pt="4">
-                    {t("addBook:title")}
+                <Heading as="h1" fontSize="3xl" mb="5" pt="5">
+                    {t("addBook:addTitle")}
                 </Heading>
 
                 {/* Formulaire */}

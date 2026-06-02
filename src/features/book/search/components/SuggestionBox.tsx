@@ -176,7 +176,7 @@ export const SuggestionBox = ({
         return [];
     }
 
-    // accumulation des pages
+    // accumulation des addpages
 
     useEffect(() => {
         const container = contentRef.current;

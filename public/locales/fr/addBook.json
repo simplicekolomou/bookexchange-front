@@ -1,5 +1,6 @@
 {
-  "title": "Ajouter un livre",
+  "addTitle": "Ajouter un livre",
+  "editTitle": "Modifier le livre",
   "book": {
     "basicInfo": "Informations de base",
     "title" : "Titre *",
