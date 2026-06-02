@@ -18,7 +18,9 @@
     "search": "Rechercher",
     "reset": "Réinitialiser",
     "collection": "Ma collection",
-    "dms": "Mes messages"
+    "dms": "Mes messages",
+    "back": "Retour",
+    "ownerMessage": "Envoyer un message au propriétaire"
   },
   "greeting": "Bonjour, {{name}} !",
   "book": {
