@@ -1,49 +1,41 @@
-import { useTranslation } from "react-i18next";
-import { tokens } from "../../../../theme/theme.ts";
+import type {BookCopy} from "../../types/book.types.ts";
+import type {UserProfile} from "../../../profile/types/profile.types.ts";
+import { useState } from "react";
+import { useBreakpointValue } from "@chakra-ui/react";
+export const useSearchController = (onSelect?: (item: BookCopy | UserProfile)=> void) =>{
+    const [searchType, setSearchType]= useState<"books" | "users">("books");
+    const [selected, setSelected] = useState<BookCopy | UserProfile | null>(null);
+    const viewMode = useBreakpointValue<"grid" | "list">({ base: "grid", md: "list" }) ?? "list";
 
-type StateValues = "new" | "veryGood" | "good" | "decent" | "";
+    const handleSelectItem = (item: BookCopy | UserProfile) =>{
+        setSelected(item);
+        onSelect?.(item);
+    }
 
-export type FilterValues = {
-    availability: boolean;
-    bookState: StateValues;
-};
+    const handleSearchTypeChange = (v: string) =>{
+        setSearchType(v as "books" | "users");
+        setSelected(null);
+    }
 
-interface UseFilterBoxOptions {
-    values?: Partial<FilterValues>;
-    onChange?: (values: FilterValues) => void;
-}
-
-const defaultValues: FilterValues = {
-    availability: false,
-    bookState: "",
-};
-
-export const BOOK_STATES = ["new", "veryGood", "good", "decent"] as const;
-export const useSearchController = ({ values, onChange }: UseFilterBoxOptions) => {
-    const { t } = useTranslation("search");
-
-    const filterState: FilterValues = { ...defaultValues, ...(values || {}) };
-
-    const handleAvailabilityChange = (details: unknown) => {
-        const isChecked = Boolean(
-            details && (details as { checked?: boolean }).checked
-        );
-        onChange?.({ ...filterState, availability: isChecked });
+    /**
+     * Type guard pour déterminer si le résultat sélectionné est un UserProfile ou un BookCopy
+     * Stratégie : vérifier la présence de propriétés spécifiques(email) et à la fois l'absence de propriétés
+     * spécifiques(isbn) pour différencier les deux types
+     * @param x - l'item sélectionné qui peut être soit un BookCopy, soit un UserProfile, ou null/undefined
+     * @returns true si x est un UserProfile, false sinon
+     */
+    const isUser = (x: BookCopy | UserProfile | null | undefined): x is UserProfile => {
+        return x !== null && typeof x === "object" && "email" in x && !("isbn" in x);
     };
 
-    const handleStateChange = (details: unknown) => {
-        const val =
-            typeof details === "string"
-                ? details
-                : (details && (details as { value?: string | null }).value) ?? "";
-        onChange?.({ ...filterState, bookState: val as StateValues });
-    };
+    console.log("C'est un user ? ", isUser(selected as BookCopy | UserProfile));
 
     return {
-        t,
-        tokens,
-        filterState,
-        handleAvailabilityChange,
-        handleStateChange,
-    };
+        searchType,
+        selected,
+        viewMode,
+        handleSelectItem,
+        handleSearchTypeChange,
+        isUser,
+    }
 }

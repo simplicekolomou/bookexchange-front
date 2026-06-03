@@ -1,43 +1,31 @@
-import {Box, useBreakpointValue} from "@chakra-ui/react";
-import { useState } from "react";
+import { Box } from "@chakra-ui/react";
 import type { BookCopy } from "../../types/book.types.ts";
 import type { UserProfile } from "../../../profile/types/profile.types.ts";
 import { SearchTabs } from "./SearchTabs.tsx";
 import { SuggestionBox } from "./SuggestionBox.tsx";
 import { BookCard } from "../../../../components/ui/BookCard.tsx";
 import { UserCard } from "../../../../components/ui/UserCard.tsx";
+import {useSearchController} from "../hooks/useSearchController.ts";
 
 type Props = {
     onSelect?: (item: BookCopy | UserProfile) => void;
 };
 
 export const SearchBar = ({ onSelect }: Props) => {
-    const [searchType, setSearchType] = useState<"books" | "users">("books");
-    const [selected, setSelected] = useState<BookCopy | UserProfile | null>(null);
-    const viewMode = useBreakpointValue<"grid" | "list">({ base: "grid", md: "list" }) ?? "list";
-
-    function handleSelectItem(item: BookCopy | UserProfile) {
-        setSelected(item);
-        if (onSelect) onSelect(item);
-    }
-
-    /**
-     * Type guard pour vérifier si x est un UserProfile
-     * @param x L'élément à vérifier
-     * @returns true si x est un UserProfile, false sinon
-     */
-    function isUser(x: unknown): x is UserProfile {
-        return typeof x === "object" && x !== null && ("firstName" in x || "lastName" in x);
-    }
+    const {
+        searchType,
+        selected,
+        viewMode,
+        handleSelectItem,
+        handleSearchTypeChange,
+        isUser,
+    } = useSearchController(onSelect);
 
     return (
         <>
             <SearchTabs
                 value={searchType}
-                onChange={(v) => {
-                    setSearchType(v as "books" | "users");
-                    setSelected(null);
-                }}
+                onChange={handleSearchTypeChange}
             />
             <Box position="relative">
                 <SuggestionBox
@@ -47,7 +35,6 @@ export const SearchBar = ({ onSelect }: Props) => {
                 />
             </Box>
 
-            {/* Affichage du BookCard ou UserCard lorsqu'un item est sélectionné */}
             <Box mt={4} w={"50%"} mx="auto" display="flex" justifyContent="center" alignItems="center">
                 {selected ? (
                     isUser(selected) ? (

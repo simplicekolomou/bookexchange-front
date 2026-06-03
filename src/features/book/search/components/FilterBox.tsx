@@ -1,5 +1,5 @@
 import { Box, Checkbox, RadioGroup, Stack } from "@chakra-ui/react";
-import {BOOK_STATES, type FilterValues, useSearchController} from "../hooks/useSearchController.ts";
+import {BOOK_STATES, type FilterValues, useFilterController} from "../hooks/useFilterController.ts";
 
 interface Props {
     values?: Partial<FilterValues>;
@@ -13,7 +13,7 @@ export const FilterBox = ({ values, onChange }: Props) => {
         filterState,
         handleAvailabilityChange,
         handleStateChange,
-    } = useSearchController({ values, onChange });
+    } = useFilterController({ values, onChange });
 
     return (
         <Box display="flex" flexDirection="column" gap={4} mb={4} mt={2}>
