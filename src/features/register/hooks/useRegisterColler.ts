@@ -1,20 +1,19 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {email, z} from "zod";
 import { useTranslation } from "react-i18next";
 import { useAppDispatch } from "../../../app/hooks";
-import { useRegisterMutation } from "../../auth/api/authApi";
 import { setCredentials } from "../../auth/authSlice";
-import type { UserProfile } from "../../profile/types/profile.types.ts";
+import {useRegisterMutation} from "../api/registerApi.ts";
 
 export const useRegisterColler = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const { t } = useTranslation("auth");
     const [localError, setLocalError] = useState("");
-    const [registerUser, { isSuccess: isRegisterSuccess }] = useRegisterMutation();
+    const [registerUser] = useRegisterMutation();
 
     // Schéma Zod avec messages localisés (recréé si la langue change)
     const schema = z.object({
@@ -54,12 +53,6 @@ export const useRegisterColler = () => {
         },
     });
 
-    // Réinitialise l’erreur locale dès que l’utilisateur modifie un champ
-    /* useEffect(() => {
-        const subscription = form.watch(() => setLocalError(""));
-        return () => subscription.unsubscribe();
-    }, [form.watch]);*/
-
     const onSubmit = async (data: RegisterForm) => {
         setLocalError("");
         const newUser = {
@@ -72,6 +65,8 @@ export const useRegisterColler = () => {
         try {
             const result = await registerUser(newUser).unwrap();
             dispatch(setCredentials(result));
+            const userId = result.user?.id;
+            navigate(`/user/${userId}/collection`, { replace: true });
         } catch (error) {
             const status = (error as { status?: number })?.status;
             if (status === 400 || status === 409) {
@@ -81,14 +76,6 @@ export const useRegisterColler = () => {
             }
         }
     };
-
-    // Redirection après succès
-    useEffect(() => {
-        if (isRegisterSuccess) {
-            const user: UserProfile = JSON.parse(localStorage.getItem("auth_user")!);
-            navigate(`/user/${user.id}/collection`, { replace: true });
-        }
-    }, [isRegisterSuccess, navigate]);
 
     // Props de style communes pour les inputs (utilisant les tokens Chakra)
     const inputProps = {

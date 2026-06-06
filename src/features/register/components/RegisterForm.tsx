@@ -59,7 +59,7 @@ export const RegisterForm = () => {
                                             autoComplete="first-name"
                                             placeholder={t("field.firstNamePlaceholder")}
                                             {...register("firstName")}
-                                            borderColor={errors.firstName ? "red.500" : "gray.200"}
+                                            borderColor={errors.firstName ? "red.500" : "gray.300"}
                                         />
                                         {errors.firstName && (
                                             <Field.ErrorText color="red.500" fontWeight="bold">{errors.firstName.message}</Field.ErrorText>
@@ -73,7 +73,7 @@ export const RegisterForm = () => {
                                             autoComplete="last-name"
                                             placeholder={t("field.lastNamePlaceholder")}
                                             {...register("lastName")}
-                                            borderColor={errors.lastName ? "red.500" : "gray.200"}
+                                            borderColor={errors.lastName ? "red.500" : "gray.300"}
                                         />
                                         {errors.lastName && (
                                             <Field.ErrorText color="red.500" fontWeight="bold">{errors.lastName.message}</Field.ErrorText>
@@ -88,7 +88,7 @@ export const RegisterForm = () => {
                                         autoComplete="email"
                                         placeholder={t("field.emailPlaceholder")}
                                         {...register("email")}
-                                        borderColor={errors.email ? "red.500" : "gray.200"}
+                                        borderColor={errors.email ? "red.500" : "gray.300"}
                                     />
                                     {errors.email && (
                                         <Field.ErrorText color="red.500" fontWeight="bold">{errors.email.message}</Field.ErrorText>
@@ -102,7 +102,7 @@ export const RegisterForm = () => {
                                         autoComplete="current-password"
                                         placeholder={t("field.passwordPlaceholder")}
                                         {...register("password")}
-                                        borderColor={errors.password ? "red.500" : "gray.200"}
+                                        borderColor={errors.password ? "red.500" : "gray.300"}
                                     />
                                     {errors.password && (
                                         <Field.ErrorText color="red.500" fontWeight="bold">{errors.password.message}</Field.ErrorText>
@@ -116,7 +116,7 @@ export const RegisterForm = () => {
                                         autoComplete="current-password"
                                         placeholder={t("field.passwordConfirmationPlaceholder")}
                                         {...register("confirmPassword")}
-                                        borderColor={errors.confirmPassword ? "red.500" : "gray.200"}
+                                        borderColor={errors.confirmPassword ? "red.500" : "gray.300"}
                                     />
                                     {errors.confirmPassword && (
                                         <Field.ErrorText color="red.500" fontWeight="bold">{errors.confirmPassword.message}</Field.ErrorText>

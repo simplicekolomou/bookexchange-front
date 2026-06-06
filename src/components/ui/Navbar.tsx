@@ -6,14 +6,16 @@ import { LogoWithText } from "./LogoWithText.tsx";
 import { UserMenu } from "./UserMenu.tsx";
 import { useGetMyBooksQuery } from "../../features/book/api/bookApi.ts";
 import type {User} from "../../features/auth/types/auth.types.ts";
+import {useSelector} from "react-redux";
+import {selectCurrentUser, selectIsAuthenticated} from "../../features/auth/authSlice.ts";
 
 export const Navbar = () => {
     const navigate = useNavigate();
     const { t } = useTranslation(["common", "collections"]);
     const pathname = window.location.pathname;
-    const isAuthenticated = true;
 
-    const user: User = JSON.parse(localStorage.getItem("auth_user") ?? "null");
+    const user: User | null | undefined = useSelector(selectCurrentUser);
+    const isAuthenticated = useSelector(selectIsAuthenticated);
 
 
     const { data: books = [] } = useGetMyBooksQuery(undefined, {

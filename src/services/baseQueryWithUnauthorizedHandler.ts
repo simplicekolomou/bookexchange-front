@@ -4,18 +4,20 @@ import {
     type FetchArgs,
     type FetchBaseQueryError,
 } from '@reduxjs/toolkit/query/react';
-import { logout } from '../features/auth/authSlice';
+import {logout, selectCurrentToken} from '../features/auth/authSlice';
+import type {RootState} from "../app/store.ts";
 
 const baseQuery = fetchBaseQuery({
     baseUrl: '/api',
     credentials: 'include',
-    prepareHeaders: (headers) => {
-        const token = localStorage.getItem("auth_token");
+    prepareHeaders: (headers, { getState }) => {
+        const state = getState() as RootState;
+        const token = selectCurrentToken(state);
         if (token) {
-            headers.set('authorization', `Bearer ${token}`)
+            headers.set('authorization', `Bearer ${token}`);
         }
-        headers.set('content-type', 'application/json')
-        return headers
+        headers.set('content-type', 'application/json');
+        return headers;
     },
 });
 

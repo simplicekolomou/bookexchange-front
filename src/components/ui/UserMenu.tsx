@@ -3,10 +3,11 @@ import { User, Settings, LogOut } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../../app/hooks.ts";
-import { logout } from "../../features/auth/authSlice.ts";
+import {logout, selectCurrentUser} from "../../features/auth/authSlice.ts";
 import { useProfilePicture } from "../../features/profile/hook/useProfilePicture.ts";
 import {GrUpdate} from "react-icons/gr";
-import {baseApi} from "../../services/baseApi.ts";
+import {persistor} from "../../app/store.ts";
+import {useSelector} from "react-redux";
 
 
 export const UserMenu = () => {
@@ -16,15 +17,13 @@ export const UserMenu = () => {
     const navigate = useNavigate();
     const { profilePictureUrl } = useProfilePicture();
     const imageSrc = profilePictureUrl;
-    const storedUser = localStorage.getItem("auth_user");
-    const user = storedUser ? JSON.parse(storedUser) : null;
+    const user = useSelector(selectCurrentUser);
 
     const handleLogout = async () => {
-        dispatch(logout());
-        // Dispatch resetApiState pour vider le cache de l'API
-        dispatch(baseApi.util.resetApiState())
-        navigate("/login");
-    };
+        dispatch(logout())              // reset du state Redux + resetApiState (dans le slice)
+        await persistor.purge()         // vide le localStorage redux-persist
+        navigate("/login")              // navigation après purge effective
+    }
 
     return (
         <Box>

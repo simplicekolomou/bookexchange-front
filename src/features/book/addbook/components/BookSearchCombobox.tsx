@@ -37,7 +37,7 @@ export function BookSearchCombobox({ onSelect }: Props) {
             <Combobox.Control>
                 <Combobox.Input
                     placeholder="Livre à chercher"
-                    borderColor="gray.200"
+                    borderColor="gray.300"
                 />
                 <Combobox.IndicatorGroup
                     background ={tokens.colors.primary}

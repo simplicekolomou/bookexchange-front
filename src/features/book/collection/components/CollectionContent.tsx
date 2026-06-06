@@ -63,7 +63,7 @@ export const CollectionContent = ({
                         pl="40px"
                         size="lg"
                         borderRadius="md"
-                        borderColor="gray.200"
+                        borderColor="gray.300"
                     />
                 </Box>
 

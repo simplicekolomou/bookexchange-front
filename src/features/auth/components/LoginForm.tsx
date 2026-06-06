@@ -61,8 +61,7 @@ export default function LoginForm() {
                                         autoComplete="email"
                                         aria-label="Email"
                                         {...register("email")}
-                                        bg="transparent"
-                                        borderColor={errors.email ? "red.500" : "gray.200"}
+                                        borderColor={errors.email ? "red.500" : "gray.300"}
                                     />
                                     {errors.email && (
                                         <Field.ErrorText color="red.500" fontWeight="bold">{errors.email.message}</Field.ErrorText>
@@ -76,8 +75,7 @@ export default function LoginForm() {
                                         autoComplete="current-password"
                                         type="password"
                                         {...register("password")}
-                                        bg="transparent"
-                                        borderColor={errors.password ? "red.500" : "gray.200"}
+                                        borderColor={errors.password ? "red.500" : "gray.300"}
                                     />
                                     {errors.password && (
                                         <Field.ErrorText color="red.500" fontWeight="bold">{errors.password.message}</Field.ErrorText>
@@ -100,9 +98,17 @@ export default function LoginForm() {
                             >
                                 {t("login.action")}
                             </Button>
-                            <Link to="/forgot-password" className="mt-4 text-center">
-                                {t("login.passwordReset")}
-                            </Link>
+                            <Button
+                                variant="ghost"
+                                colorScheme="gray"
+                                size="sm"
+                                mt={4}
+                                justifyContent="center"
+                            >
+                                <Link to="/forgotPassword" className="mt-4 text-center">
+                                    {t("login.passwordReset")}
+                                </Link>
+                            </Button>
                         </Card.Footer>
                     </Card.Root>
                 </Fieldset.Content>

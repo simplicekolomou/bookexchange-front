@@ -1,7 +1,5 @@
 import {createBrowserRouter} from "react-router-dom";
 import {Home} from "../features/home/Home.tsx";
-import {ForgotPassword} from "../features/forgotPassword/components/ForgotPassword.tsx";
-import {ResetPassword} from "../features/resetPassword/components/ResetPassword.tsx";
 import {BookDetailPage} from "../features/book/details/pages/BookDetailPage.tsx";
 import {ProtectedRoute} from "../routes/ProtectedRoute.tsx";
 import {SearchPage} from "../features/book/search/pages/SearchPage.tsx";
@@ -9,7 +7,6 @@ import {AddBookPage} from "../features/book/addbook/addpages/AddBookPage.tsx";
 import {EditBookPage} from "../features/book/addbook/editpages/EditBookPage.tsx";
 import {Profile} from "../features/profile/components/Profile.tsx";
 import {Settings} from "../features/profile/components/Settings.tsx";
-import {UpdatePassword} from "../features/updatePassword/components/UpdatePassword.tsx";
 import {Messaging} from "../features/message/sendMessage/pages/Messaging.tsx";
 import {SendMessageBox} from "../features/message/sendMessage/components/SendMessageBox.tsx";
 import {CollectionPage} from "../features/book/collection/pages/CollectionPage.tsx";
@@ -17,6 +14,9 @@ import {NotFound404} from "../components/ui/NotFound404.tsx";
 import MainLayout from "../components/layout/MainLayout.tsx";
 import Login from "../features/auth/pages/Login.tsx";
 import Register from "../features/register/pages/Register.tsx";
+import ResetPassword from "../features/resetPassword/pages/ResetPassword.tsx";
+import ForgotPassword from "../features/forgotPassword/pages/ForgotPassword.tsx";
+import {UpdatePassword} from "../features/updatePassword/pages/UpdatePassword.tsx";
 
 export const router = createBrowserRouter(
     [
@@ -37,11 +37,11 @@ export const router = createBrowserRouter(
                 },
                 {
                     path: "/forgotPassword",
-                    element: <ForgotPassword/>
+                    element: <ForgotPassword />
                 },
                 {
                     path: "/reset-password",
-                    element: <ResetPassword/>
+                    element: <ResetPassword />
                 },
                 {
                     element: <ProtectedRoute />,
@@ -68,7 +68,7 @@ export const router = createBrowserRouter(
                         },
                         {
                             path: "/update-password",
-                            element: <UpdatePassword/>
+                            element: <UpdatePassword />
                         },
                         {
                             path: "/dms",

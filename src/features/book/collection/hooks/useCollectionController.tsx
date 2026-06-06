@@ -1,13 +1,13 @@
-import { useParams } from "react-router-dom";
 import { useGetMyBooksQuery, useGetUserBooksQuery } from "../../api/bookApi.ts";
 import { useMemo, useState } from "react";
-import type {UserProfile} from "../../../profile/types/profile.types.ts";
 import {useBreakpointValue} from "@chakra-ui/react";
+import {useSelector} from "react-redux";
+import {selectCurrentUser} from "../../../auth/authSlice.ts";
+import type {User} from "../../../auth/types/auth.types.ts";
 
 export const useCollectionController = () => {
-    const { userId } = useParams();
-    const user: UserProfile = JSON.parse(localStorage.getItem("auth_user")!);
-    const isMyCollection = Number(userId) == Number(user.id);
+    const user: User | null | undefined = useSelector(selectCurrentUser);
+    const isMyCollection = Number(user?.id) == Number(user?.id);
 
     const myBooksQuery = useGetMyBooksQuery(
         undefined,
@@ -15,7 +15,7 @@ export const useCollectionController = () => {
     );
 
     const userBooksQuery = useGetUserBooksQuery(
-        { userId: Number(userId) },
+        { userId: Number(user?.id) },
         { skip: isMyCollection, }
     );
 

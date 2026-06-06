@@ -2,9 +2,8 @@ import { useTranslation } from "react-i18next";
 import { useAppDispatch } from "../../../app/hooks";
 import { useNavigate } from "react-router-dom";
 import { useLoginMutation } from "../api/authApi";
-import { useEffect, useState } from "react";
-import { setCredentials } from "../authSlice";
-import type { UserProfile } from "../../profile/types/profile.types.ts";
+import { useState } from "react";
+import {setCredentials} from "../authSlice";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {email, z} from "zod";
@@ -13,7 +12,8 @@ export const useLoginController = () => {
     const { t } = useTranslation("auth");
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    const [login, { isSuccess: isLoginSuccess }] = useLoginMutation();
+    const [login] = useLoginMutation();
+    //const userId: string | undefined = useSelector(selectCurrentUserId);
     const [localError, setLocalError] = useState("");
 
     const schema = z.object({
@@ -41,6 +41,15 @@ export const useLoginController = () => {
         try {
             const result = await login(data).unwrap();
             dispatch(setCredentials(result));
+
+            // Naviguer immédiatement avec l'ID renvoyé par l'API
+            const userId = result.user?.id;
+            if (userId) {
+                navigate(`/user/${userId}/collection`);
+            } else {
+                // En cas d'absence d'ID, rester sur place ou gérer l'erreur
+                setLocalError(t("login.serverError"));
+            }
         } catch (error) {
             const status = (error as { status?: number })?.status;
             if (status === 400 || status === 401) {
@@ -50,15 +59,6 @@ export const useLoginController = () => {
             }
         }
     };
-
-    useEffect(() => {
-        if (isLoginSuccess) {
-            const user: UserProfile = JSON.parse(
-                localStorage.getItem("auth_user")!
-            );
-            navigate(`/user/${user.id}/collection`);
-        }
-    }, [isLoginSuccess, navigate]);
 
     return {
         localError,

@@ -79,7 +79,7 @@ export const BookForm = ({ mode, initialData, onSubmitSuccess, bookId }: BookFor
                                         placeholder={t("addBook:book.titlePlaceholder")}
                                         required
                                         size="md"
-                                        borderColor={errors.title ? "red.500" : "gray.200"}
+                                        borderColor={errors.title ? "red.500" : "gray.300"}
                                     />
                                     <Field.ErrorText color="red.500" fontWeight={"bold"}>{errors.title?.message}</Field.ErrorText>
                                 </Field.Root>
@@ -97,7 +97,7 @@ export const BookForm = ({ mode, initialData, onSubmitSuccess, bookId }: BookFor
                                                     {...register(`authors.${index}.name`)}
                                                     placeholder={t("addBook:book.authorPlaceholder")}
                                                     size="md"
-                                                    borderColor={errors.title ? "red.500" : "gray.200"}
+                                                    borderColor={errors.title ? "red.500" : "gray.300"}
                                                 />
                                                 <CloseButton onClick={() => remove(index)} />
                                             </Flex>
@@ -139,7 +139,7 @@ export const BookForm = ({ mode, initialData, onSubmitSuccess, bookId }: BookFor
                                         type="text"
                                         {...register("isbns")}
                                         placeholder={t("addBook:book.isbnPlaceholder")}
-                                        borderColor={errors.title ? "red.500" : "gray.200"}
+                                        borderColor={errors.title ? "red.500" : "gray.300"}
                                     />
                                     <Field.ErrorText color="red.500" fontWeight={"bold"}>{errors.isbns?.message}</Field.ErrorText>
                                 </Field.Root>
@@ -201,7 +201,7 @@ export const BookForm = ({ mode, initialData, onSubmitSuccess, bookId }: BookFor
                                         type="text"
                                         {...register("format")}
                                         placeholder={t("addBook:book.formatPlaceholder")}
-                                        borderColor={errors.format ? "red.500" : "gray.200"}
+                                        borderColor={errors.format ? "red.500" : "gray.300"}
                                     />
                                     <Field.ErrorText color="red.500" fontWeight={"bold"}>{errors.format?.message}</Field.ErrorText>
                                 </Field.Root>
@@ -216,7 +216,7 @@ export const BookForm = ({ mode, initialData, onSubmitSuccess, bookId }: BookFor
                                         {...register("edition")}
                                         placeholder={t("addBook:book.editionPlaceholder")}
                                         size="md"
-                                        borderColor={errors.edition ? "red.500" : "gray.200"}
+                                        borderColor={errors.edition ? "red.500" : "gray.300"}
                                     />
                                     <Field.ErrorText color="red.500" fontWeight={"bold"}>{errors.edition?.message}</Field.ErrorText>
                                 </Field.Root>

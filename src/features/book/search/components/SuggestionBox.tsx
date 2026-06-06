@@ -96,7 +96,10 @@ export const SuggestionBox = ({ initialQuery = "", onSelectItem, searchType }: P
                 positioning={{ sameWidth: false, placement: "bottom-end" }}
             >
                 <Combobox.Control>
-                    <Combobox.Input placeholder={t("searchUserPlaceholder")} />
+                    <Combobox.Input
+                        placeholder={t("searchUserPlaceholder")}
+                        borderColor={"gray.300"}
+                    />
                     <Combobox.IndicatorGroup>
                         <Combobox.ClearTrigger />
                         <Combobox.Trigger />
