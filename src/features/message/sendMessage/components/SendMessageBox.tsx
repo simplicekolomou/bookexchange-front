@@ -7,12 +7,12 @@ import {
     VStack,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import {useGetAllUsersQuery, useGetCurrentUserQuery, useGetUserQuery} from "../../../profile/api/profileApi.ts";
 import {useTranslation} from "react-i18next";
-import type {UserProfile} from "../../../profile/types/profile.types.ts";
+import type {UserProfile} from "../../../auth/profile/types/profile.types.ts";
 import type {GroupChat, PagedResponse} from "../../types/message.types.ts";
 import {useAddGroupChatMutation, useLazyFindGroupByMembersQuery} from "../../messageApi.ts";
 import {useLocation} from "react-router-dom";
+import {useGetAllUsersQuery, useGetCurrentUserQuery, useGetUserQuery} from "../../../auth/api/authApi.ts";
 
 interface SendMessageBoxProps {
     open?: boolean;

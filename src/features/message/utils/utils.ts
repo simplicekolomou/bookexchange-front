@@ -1,4 +1,4 @@
-import type {UserProfile} from "../../profile/types/profile.types.ts";
+import type {UserProfile} from "../../auth/profile/types/profile.types.ts";
 
 export function getCurrentUser(): UserProfile | null {
     const authRaw = localStorage.getItem("auth_user");

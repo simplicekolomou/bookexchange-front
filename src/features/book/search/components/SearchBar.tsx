@@ -1,6 +1,6 @@
 import { Box } from "@chakra-ui/react";
 import type { BookCopy } from "../../types/book.types.ts";
-import type { UserProfile } from "../../../profile/types/profile.types.ts";
+import type { UserProfile } from "../../../auth/profile/types/profile.types.ts";
 import { SearchTabs } from "./SearchTabs.tsx";
 import { SuggestionBox } from "./SuggestionBox.tsx";
 import { BookCard } from "../../../../components/ui/BookCard.tsx";

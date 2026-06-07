@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import {
     useGetBookCopyQuery, useGetBookOwnerQuery,
 } from "../../api/bookApi.ts";
-import type {UserProfile} from "../../../profile/types/profile.types.ts";
+import type {UserProfile} from "../../../auth/profile/types/profile.types.ts";
 
 export const useBookDetailController = () => {
     const { bookCopyId } = useParams();

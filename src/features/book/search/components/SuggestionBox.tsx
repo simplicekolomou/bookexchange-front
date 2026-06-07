@@ -1,8 +1,9 @@
 import { Box, Combobox, HStack, Image, Portal, Text, Spinner, Heading } from "@chakra-ui/react";
 import type { BookCopy } from "../../types/book.types.ts";
-import type { UserProfile } from "../../../profile/types/profile.types.ts";
+import type { UserProfile } from "../../../auth/profile/types/profile.types.ts";
 import { FilterBox } from "./FilterBox.tsx";
 import {useSuggestionController} from "../hooks/useSuggestionController.ts";
+import {tokens} from "../../../../theme/theme.ts";
 
 interface Props {
     initialQuery?: string;
@@ -33,11 +34,14 @@ export const SuggestionBox = ({ initialQuery = "", onSelectItem, searchType }: P
                     positioning={{ sameWidth: false, placement: "bottom-end" }}
                 >
                     <Combobox.Control>
-                        <Combobox.Input placeholder={t("searchBookPlaceholder")} />
-                        <Combobox.IndicatorGroup>
+                        <Combobox.Input
+                            placeholder={t("searchBookPlaceholder")}
+                            borderColor="gray.300"
+                        />
+                        <Combobox.IndicatorGroup bg={tokens.colors.primary}>
                             <Combobox.ClearTrigger />
                             <Combobox.Trigger />
-                        </Combobox.IndicatorGroup>
+                        </Combobox.IndicatorGroup >
                     </Combobox.Control>
                     <Portal>
                         <Combobox.Positioner>

@@ -11,12 +11,12 @@ import {
     VStack
 } from "@chakra-ui/react";
 import React, {useEffect, useState } from "react";
-import { useGetAllUsersQuery } from "../../../profile/api/profileApi.ts";
-import type { UserProfile } from "../../../profile/types/profile.types.ts";
+import type { UserProfile } from "../../../auth/profile/types/profile.types.ts";
 import {SendHorizonalIcon} from "lucide-react";
 import type {PagedResponse} from "../../types/message.types.ts";
 import {useAddGroupChatMutation} from "../../messageApi.ts";
 import {useTranslation} from "react-i18next";
+import {useGetAllUsersQuery} from "../../../auth/api/authApi.ts";
 
 export interface ChatBoxProps{
     onClose: () => void;

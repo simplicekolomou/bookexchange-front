@@ -5,18 +5,18 @@ import {ProtectedRoute} from "../routes/ProtectedRoute.tsx";
 import {SearchPage} from "../features/book/search/pages/SearchPage.tsx";
 import {AddBookPage} from "../features/book/addbook/addpages/AddBookPage.tsx";
 import {EditBookPage} from "../features/book/addbook/editpages/EditBookPage.tsx";
-import {Profile} from "../features/profile/components/Profile.tsx";
-import {Settings} from "../features/profile/components/Settings.tsx";
+import {Profile} from "../features/auth/profile/pages/Profile.tsx";
 import {Messaging} from "../features/message/sendMessage/pages/Messaging.tsx";
 import {SendMessageBox} from "../features/message/sendMessage/components/SendMessageBox.tsx";
 import {CollectionPage} from "../features/book/collection/pages/CollectionPage.tsx";
 import {NotFound404} from "../components/ui/NotFound404.tsx";
 import MainLayout from "../components/layout/MainLayout.tsx";
-import Login from "../features/auth/pages/Login.tsx";
-import Register from "../features/register/pages/Register.tsx";
-import ResetPassword from "../features/resetPassword/pages/ResetPassword.tsx";
-import ForgotPassword from "../features/forgotPassword/pages/ForgotPassword.tsx";
-import {UpdatePassword} from "../features/updatePassword/pages/UpdatePassword.tsx";
+import Login from "../features/auth/login/pages/Login.tsx";
+import Register from "../features/auth/register/pages/Register.tsx";
+import ResetPassword from "../features/auth/resetPassword/pages/ResetPassword.tsx";
+import ForgotPassword from "../features/auth/forgotPassword/pages/ForgotPassword.tsx";
+import {UpdatePassword} from "../features/auth/updatePassword/pages/UpdatePassword.tsx";
+import Settings from "../features/auth/settings/pages/Settings.tsx";
 
 export const router = createBrowserRouter(
     [
@@ -64,7 +64,7 @@ export const router = createBrowserRouter(
                         },
                         {
                             path: "/settings",
-                            element: <Settings/>
+                            element: <Settings />
                         },
                         {
                             path: "/update-password",

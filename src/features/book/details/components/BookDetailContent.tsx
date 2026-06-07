@@ -7,7 +7,7 @@ import {Link, useNavigate} from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import type {BookCopy} from "../../types/book.types.ts";
 import {ArrowLeftIcon, PencilIcon, SendHorizonalIcon} from "lucide-react";
-import type {UserProfile} from "../../../profile/types/profile.types.ts";
+import type {UserProfile} from "../../../auth/profile/types/profile.types.ts";
 
 interface BookDetailProps {
     book: BookCopy;

@@ -1,4 +1,4 @@
-import type { UserProfile } from "../../profile/types/profile.types.ts"
+import type { UserProfile } from "../profile/types/profile.types.ts"
 
 export interface User {
     id: string
@@ -29,9 +29,30 @@ export interface AuthState {
     isAuthenticated: boolean
     isLoading: boolean
     user?: User | null
+    userProfile?: UserProfile | null
 }
 
 export interface ResetPasswordRequest {
     token: string | null;
     password: string;
+}
+
+export interface UpdatePasswordRequest {
+    currentPassword: string;
+    newPassword: string;
+}
+
+export interface UpdateProfileRequest {
+    firstName?: string;
+    lastName?: string;
+    bio?: string;
+    visible?: boolean;
+    profilePicture?: string;
+    adress?: {
+        locality?: string;
+        street?: string;
+        zipCode?: string;
+        country?: string;
+        postalBoxNumber?: string;
+    };
 }

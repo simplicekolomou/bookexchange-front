@@ -4,12 +4,12 @@ import { skipToken } from "@reduxjs/toolkit/query/react";
 import { useTranslation } from "react-i18next";
 import React from "react";
 import type { BookCopy } from "../../types/book.types.ts";
-import type { UserProfile } from "../../../profile/types/profile.types.ts";
+import type { UserProfile } from "../../../auth/profile/types/profile.types.ts";
 import type { PagedResponse } from "../../../message/types/message.types.ts";
-import type { FilterValues } from "../hooks/useFilterController.ts";
-import { useFindUserQuery } from "../../../profile/api/profileApi.ts";
+import type { FilterValues } from "./useFilterController.ts";
 import { useFindBookQuery } from "../../api/bookApi.ts";
 import {useDebouncedController} from "../../../../hooks/useDebouncedController.ts";
+import {useFindUserQuery} from "../../../auth/api/authApi.ts";
 
 interface Props {
     initialQuery?: string;

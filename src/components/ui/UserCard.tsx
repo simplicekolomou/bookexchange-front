@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import {Link as RouterLink, useNavigate} from "react-router-dom";
 import {SendHorizonalIcon} from "lucide-react";
-import type {UserProfile} from "../../features/profile/types/profile.types.ts";
+import type {UserProfile} from "../../features/auth/profile/types/profile.types.ts";
 import {useTranslation} from "react-i18next";
 
 interface UserCardProps {

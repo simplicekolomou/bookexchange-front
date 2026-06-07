@@ -1,5 +1,5 @@
 import type {BookCopy} from "../../types/book.types.ts";
-import type {UserProfile} from "../../../profile/types/profile.types.ts";
+import type {UserProfile} from "../../../auth/profile/types/profile.types.ts";
 import { useState } from "react";
 import { useBreakpointValue } from "@chakra-ui/react";
 export const useSearchController = (onSelect?: (item: BookCopy | UserProfile)=> void) =>{
