@@ -1,129 +1,175 @@
 import {
-    Box,
-    CloseButton,
-    Drawer,
-    HStack,
-    IconButton,
-    Input,
-    Portal,
-    Text,
-    VStack,
+    Box, IconButton, Input, VStack,
+    Text, HStack, Icon, CloseButton,
 } from "@chakra-ui/react";
-import type { GroupChat } from "../../types/message.types.ts";
-import { SendHorizonalIcon } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { tokens } from "../../../../theme/theme.ts";
-import {useGetMessagesByGroupChatQuery, useSendMessageMutation} from "../../messageApi.ts";
-import {getCurrentUser} from "../../utils/utils.ts";
+import { SendHorizonalIcon, Minimize2, Maximize2 } from "lucide-react";
+import { useState } from "react";
+import type { GroupChat, Message } from "../../types/message.types.ts";
+import { useSendMessageController } from "../hooks/useSendMessageController.ts"; // ✅ hook allégé
 
 interface ChatBoxProps {
     chatGroup?: GroupChat | null;
     onClose: () => void;
     open: boolean;
+    stackIndex?: number;
 }
-export const ChatBox = ({ chatGroup, onClose, open }: ChatBoxProps) => {
-    const bottomRef = useRef<HTMLDivElement | null>(null);
-    const chatId = chatGroup?.id;
-    const [sendMessage] = useSendMessageMutation();
-    const { data: messages } = useGetMessagesByGroupChatQuery(chatId!, {
-        skip: !chatId,
-    });
 
-    const myId = getCurrentUser()!.id;
-    const [message, setMessage] = useState("");
-    console.log("Mon ID est : ", myId);
+const formatTime = (date: Date | string) =>
+    new Date(date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
-    useEffect(() => {
-        if (open) bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messages, open]);
+export const ChatBox = ({ chatGroup, onClose, open, stackIndex = 0 }: ChatBoxProps) => {
+    const [minimized, setMinimized] = useState(false);
+    const rightOffset = 132 + stackIndex * 370;
 
-    if (!chatGroup) return null;
+    // ✅ uniquement les props du hook allégé
+    const controller = useSendMessageController({ chatGroup, open });
 
-    const handleSendMessage = async (text: string) => {
-        if (!text.trim()) return;
-        if (!chatGroup) return;
-        try {
-            await sendMessage({ groupChatId: chatGroup.id, content: text.trim() }).unwrap();
-            setMessage("");
-        } catch (error) {
-            console.error(error);
-        }
-    };
+    if (!open || !controller?.messages) return null;
 
-    console.log("Les messages chargés sont : ", messages);
-    if(!messages) return null;
+    const { messages, myId, message, setMessage, handleSendMessage, bottomRef } = controller;
 
     return (
-        <Drawer.Root
-            open={open}
-            onOpenChange={(isOpen) => { if (!isOpen) onClose(); }}
+        <Box
+            position="fixed"
+            bottom="calc(var(--footer-height, 64px) + 30px)"
+            right={`${rightOffset}px`}
+            zIndex="dropdown"
+            width="350px"
+            pointerEvents="auto"
         >
-            <Portal>
-                <Drawer.Backdrop />
-                <Drawer.Positioner
-                    padding={{ base: 0, md: 4 }}
-                >
-                    <Drawer.Content
-                        rounded={{ base: "none", md: "xl" }}
-                        h={{ base: "90%", md: "100%" }}
-                        bg={tokens.colors.messageBox}
-                        display="flex"
-                        flexDirection="column"
+            {minimized ? (
+                <Box display="flex" justifyContent="flex-end" p={1}>
+                    <IconButton
+                        aria-label="Ouvrir le chat"
+                        onClick={() => setMinimized(false)}
+                        colorScheme="blue"
+                        borderRadius="full"
+                        size="lg"
+                        boxShadow="lg"
                     >
-                        <Drawer.Header borderBottomWidth="1px">
-                            <Drawer.Title>{chatGroup.name}</Drawer.Title>
-                        </Drawer.Header>
+                        <Icon as={Maximize2} boxSize={4} />
+                    </IconButton>
+                </Box>
+            ) : (
+                <Box
+                    bg="bg.surface"
+                    borderRadius="lg"
+                    boxShadow="xl"
+                    overflow="hidden"
+                    display="flex"
+                    flexDirection="column"
+                >
+                    {/* Header */}
+                    <HStack
+                        justify="space-between"
+                        bg="colorPalette.default"
+                        px={3}
+                        py={2}
+                        color="white"
+                    >
+                        <Text fontWeight="bold" fontSize="sm">
+                            {chatGroup?.name ?? "Chat"}
+                        </Text>
+                        <HStack gap={1}>
+                            <IconButton
+                                aria-label="Minimiser"
+                                size="xs"
+                                variant="ghost"
+                                color="white"
+                                _hover={{ bg: "whiteAlpha.300" }}
+                                onClick={() => setMinimized(true)}
+                            >
+                                <Icon as={Minimize2} boxSize={3} />
+                            </IconButton>
+                            <CloseButton
+                                size="sm"
+                                color="white"
+                                _hover={{ bg: "whiteAlpha.300" }}
+                                onClick={onClose}
+                            />
+                        </HStack>
+                    </HStack>
 
-                        <Drawer.Body flex="1" overflowY="auto">
-                            <VStack align="stretch" gap={3}>
-                                {messages.map((msg) => {
+                    {/* Zone messages */}
+                    <Box
+                        height="400px"
+                        overflowY="auto"
+                        p={3}
+                        aria-live="polite"
+                        aria-label="Zone de messages"
+                    >
+                        {messages.length === 0 ? (
+                            <Box h="100%" display="flex" alignItems="center" justifyContent="center">
+                                <Text fontSize="xs" color="fg.muted" textAlign="center">
+                                    Aucun message pour l'instant.
+                                    <br /> Soyez le premier à écrire !
+                                </Text>
+                            </Box>
+                        ) : (
+                            <VStack align="stretch" gap={2}>
+                                {messages.map((msg: Message) => {
                                     const isMe = msg.senderId === myId;
                                     return (
                                         <Box
                                             key={msg.id}
                                             alignSelf={isMe ? "flex-end" : "flex-start"}
-                                            bg={isMe ? "blue.500" : "gray.100"}
-                                            color={isMe ? "white" : "black"}
+                                            bg={isMe ? "colorPalette.default" : "bg.subtle"}
+                                            color={isMe ? "white" : "fg.default"}
                                             px={3}
                                             py={2}
                                             borderRadius="lg"
                                             maxW="80%"
+                                            boxShadow="sm"
                                         >
-                                            <Text fontSize="sm">{msg.content}</Text>
-                                            <Text fontSize="xs" opacity={0.6} mt={1}>
-                                                {msg.sendTime instanceof Date ? msg.sendTime.toLocaleTimeString() : new Date(msg.sendTime).toLocaleTimeString()}
+                                            <Text fontSize="sm" wordBreak="break-word">
+                                                {msg.content}
+                                            </Text>
+                                            <Text
+                                                fontSize="xs"
+                                                opacity={0.6}
+                                                mt={0.5}
+                                                textAlign={isMe ? "right" : "left"}
+                                            >
+                                                {formatTime(msg.sendTime)}
                                             </Text>
                                         </Box>
                                     );
                                 })}
                                 <div ref={bottomRef} />
                             </VStack>
-                        </Drawer.Body>
+                        )}
+                    </Box>
 
-                        <Drawer.Footer borderTopWidth="1px">
-                            <HStack w="100%">
-                                <Input
-                                    value={message}
-                                    placeholder="Écrire un message…"
-                                    onChange={(e) => setMessage(e.target.value)}
-                                    onKeyDown={(e) => e.key === "Enter" && handleSendMessage(message)}
-                                    aria-label="Écrire un message"
-                                    color={tokens.colors.surface}
-                                />
-                                <IconButton
-                                    aria-label="Envoyer"
-                                    onClick={() => handleSendMessage(message)}
-                                >
-                                    <SendHorizonalIcon />
-                                </IconButton>
-                            </HStack>
-                            <Drawer.CloseTrigger asChild bg={"gray.300"}>
-                                <CloseButton size="sm" onClick={onClose} />
-                            </Drawer.CloseTrigger>
-                        </Drawer.Footer>
-                    </Drawer.Content>
-                </Drawer.Positioner>
-            </Portal>
-        </Drawer.Root>
+                    {/* Saisie */}
+                    <HStack p={2} borderTopWidth="1px" borderColor="border.default" gap={2}>
+                        <Input
+                            value={message}
+                            placeholder="Écrire un message…"
+                            size="sm"
+                            bg="bg.subtle"
+                            onChange={(e) => setMessage(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter" && !e.shiftKey) {
+                                    e.preventDefault();
+                                    handleSendMessage(message);
+                                }
+                            }}
+                            aria-label="Écrire un message"
+                            autoFocus
+                            borderColor="gray.300"
+                        />
+                        <IconButton
+                            aria-label="Envoyer"
+                            size="sm"
+                            colorScheme="blue"
+                            disabled={!message.trim()}
+                            onClick={() => handleSendMessage(message)}
+                        >
+                            <Icon as={SendHorizonalIcon} boxSize={4} />
+                        </IconButton>
+                    </HStack>
+                </Box>
+            )}
+        </Box>
     );
-}
+};

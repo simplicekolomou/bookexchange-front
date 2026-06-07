@@ -1,65 +1,51 @@
-import { Button, Tabs, Text } from '@chakra-ui/react';
+import { Button, Flex } from '@chakra-ui/react';
 import { GroupIcon, MessageCircle, Users } from 'lucide-react';
 import { useTranslation } from "react-i18next";
+import { tokens } from "../../../../theme/theme.ts";
 
-interface SearchTabsProps {
+interface MessageTabsProps {
     value: string;
     onChange: (value: string) => void;
 }
 
-export const MessageTabs = ({ value, onChange }: SearchTabsProps) => {
+export const MessageTabs = ({ value, onChange }: MessageTabsProps) => {
     const { t } = useTranslation("message");
+
+    const tabs = [
+        { id: "messages", label: t("messages"), icon: MessageCircle },
+        { id: "groups", label: t("newGroup"), icon: GroupIcon },
+        { id: "sendMessage", label: t("sendMessage"), icon: Users },
+    ];
+
     return (
-        <Tabs.Root
-            value={value}
-            onValueChange={(details) => {
-                const newValue: string = typeof details === 'string' ? details : details?.value ?? '';
-                onChange(newValue);
-            }}
-            mb={3}
-            mt={2}
+        <Flex
+            gap={tokens.spacing.md}
+            justify="center"
+            mb={tokens.spacing.sm}
+            mt={tokens.spacing.xs}
+            direction={{ base: "column", sm: "row" }}
         >
-            <Tabs.List
-                display="grid"
-                gridTemplateColumns={{ base: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }}
-                width="full"
-                gap={1}
-                alignItems="center"
-                borderBottomWidth={0}
-            >
-                <Tabs.Trigger asChild value="messages">
+            {tabs.map((tab) => {
+                const isActive = value === tab.id;
+                return (
                     <Button
-                        width="full"
+                        key={tab.id}
+                        variant={isActive ? "solid" : "outline"}
+                        onClick={() => onChange(tab.id)}
+                        flex="1"
                         justifyContent="center"
-                        variant={value === 'messages' ? 'solid' : 'outline'}
+                        gap={tokens.spacing.xs}
+                        transition="all 0.2s"
+                        _hover={{
+                            transform: "translateY(-1px)",
+                            boxShadow: "sm",
+                        }}
                     >
-                        <MessageCircle size={16} />
-                        <Text as="span" fontWeight="bold">{t("messages")}</Text>
+                        <tab.icon size={16} />
+                        <span>{tab.label}</span>
                     </Button>
-                </Tabs.Trigger>
-
-                <Tabs.Trigger asChild value="groups">
-                    <Button
-                        width="full"
-                        justifyContent="center"
-                        variant={value === 'groups' ? 'solid' : 'outline'}
-                    >
-                        <GroupIcon size={16} />
-                        <Text as="span" fontWeight="bold">{t("newGroup")}</Text>
-                    </Button>
-                </Tabs.Trigger>
-
-                <Tabs.Trigger asChild value="sendMessage">
-                    <Button
-                        width="full"
-                        justifyContent="center"
-                        variant={value === 'sendMessage' ? 'solid' : 'outline'}
-                    >
-                        <Users size={16} />
-                        <Text as="span" fontWeight="bold">{t("sendMessage")}</Text>
-                    </Button>
-                </Tabs.Trigger>
-            </Tabs.List>
-        </Tabs.Root>
+                );
+            })}
+        </Flex>
     );
 };

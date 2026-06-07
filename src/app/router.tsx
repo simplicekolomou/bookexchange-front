@@ -72,7 +72,7 @@ export const router = createBrowserRouter(
                         },
                         {
                             path: "/dms",
-                            element: <Messaging/>
+                            element: <Messaging />
                         },
                         {
                             path: "/send-message",

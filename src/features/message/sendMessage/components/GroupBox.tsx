@@ -1,226 +1,207 @@
 import {
     Box,
-    CheckboxCard,
-    CloseButton,
-    Drawer,
-    HStack,
-    IconButton,
     Input,
-    Portal,
+    VStack,
+    Text,
+    HStack,
+    Icon,
+    CloseButton,
+    CheckboxCard,
     Spinner,
-    VStack
+    Button,
 } from "@chakra-ui/react";
-import React, {useEffect, useState } from "react";
-import type { UserProfile } from "../../../auth/profile/types/profile.types.ts";
-import {SendHorizonalIcon} from "lucide-react";
-import type {PagedResponse} from "../../types/message.types.ts";
-import {useAddGroupChatMutation} from "../../messageApi.ts";
-import {useTranslation} from "react-i18next";
-import {useGetAllUsersQuery} from "../../../auth/api/authApi.ts";
+import { SendHorizonalIcon, SearchIcon } from "lucide-react";
+import type { GroupChat } from "../../types/message.types.ts";
+import {useGroupBoxController} from "../hooks/useGroupBoxController.ts";
 
-export interface ChatBoxProps{
+interface GroupBoxProps {
     onClose: () => void;
     open: boolean;
+    onGroupCreated: (group: GroupChat) => void;
+    stackIndex?: number;
 }
-export const GroupBox = ({ onClose, open }: ChatBoxProps) => {
-    const [users, setUsers] = useState<UserProfile[]>([]);
-    const [isLastPage, setIsLastPage] = useState(false);
-    const [page, setPage] = useState(0);
-    const size = 15;
-    const { data, isFetching } = useGetAllUsersQuery({ page, size });
-    const groupNameRef = React.useRef<HTMLInputElement | null>(null);
-    const [addGroup] = useAddGroupChatMutation();
-    const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
-    const [localError, setLocalError] = useState<string | null>(null);
-    const {t} = useTranslation("message");
 
-    // Accumulation des addpages
-    useEffect(() => {
-        if (!data) return;
+export const GroupBox = ({ onClose, open, onGroupCreated, stackIndex = 0 }: GroupBoxProps) => {
+    const {
+        users,
+        isFetching,
+        isLastPage,
+        groupName,
+        setGroupName,
+        selectedUserIds,
+        toggleMember,
+        handleScroll,
+        handleCreateGroup,
+        handleClose,
+        isLoading,
+        localError,
+        t,
+        searchTerm,
+        setSearchTerm,
+        isSearching,
+        loadedUsers,
+    } = useGroupBoxController({ onClose, onGroupCreated });
+    console.log("Loaded users for pagination:", loadedUsers);
 
-        const newUsers = (data as PagedResponse<UserProfile>).content ?? [];
-
-        setUsers(prev => {
-            const map = new Map(prev.map(u => [u.id, u]));
-            newUsers.forEach((u: UserProfile) => map.set(u.id, u));
-            return Array.from(map.values());
-        });
-
-        setIsLastPage((data as PagedResponse<UserProfile>).last ?? false);
-
-        // Autorise un nouveau chargement une fois les données traitées
-        loadingRef.current = false;
-    }, [data]);
-
-    // Scroll handler
-    const loadingRef = React.useRef(false);
-
-    const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-        const el = e.currentTarget;
-        const nearBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 50;
-
-        if (nearBottom && !isFetching && !isLastPage && !loadingRef.current) {
-            loadingRef.current = true;
-            setPage(p => p + 1);
-        }
-    };
-
-    const getCurrentUserId = (): string | null => {
-        const authRaw = localStorage.getItem('auth_user');
-        if (!authRaw) return null;
-
-        try {
-            const auth = JSON.parse(authRaw);
-            return String(auth.id);
-        } catch {
-            return null;
-        }
-    }
-    // Gestion de la sélection des utilisateurs
-    const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const target = e.target as HTMLInputElement;
-        const card = target.closest('[data-checkboxcard-id]') as HTMLElement | null;
-        const userId = card?.getAttribute('data-checkboxcard-id');
-
-        if (!userId) return;
-
-        setSelectedUserIds(prev => {
-            // Récupérer et normaliser l'id courant en string de manière sûre
-            const currentUserId: string | null = getCurrentUserId();
-
-            let next: string[];
-            if (target.checked) {
-                next = prev.includes(userId) ? prev : [...prev, userId];
-            } else {
-                next = prev.filter(id => id !== userId);
-            }
-
-            // S'assurer que l'id du user courant (string) est toujours présent si disponible
-            if (currentUserId && !next.includes(currentUserId)) {
-                next = [...next, currentUserId];
-            }
-
-            console.log("Utilisateurs sélectionnés : ", next);
-            return next;
-        });
-    };
-
-
-    // Gestion de la sélection des utilisateurs
-    const handleCreateGroupButton = async () => {
-        setLocalError(null);
-        const name = groupNameRef.current?.value?.trim();
-        if (!selectedUserIds || selectedUserIds.length === 0) {
-            return;
-        }
-
-        try {
-            const payload = {
-                name,
-                members: selectedUserIds.map(id => ({
-                    notification: true,
-                    endUserId: Number(id)
-                }))
-            };
-
-            await addGroup(payload).unwrap();
-            setSelectedUserIds([]);
-            onClose();
-        } catch (error) {
-            const status = (error as { status?: number })?.status;
-            if (status === 401) {
-                setLocalError(t("unAuthenticated"));
-            } else {
-                setLocalError(t("serverError"));
-            }
-        }
-    };
+    const rightOffset = 132 + stackIndex * 370;
+    if (!open) return null;
 
     return (
-        <Drawer.Root
-            open={open}
-            onOpenChange={(isOpen) => { if (!isOpen) onClose(); }}
+        <Box
+            position="fixed"
+            bottom="calc(var(--footer-height, 64px) + 30px)"
+            right={`${rightOffset}px`}
+            zIndex="dropdown"
+            width="350px"
+            pointerEvents="auto"
         >
-            <Portal>
-                <Drawer.Backdrop />
-                <Drawer.Positioner padding={{ base: 0, md: 4 }}>
-                    <Drawer.Content
-                        bg="gray.700"
-                        display="flex"
-                        flexDirection="column"
-                        color="gray.300"
-                        h={{ base: "90%", md: "100%" }}
-                    >
-                        <Drawer.Header
-                            borderBottomWidth="1px"
-                            flexWrap="wrap"
-                            display="flex"
-                        >
-                            <Drawer.Title>
-                                {t("groupName")}
-                                <Input
-                                    ref={groupNameRef}
-                                    w={"60%"}
-                                    h={"8"}
-                                    ml={1}
-                                    name={"groupName"}
-                                />
-                            </Drawer.Title>
-                        </Drawer.Header>
+            <Box
+                bg="bg.surface"
+                borderRadius="lg"
+                boxShadow="xl"
+                overflow="hidden"
+                display="flex"
+                flexDirection="column"
+            >
+                {/* Header (identique chat) */}
+                <HStack
+                    justify="space-between"
+                    bg="colorPalette.default"
+                    px={3}
+                    py={2}
+                    color="white"
+                >
+                    <Text fontWeight="bold" fontSize="sm">
+                        {t("groupName")}
+                    </Text>
+                    <CloseButton
+                        size="sm"
+                        color="white"
+                        _hover={{ bg: "whiteAlpha.300" }}
+                        onClick={handleClose}
+                    />
+                </HStack>
 
-                        <Drawer.Body
-                            flex="1"
-                            overflowY="auto"
-                            onScroll={handleScroll}
-                        >
-                            <VStack align="stretch">
-                                {users.map(user => (
+                {/* Champ nom du groupe */}
+                <Box p={3} borderBottomWidth="1px" borderColor="border.default">
+                    <Input
+                        value={groupName}
+                        onChange={(e) => setGroupName(e.target.value)}
+                        placeholder={t("groupNamePlaceholder") || "Nom du groupe"}
+                        size="sm"
+                        bg="bg.subtle"
+                        borderColor="border.default"
+                        _hover={{ borderColor: "colorPalette.default" }}
+                        transition="all 0.2s"
+                        autoFocus
+                    />
+                </Box>
+
+                {/* Barre de recherche */}
+                <Box position="relative">
+                    <Icon
+                        as={SearchIcon}
+                        boxSize={4}
+                        color="fg.muted"
+                        position="absolute"
+                        left={3}
+                        top="50%"
+                        transform="translateY(-50%)"
+                        pointerEvents="none"
+                    />
+                    <Input
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        placeholder={t("searchUsers") || "Rechercher un utilisateur..."}
+                        bg="bg.subtle"
+                        borderColor="gray.300"
+                        _hover={{ borderColor: "colorPalette.default" }}
+                        transition="all 0.2s"
+                        pl={8}
+                        size="sm"
+                    />
+                </Box>
+
+                {/* Liste des utilisateurs (hauteur augmentée) */}
+                <Box
+                    height="400px"
+                    overflowY="auto"
+                    p={3}
+                    aria-label="Liste des membres"
+                    onScroll={handleScroll}
+                >
+                    {isSearching ? (
+                        <HStack justify="center" py={4}>
+                            <Spinner size="sm" color="colorPalette.default" />
+                            <Text fontSize="xs" color="fg.muted">Recherche...</Text>
+                        </HStack>
+                    ) : (
+                        <VStack align="stretch" gap={2}>
+                            {users.length === 0 && searchTerm && !isFetching ? (
+                                <Text textAlign="center" fontSize="xs" color="fg.muted" py={4}>
+                                    Aucun utilisateur trouvé.
+                                </Text>
+                            ) : (
+                                users.map((user) => (
                                     <CheckboxCard.Root
                                         key={user.id}
                                         size="sm"
-                                        data-checkboxcard-id={user.id}
+                                        checked={selectedUserIds.includes(String(user.id))}
+                                        onCheckedChange={() => toggleMember(String(user.id))}
+                                        borderWidth="1px"
+                                        borderColor="gray.300"
+                                        borderRadius="lg"
+                                        bg="bg.surface"
+                                        transition="all 0.2s"
+                                        _hover={{ bg: "bg.subtle", transform: "translateX(2px)" }}
                                     >
-                                        <CheckboxCard.HiddenInput
-                                            onChange={handleCheckboxChange}
-                                        />
+                                        <CheckboxCard.HiddenInput  />
                                         <CheckboxCard.Control>
                                             <CheckboxCard.Content>
                                                 <CheckboxCard.Label>
                                                     {user.firstName} {user.lastName}
                                                 </CheckboxCard.Label>
                                             </CheckboxCard.Content>
-                                            <CheckboxCard.Indicator borderRadius={"xl"} />
+                                            <CheckboxCard.Indicator borderRadius="full" />
                                         </CheckboxCard.Control>
                                     </CheckboxCard.Root>
-                                ))}
+                                ))
+                            )}
+                            {isFetching && !isSearching && (
+                                <HStack justify="center" py={2}>
+                                    <Spinner size="sm" color="colorPalette.default" />
+                                </HStack>
+                            )}
+                            {isLastPage && !isFetching && !isSearching && users.length > 0 && (
+                                <Text textAlign="center" fontSize="xs" color="fg.muted" py={2}>
+                                    {t("endOfList")}
+                                </Text>
+                            )}
+                        </VStack>
+                    )}
+                </Box>
 
-                                {isFetching && (
-                                    <HStack justify="center" py={3}>
-                                        <Spinner size="sm" />
-                                    </HStack>
-                                )}
-
-                                {isLastPage && (
-                                    <Box>Fin de la liste</Box>
-                                )}
-                            </VStack>
-                        </Drawer.Body>
-
-                        <Drawer.Footer borderTopWidth="1px">
-                            <IconButton
-                                aria-label="Créer"
-                                onClick={handleCreateGroupButton}
-                            >
-                                <SendHorizonalIcon />
-                                {localError && <Box color="red.500" ml={2}>{localError}</Box>}
-                            </IconButton>
-                            <Drawer.CloseTrigger asChild bg={"gray.300"}>
-                                <CloseButton size="sm" onClick={onClose} />
-                            </Drawer.CloseTrigger>
-                        </Drawer.Footer>
-                    </Drawer.Content>
-                </Drawer.Positioner>
-            </Portal>
-        </Drawer.Root>
+                {/* Footer */}
+                <HStack p={2} borderTopWidth="1px" borderColor="border.default" gap={2}>
+                    {localError && (
+                        <Text color="red.500" fontSize="xs" flex="1">
+                            {localError}
+                        </Text>
+                    )}
+                    <Button
+                        size="sm"
+                        colorScheme="blue"
+                        loading={isLoading}
+                        disabled={!groupName.trim() || selectedUserIds.length === 0}
+                        onClick={handleCreateGroup}
+                        gap={2}
+                        flexShrink={0}
+                    >
+                        <Icon as={SendHorizonalIcon} boxSize={4} />
+                        {t("createGroup.confirm")}
+                    </Button>
+                </HStack>
+            </Box>
+        </Box>
     );
 };

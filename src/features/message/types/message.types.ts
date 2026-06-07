@@ -49,5 +49,13 @@ export interface Membership {
     notification: boolean;
 }
 
+export interface MessageState {
+    groupChats: GroupChat[];
+    currentChat: GroupChat | null;
+    messages: Message[];
+    isLoading: boolean;
+    error: string | null;
+}
+
 
 
