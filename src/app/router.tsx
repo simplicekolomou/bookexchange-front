@@ -17,6 +17,7 @@ import ResetPassword from "../features/auth/resetPassword/pages/ResetPassword.ts
 import ForgotPassword from "../features/auth/forgotPassword/pages/ForgotPassword.tsx";
 import {UpdatePassword} from "../features/auth/updatePassword/pages/UpdatePassword.tsx";
 import Settings from "../features/auth/settings/pages/Settings.tsx";
+import { PublicOnlyRoute } from "../routes/PublicOnlyRoute.tsx";
 
 export const router = createBrowserRouter(
     [
@@ -24,24 +25,29 @@ export const router = createBrowserRouter(
             element: <MainLayout />,
             children: [
                 {
-                    path: "/",
-                    element: <Home />
-                },
-                {
-                    path: "/login",
-                    element: <Login/>
-                },
-                {
-                    path: "/register",
-                    element: <Register />
-                },
-                {
-                    path: "/forgotPassword",
-                    element: <ForgotPassword />
-                },
-                {
-                    path: "/reset-password",
-                    element: <ResetPassword />
+                    element: <PublicOnlyRoute />,
+                    children: [
+                        {
+                            path: "/",
+                            element: <Home />
+                        },
+                        {
+                            path: "/login",
+                            element: <Login/>
+                        },
+                        {
+                            path: "/register",
+                            element: <Register />
+                        },
+                        {
+                            path: "/forgotPassword",
+                            element: <ForgotPassword />
+                        },
+                        {
+                            path: "/reset-password",
+                            element: <ResetPassword />
+                        },
+                    ],
                 },
                 {
                     element: <ProtectedRoute />,
