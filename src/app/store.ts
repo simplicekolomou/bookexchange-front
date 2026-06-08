@@ -8,11 +8,12 @@ import {
     FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER,
 } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
+import {messageSlice} from "../features/message/messageSlice.ts";
 
 const authPersistConfig = {
     key: 'auth',
     storage,
-    whitelist: ['user', 'token', 'isAuthenticated'], // ✅ user inclus dans la persistance
+    whitelist: ['user', 'token', 'isAuthenticated'],
 }
 
 const persistedAuthReducer = persistReducer(authPersistConfig, authReducer)
@@ -21,7 +22,7 @@ export const store = configureStore({
     reducer: {
         [baseApi.reducerPath]: baseApi.reducer,
         auth: persistedAuthReducer,
-        // ✅ suppression de profile: persistedAuthReducer (doublon)
+        message: messageSlice.reducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({

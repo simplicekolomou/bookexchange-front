@@ -33,6 +33,7 @@ export interface GroupChat {
     myMembership: Membership[];
     notificationsEnabled: boolean;
     lastMessage: Message | null;
+    unReadMessagesCount?: number;
 }
 
 export interface AddGroupRequest {
@@ -67,11 +68,10 @@ export interface Membership {
 }
 
 export interface MessageState {
-    groupChats: GroupChat[];
-    currentChat: GroupChat | null;
-    messages: Message[];
-    isLoading: boolean;
-    error: string | null;
+    activeChats: GroupChat[];        // conversations ouvertes (ChatBox)
+    activeTab: string;               // 'messages' | 'groups' | 'sendMessage'
+    isGroupBoxOpen: boolean;
+    isSendMessageBoxOpen: boolean;
 }
 
 

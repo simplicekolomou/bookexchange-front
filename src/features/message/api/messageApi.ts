@@ -39,7 +39,7 @@ export const messageApi = baseApi.injectEndpoints({
 
         findGroupByMembers: builder.query<GroupChat, number>({
             query: (idUser) => ({
-                url: `/groups/oneToOne/${idUser}`,
+                url: `/groups/one-to-one/${idUser}`,
                 method: "GET",
             }),
             providesTags: ['Group'],
