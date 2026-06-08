@@ -17,11 +17,19 @@ export interface Attachment {
 }
 
 export type GroupChatType = 'GROUP' | 'DIRECT';
+
+export interface Member {
+    id: string;
+    notification: boolean;
+    endUserId: string;
+    groupChatId: string;
+}
+
 export interface GroupChat {
     id: string;
     groupType: GroupChatType;
     name: string;
-    members: string[] | undefined[];
+    members: Member[];
     myMembership: Membership[];
     notificationsEnabled: boolean;
     lastMessage: Message | null;

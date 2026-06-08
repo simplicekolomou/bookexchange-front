@@ -5,6 +5,7 @@ import { Trash2 } from "lucide-react";
 import { DeleteDialog } from "../../delete/components/DeleteDialog.tsx";
 import { useMessageCardController } from "../hooks/useMessageCardController.ts";
 import {useDeleteMessageController} from "../../delete/hooks/useDeleteMessageController.ts";
+import {useSendMessageController} from "../hooks/useSendMessageController.ts";
 
 type MessageCardProps = {
     group: GroupChat;
@@ -18,12 +19,15 @@ export const MessageCard = ({ group, onSelected, isActive = false }: MessageCard
         handleKeyDown,
         t,
     } = useMessageCardController({ group, onSelected });
+    const {conversationName}= useSendMessageController({chatGroup: group});
     const {
         isDialogOpen,
         setDialogOpen,
         handleConfirmDelete,
         localError,
     } = useDeleteMessageController({group});
+
+    const lastMessageDate = group?.lastMessage?.sendTime ? new Date(group.lastMessage.sendTime).toLocaleString() : undefined;
 
     return (
         <>
@@ -60,7 +64,7 @@ export const MessageCard = ({ group, onSelected, isActive = false }: MessageCard
                 <Flex direction="column" gap={tokens.spacing.xs}>
                     <Flex justifyContent="space-between" alignItems="center">
                         <Text fontWeight="bold" fontSize="md" color="fg.default">
-                            {group.name}
+                            {group.name ?? conversationName}
                         </Text>
                         <Icon
                             as={Trash2}
@@ -78,13 +82,11 @@ export const MessageCard = ({ group, onSelected, isActive = false }: MessageCard
                     </Flex>
                     {group.lastMessage && (
                         <>
-                            <Text fontSize="xs" color="fg.muted" fontStyle="italic">
-                                {group.lastMessage.sendTime instanceof Date
-                                    ? group.lastMessage.sendTime.toLocaleString()
-                                    : new Date(group.lastMessage.sendTime).toLocaleString()}
-                            </Text>
                             <Text fontSize="sm" color="fg.default">
                                 {group.lastMessage.content}
+                            </Text>
+                            <Text fontSize="xs" color="fg.muted" fontStyle="italic">
+                                {lastMessageDate}
                             </Text>
                         </>
                     )}

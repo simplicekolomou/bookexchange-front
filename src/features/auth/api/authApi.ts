@@ -118,7 +118,7 @@ export const authApi = baseApi.injectEndpoints({
             },
         }),
 
-        getUser: builder.query<UserProfile, { userId: string }>({
+        getUser: builder.query<UserProfile, { userId?: string }>({
             query: ({ userId }) => ({
                 url: `/users/${userId}`,
                 method: 'GET',

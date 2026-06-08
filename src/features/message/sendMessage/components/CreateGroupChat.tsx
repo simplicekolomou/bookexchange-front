@@ -6,36 +6,40 @@ import {
     HStack,
     Icon,
     CloseButton,
+    CheckboxCard,
     Spinner,
+    Button,
 } from "@chakra-ui/react";
-import { SearchIcon } from "lucide-react";
+import { SendHorizonalIcon, SearchIcon } from "lucide-react";
 import type { GroupChat } from "../../types/message.types.ts";
-import { useConversationController } from "../hooks/useConversationController.ts";
-import type { UserProfile } from "../../../auth/profile/types/profile.types.ts";
+import {useCreateGroupChatController} from "../hooks/useCreateGroupChatController.ts";
 
-interface SendMessageBoxProps {
-    open?: boolean;
-    onClose?: () => void;
-    onGroupSelected?: (group: GroupChat) => void;
+interface GroupBoxProps {
+    onClose: () => void;
+    open: boolean;
+    onGroupCreated: (group: GroupChat) => void;
     stackIndex?: number;
 }
 
-export const SendMessageBox = ({open, onClose, onGroupSelected, stackIndex = 0}: SendMessageBoxProps) => {
+export const CreateGroupChat = ({ onClose, open, onGroupCreated, stackIndex = 0 }: GroupBoxProps) => {
     const {
-        users,               // liste des utilisateurs (paginer + recherche)
+        users,
         isFetching,
         isLastPage,
+        groupName,
+        setGroupName,
+        selectedUserIds,
+        toggleMember,
         handleScroll,
+        handleCreateGroup,
+        handleClose,
+        isLoading,
         localError,
         t,
-        handleUserClick,
         searchTerm,
         setSearchTerm,
         isSearching,
-    } = useConversationController({
-        onGroupSelected,
-        onClose,
-    });
+    } = useCreateGroupChatController({ onClose, onGroupCreated });
 
     const rightOffset = 132 + stackIndex * 370;
     if (!open) return null;
@@ -57,7 +61,7 @@ export const SendMessageBox = ({open, onClose, onGroupSelected, stackIndex = 0}:
                 display="flex"
                 flexDirection="column"
             >
-                {/* Header */}
+                {/* Header (identique chat) */}
                 <HStack
                     justify="space-between"
                     bg="colorPalette.default"
@@ -66,18 +70,33 @@ export const SendMessageBox = ({open, onClose, onGroupSelected, stackIndex = 0}:
                     color="white"
                 >
                     <Text fontWeight="bold" fontSize="sm">
-                        {t("sendMessage")}
+                        {t("groupName")}
                     </Text>
                     <CloseButton
                         size="sm"
                         color="white"
-                        _hover={{bg: "whiteAlpha.300"}}
-                        onClick={onClose}
+                        _hover={{ bg: "whiteAlpha.300" }}
+                        onClick={handleClose}
                     />
                 </HStack>
 
+                {/* Champ nom du groupe */}
+                <Box p={3} borderBottomWidth="1px" borderColor="gray.500">
+                    <Input
+                        value={groupName}
+                        onChange={(e) => setGroupName(e.target.value)}
+                        placeholder={t("groupNamePlaceholder") || "Nom du groupe"}
+                        size="sm"
+                        bg="bg.subtle"
+                        borderColor="gray.300"
+                        _hover={{ borderColor: "colorPalette.default" }}
+                        transition="all 0.2s"
+                        autoFocus
+                    />
+                </Box>
+
                 {/* Barre de recherche */}
-                <Box position="relative" mx="auto" maxW="320px" width="100%" mt={2}>
+                <Box position="relative" mx="auto" maxW="320px" width="100%">
                     <Icon
                         as={SearchIcon}
                         boxSize={4}
@@ -94,11 +113,12 @@ export const SendMessageBox = ({open, onClose, onGroupSelected, stackIndex = 0}:
                         placeholder={t("searchUsers") || "Rechercher un utilisateur..."}
                         bg="bg.subtle"
                         borderColor="gray.300"
-                        _hover={{borderColor: "colorPalette.default"}}
+                        _hover={{ borderColor: "colorPalette.default" }}
                         transition="all 0.2s"
                         size="sm"
                         width="100%"
-                        pl={8}
+                        mt="5px"
+                        pl={2}
                     />
                 </Box>
 
@@ -107,12 +127,12 @@ export const SendMessageBox = ({open, onClose, onGroupSelected, stackIndex = 0}:
                     height="400px"
                     overflowY="auto"
                     p={3}
-                    aria-label="Liste des utilisateurs"
+                    aria-label="Liste des membres"
                     onScroll={handleScroll}
                 >
                     {isSearching ? (
                         <HStack justify="center" py={4}>
-                            <Spinner size="sm" color="colorPalette.default"/>
+                            <Spinner size="sm" color="colorPalette.default" />
                             <Text fontSize="xs" color="fg.muted">Recherche...</Text>
                         </HStack>
                     ) : (
@@ -122,23 +142,29 @@ export const SendMessageBox = ({open, onClose, onGroupSelected, stackIndex = 0}:
                                     Aucun utilisateur trouvé.
                                 </Text>
                             ) : (
-                                users.map((user: UserProfile) => (
-                                    <Box
+                                users.map((user) => (
+                                    <CheckboxCard.Root
                                         key={user.id}
-                                        p={3}
+                                        size="sm"
+                                        checked={selectedUserIds.includes(String(user.id))}
+                                        onCheckedChange={() => toggleMember(String(user.id))}
                                         borderWidth="1px"
                                         borderColor="gray.300"
                                         borderRadius="lg"
-                                        cursor="pointer"
                                         bg="bg.surface"
                                         transition="all 0.2s"
                                         _hover={{ bg: "bg.subtle", transform: "translateX(2px)" }}
-                                        onClick={() => handleUserClick(user)}
                                     >
-                                        <Text fontSize="sm" fontWeight="medium">
-                                            {user.firstName} {user.lastName}
-                                        </Text>
-                                    </Box>
+                                        <CheckboxCard.HiddenInput  />
+                                        <CheckboxCard.Control>
+                                            <CheckboxCard.Content>
+                                                <CheckboxCard.Label>
+                                                    {user.firstName} {user.lastName}
+                                                </CheckboxCard.Label>
+                                            </CheckboxCard.Content>
+                                            <CheckboxCard.Indicator borderRadius="full" />
+                                        </CheckboxCard.Control>
+                                    </CheckboxCard.Root>
                                 ))
                             )}
                             {isFetching && !isSearching && (
@@ -155,14 +181,26 @@ export const SendMessageBox = ({open, onClose, onGroupSelected, stackIndex = 0}:
                     )}
                 </Box>
 
-                {/* Footer (juste l'erreur éventuelle) */}
-                {localError && (
-                    <HStack p={2} borderTopWidth="1px" borderColor="border.default" gap={2}>
+                {/* Footer */}
+                <HStack p={2} borderTopWidth="1px" borderColor="border.default" gap={2}>
+                    {localError && (
                         <Text color="red.500" fontSize="xs" flex="1">
                             {localError}
                         </Text>
-                    </HStack>
-                )}
+                    )}
+                    <Button
+                        size="sm"
+                        colorScheme="blue"
+                        loading={isLoading}
+                        disabled={!groupName.trim() || selectedUserIds.length === 0}
+                        onClick={handleCreateGroup}
+                        gap={2}
+                        flexShrink={0}
+                    >
+                        <Icon as={SendHorizonalIcon} boxSize={4} />
+                        {t("createGroup.confirm")}
+                    </Button>
+                </HStack>
             </Box>
         </Box>
     );

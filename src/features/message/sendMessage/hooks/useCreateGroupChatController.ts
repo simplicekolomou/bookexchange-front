@@ -16,7 +16,7 @@ interface Props {
 
 const SIZE = 15;
 
-export const useGroupBoxController = ({ onClose, onGroupCreated }: Props) => {
+export const useCreateGroupChatController = ({ onClose, onGroupCreated }: Props) => {
     const { t } = useTranslation("message");
     const currentUserId = useSelector(selectCurrentUserId);
 

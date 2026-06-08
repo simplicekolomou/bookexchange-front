@@ -20,7 +20,7 @@ interface Props {
     onClose?: () => void;
 }
 
-export const useConversationController = ({ onGroupSelected, onClose }: Props) => {
+export const useCreateDirectChatController = ({ onGroupSelected, onClose }: Props) => {
     const { t } = useTranslation("message");
     const location = useLocation();
 

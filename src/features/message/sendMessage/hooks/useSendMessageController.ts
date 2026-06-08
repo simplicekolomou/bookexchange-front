@@ -44,13 +44,13 @@ export const useSendMessageController = ({ chatGroup, open }: Props) => {
         }
     };
 
-        // ✅ dérive le nom affiché selon le type de conversation
-        // ✅ pour un DIRECT : récupérer l'id de l'autre membre et appeler le hook au niveau supérieur
-    const otherMember = chatGroup?.members?.find(
-        (member) => member.endUserId !== myId
-    );
+    console.log("Les membres du chat :", chatGroup?.members);
+    //{id: 2352, notification: true, endUserId: 1, groupChatId: 2052}
 
-    const otherUserId = otherMember?.endUserId; // ex: 2354
+    // Dérive le nom affiché selon le type de conversation
+    // Pour un DIRECT : récupérer l'id de l'autre membre et appeler le hook au niveau supérieur
+    const otherMember = chatGroup?.members.find(m => m.endUserId !== myId);
+    const otherUserId = otherMember?.endUserId;
 
 // Ensuite, fetch l'autre utilisateur
     const { data: otherUser } = useGetUserQuery(

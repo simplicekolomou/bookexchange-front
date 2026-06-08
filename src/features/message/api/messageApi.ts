@@ -12,7 +12,7 @@ export const messageApi = baseApi.injectEndpoints({
             providesTags: ['Message'],
         }),
 
-        getGroupChats: builder.query<GroupChat[], void>({
+        getMyGroupChats: builder.query<GroupChat[], void>({
             query: () => ({
                 url: `/groups/user/me`,
                 method: 'GET',
@@ -57,7 +57,7 @@ export const messageApi = baseApi.injectEndpoints({
 });
 
 export const {
-    useGetGroupChatsQuery,
+    useGetMyGroupChatsQuery,
     useGetMessagesByGroupChatQuery,
     useAddGroupChatMutation,
     useDeleteGroupMutation,

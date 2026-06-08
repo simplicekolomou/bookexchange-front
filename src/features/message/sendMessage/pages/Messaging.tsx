@@ -1,11 +1,9 @@
-// typescript
-// `src/features/message/sendMessage/pages/Messaging.tsx`
 import { Box, VStack, Spinner, Text, Button, Flex } from "@chakra-ui/react";
 import { ChatBox } from "../components/ChatBox.tsx";
 import { MessageCard } from "../components/MessageCard.tsx";
 import { MessageTabs } from "../components/MessageTabs.tsx";
-import { GroupBox } from "../components/GroupBox.tsx";
-import { SendMessageBox } from "../components/SendMessageBox.tsx";
+import { CreateGroupChat } from "../components/CreateGroupChat.tsx";
+import { CreateDirectChat } from "../components/CreateDirectChat.tsx";
 import { tokens } from "../../../../theme/theme.ts";
 import { useMessagingController } from "../hooks/useMessagingController.ts";
 import type { GroupChat } from "../../types/message.types.ts";
@@ -33,10 +31,6 @@ export const Messaging = () => {
             </Flex>
         );
     }
-
-    // safe arrays (déjà sanitizées dans le hook mais double protection ici)
-    const safeGroupChats = Array.isArray(groupChats) ? groupChats.filter(Boolean) as GroupChat[] : [];
-    const safeActiveChats = Array.isArray(activeChats) ? activeChats.filter(Boolean) as GroupChat[] : [];
 
     return (
         <Box
@@ -67,16 +61,16 @@ export const Messaging = () => {
                 </Text>
             )}
 
-            {!isGroupError && safeGroupChats.length === 0 && (
+            {!isGroupError && groupChats.length === 0 && (
                 <Text color="fg.muted" textAlign="center" mt={tokens.spacing.lg}>
                     Aucune discussion pour le moment.
                 </Text>
             )}
 
             <VStack align="stretch" gap={tokens.spacing.xs} mt={tokens.spacing.md}>
-                {safeGroupChats.map((group: GroupChat, index) => {
+                {groupChats.map((group: GroupChat, index) => {
                     const groupIdKey = String(group?.id ?? group?.id ?? `g-${index}`);
-                    const isActive = safeActiveChats.some((g) => String(g?.id) === String(group?.id));
+                    const isActive = activeChats.some((g) => String(g?.id) === String(group?.id));
                     return (
                         <MessageCard
                             key={groupIdKey}
@@ -88,7 +82,7 @@ export const Messaging = () => {
                 })}
             </VStack>
 
-            {safeActiveChats.map((group, idx) => (
+            {activeChats.map((group, idx) => (
                 <ChatBox
                     key={String(group?.id ?? `active-${idx}`)}
                     chatGroup={group}
@@ -98,12 +92,12 @@ export const Messaging = () => {
                 />
             ))}
 
-            <SendMessageBox
+            <CreateDirectChat
                 open={value === "sendMessage"}
                 onGroupSelected={openChat}
                 onClose={() => setValue("")}
             />
-            <GroupBox
+            <CreateGroupChat
                 open={value === "groups"}
                 onClose={() => setValue("")}
                 onGroupCreated={openChat}

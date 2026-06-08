@@ -1,8 +1,6 @@
-import { useGetGroupChatsQuery } from "../../api/messageApi.ts";
+import { useGetMyGroupChatsQuery } from "../../api/messageApi.ts";
 import { useState } from "react";
 import { subscribeToPush } from "../../../../utils/notification.ts";
-import { useSelector } from "react-redux";
-import { selectCurrentUserId } from "../../../auth/authSlice.ts";
 import { useTranslation } from "react-i18next";
 import type { GroupChat } from "../../types/message.types";
 
@@ -13,25 +11,17 @@ export const useMessagingController = () => {
         data: rawGroupChats = [],
         isLoading: isGroupLoading,
         isError: isGroupError,
-    } = useGetGroupChatsQuery();
+    } = useGetMyGroupChatsQuery();
 
-    // sanitize les résultats API pour éviter valeurs null
+    console.log("Réponse du back pour le groupe : ", rawGroupChats);
+
+    // Convertir les résultats API pour éviter valeurs null
     const groupChats: GroupChat[] = Array.isArray(rawGroupChats) ? rawGroupChats.filter(Boolean) as GroupChat[] : [];
 
     const [activeChats, setActiveChats] = useState<GroupChat[]>([]);
-    const [value, setValue] = useState("messages");
+    const [activeButton, setActiveButton] = useState("messages");
     const [open, setOpen] = useState(true);
     const { t } = useTranslation("notification");
-
-    const currentUserId = useSelector(selectCurrentUserId);
-
-    const isMemberCurrentUser = (conversation: GroupChat) =>
-        (conversation?.members ?? []).some((m) => {
-            const memberId = typeof m === "object" && m !== null && "id" in m
-                ? (m as { id?: string | number }).id
-                : m;
-            return Number(memberId) === Number(currentUserId);
-        });
 
     const show =
         "Notification" in window &&
@@ -49,9 +39,9 @@ export const useMessagingController = () => {
         });
     };
 
-    // Ferme une chatbox par id - accepte id undefined/null
-    const closeChat = (groupId?: string | number | null) => {
-        const idStr = String(groupId ?? "");
+    // Ferme une chatbox par id - nécessite un id non null/undefined
+    const closeChat = (groupId: string) => {
+        const idStr = String(groupId);
         setActiveChats((prev) => prev.filter((g) => String(g?.id ?? "") !== idStr));
     };
 
@@ -67,13 +57,11 @@ export const useMessagingController = () => {
         activeChats,
         openChat,
         closeChat,
-        value,
-        setValue,
+        value: activeButton,
+        setValue: setActiveButton,
         show,
         open,
         handleSubscribeToPush,
         t,
-        isMemberCurrentUser,
-        currentUserId,
     };
 };

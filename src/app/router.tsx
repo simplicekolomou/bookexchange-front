@@ -7,7 +7,7 @@ import {AddBookPage} from "../features/book/addbook/addpages/AddBookPage.tsx";
 import {EditBookPage} from "../features/book/addbook/editpages/EditBookPage.tsx";
 import {Profile} from "../features/auth/profile/pages/Profile.tsx";
 import {Messaging} from "../features/message/sendMessage/pages/Messaging.tsx";
-import {SendMessageBox} from "../features/message/sendMessage/components/SendMessageBox.tsx";
+import {CreateDirectChat} from "../features/message/sendMessage/components/CreateDirectChat.tsx";
 import {CollectionPage} from "../features/book/collection/pages/CollectionPage.tsx";
 import {NotFound404} from "../components/ui/NotFound404.tsx";
 import MainLayout from "../components/layout/MainLayout.tsx";
@@ -76,7 +76,7 @@ export const router = createBrowserRouter(
                         },
                         {
                             path: "/send-message",
-                            element: <SendMessageBox />
+                            element: <CreateDirectChat />
                         },
                         {
                             path: "/user/:userId/collection",
