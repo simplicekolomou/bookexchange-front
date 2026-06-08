@@ -7,13 +7,14 @@ import type { GroupChat } from "../../types/message.types";
 const MAX_CHATS = 3;
 
 export const useMessagingController = () => {
+    const [isGroupBoxOpen, setIsGroupBoxOpen] = useState(false);
+    const [isSendMessageBoxOpen, setIsSendMessageBoxOpen] = useState(false);
+
     const {
         data: rawGroupChats = [],
         isLoading: isGroupLoading,
         isError: isGroupError,
     } = useGetMyGroupChatsQuery();
-
-    console.log("Réponse du back pour le groupe : ", rawGroupChats);
 
     // Convertir les résultats API pour éviter valeurs null
     const groupChats: GroupChat[] = Array.isArray(rawGroupChats) ? rawGroupChats.filter(Boolean) as GroupChat[] : [];
@@ -50,6 +51,22 @@ export const useMessagingController = () => {
         await subscribeToPush();
     };
 
+    // Au clic sur un onglet :
+    const handleTabChange = (newValue: string) => {
+        setActiveButton(newValue);
+        // Ouvre la boîte correspondante si on clique sur l'onglet (même s'il était déjà actif)
+        if (newValue === 'groups') setIsGroupBoxOpen(true);
+        if (newValue === 'sendMessage') setIsSendMessageBoxOpen(true);
+    };
+
+    // À la fermeture des boîtes :
+    const closeGroupBox = () => {
+        setIsGroupBoxOpen(false);
+    };
+    const closeSendMessageBox = () => {
+        setIsSendMessageBoxOpen(false);
+    };
+
     return {
         groupChats,
         isGroupLoading,
@@ -63,5 +80,10 @@ export const useMessagingController = () => {
         open,
         handleSubscribeToPush,
         t,
+        handleTabChange,
+        isGroupBoxOpen,
+        closeGroupBox,
+        isSendMessageBoxOpen,
+        closeSendMessageBox,
     };
 };

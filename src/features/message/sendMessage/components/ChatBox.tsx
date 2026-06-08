@@ -5,7 +5,7 @@ import {
 import { SendHorizonalIcon, Minimize2, Maximize2 } from "lucide-react";
 import { useState } from "react";
 import type { GroupChat, Message } from "../../types/message.types.ts";
-import { useSendMessageController } from "../hooks/useSendMessageController.ts"; // ✅ hook allégé
+import { useSendMessageController } from "../hooks/useSendMessageController.ts";
 
 interface ChatBoxProps {
     chatGroup?: GroupChat | null;
@@ -19,9 +19,11 @@ const formatTime = (date: Date | string) =>
 
 export const ChatBox = ({ chatGroup, onClose, open, stackIndex = 0 }: ChatBoxProps) => {
     const [minimized, setMinimized] = useState(false);
+
+    // calcul de l'offset à droite en fonction du nombre de fenêtres ouvertes (stackIndex)
     const rightOffset = 132 + stackIndex * 370;
 
-    // ✅ uniquement les props du hook allégé
+    // uniquement les props du hook allégé
     const controller = useSendMessageController({ chatGroup, open });
 
     if (!open || !controller?.messages) return null;
@@ -148,10 +150,11 @@ export const ChatBox = ({ chatGroup, onClose, open, stackIndex = 0 }: ChatBoxPro
                             size="sm"
                             bg="bg.subtle"
                             onChange={(e) => setMessage(e.target.value)}
-                            onKeyDown={(e) => {
+                            onKeyDown={async (e) => {
                                 if (e.key === "Enter" && !e.shiftKey) {
                                     e.preventDefault();
-                                    handleSendMessage(message);
+                                    if (!message.trim()) return;
+                                    await handleSendMessage(message.trim());
                                 }
                             }}
                             aria-label="Écrire un message"

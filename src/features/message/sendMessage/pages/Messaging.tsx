@@ -17,11 +17,15 @@ export const Messaging = () => {
         openChat,
         closeChat,
         value,
-        setValue,
         show,
         open,
         handleSubscribeToPush,
         t,
+        isGroupBoxOpen,
+        isSendMessageBoxOpen,
+        closeGroupBox,
+        closeSendMessageBox,
+        handleTabChange
     } = useMessagingController();
 
     if (isGroupLoading) {
@@ -53,7 +57,7 @@ export const Messaging = () => {
                 </Button>
             )}
 
-            <MessageTabs value={value} onChange={setValue} />
+            <MessageTabs value={value} onChange={handleTabChange} />
 
             {isGroupError && (
                 <Text color={tokens.colors.textMuted} textAlign="center" mt={tokens.spacing.md}>
@@ -93,13 +97,13 @@ export const Messaging = () => {
             ))}
 
             <CreateDirectChat
-                open={value === "sendMessage"}
+                open={isSendMessageBoxOpen}
                 onGroupSelected={openChat}
-                onClose={() => setValue("")}
+                onClose={closeSendMessageBox}
             />
             <CreateGroupChat
-                open={value === "groups"}
-                onClose={() => setValue("")}
+                open={isGroupBoxOpen}
+                onClose={closeGroupBox}
                 onGroupCreated={openChat}
             />
         </Box>

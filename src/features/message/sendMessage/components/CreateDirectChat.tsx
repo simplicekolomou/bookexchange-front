@@ -37,6 +37,7 @@ export const CreateDirectChat = ({open, onClose, onGroupSelected, stackIndex = 0
         onClose,
     });
 
+    // Calcul de l'offset à droite en fonction de l'index de la pile(stackIndex)
     const rightOffset = 132 + stackIndex * 370;
     if (!open) return null;
 

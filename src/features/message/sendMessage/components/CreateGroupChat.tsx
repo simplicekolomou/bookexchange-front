@@ -41,6 +41,7 @@ export const CreateGroupChat = ({ onClose, open, onGroupCreated, stackIndex = 0 
         isSearching,
     } = useCreateGroupChatController({ onClose, onGroupCreated });
 
+    // Calcul de la position en fonction de l'index dans la pile(stackIndex)
     const rightOffset = 132 + stackIndex * 370;
     if (!open) return null;
 
@@ -70,7 +71,7 @@ export const CreateGroupChat = ({ onClose, open, onGroupCreated, stackIndex = 0 
                     color="white"
                 >
                     <Text fontWeight="bold" fontSize="sm">
-                        {t("groupName")}
+                        {t("title")}
                     </Text>
                     <CloseButton
                         size="sm"
@@ -162,7 +163,7 @@ export const CreateGroupChat = ({ onClose, open, onGroupCreated, stackIndex = 0 
                                                     {user.firstName} {user.lastName}
                                                 </CheckboxCard.Label>
                                             </CheckboxCard.Content>
-                                            <CheckboxCard.Indicator borderRadius="full" />
+                                            <CheckboxCard.Indicator borderRadius="full" borderColor="gray.400"/>
                                         </CheckboxCard.Control>
                                     </CheckboxCard.Root>
                                 ))
@@ -192,13 +193,13 @@ export const CreateGroupChat = ({ onClose, open, onGroupCreated, stackIndex = 0 
                         size="sm"
                         colorScheme="blue"
                         loading={isLoading}
-                        disabled={!groupName.trim() || selectedUserIds.length === 0}
+                        disabled={!groupName.trim() || selectedUserIds.length < 2}
                         onClick={handleCreateGroup}
                         gap={2}
                         flexShrink={0}
                     >
                         <Icon as={SendHorizonalIcon} boxSize={4} />
-                        {t("createGroup.confirm")}
+                        {t("actions.createGroup")}
                     </Button>
                 </HStack>
             </Box>

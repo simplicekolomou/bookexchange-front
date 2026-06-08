@@ -39,26 +39,19 @@ export const useSendMessageController = ({ chatGroup, open }: Props) => {
                 content: text.trim(),
             }).unwrap();
             setMessage("");
-        } catch (error) {
-            console.error(error);
-        }
+        } catch{ /* empty */ }
     };
-
-    console.log("Les membres du chat :", chatGroup?.members);
-    //{id: 2352, notification: true, endUserId: 1, groupChatId: 2052}
 
     // Dérive le nom affiché selon le type de conversation
     // Pour un DIRECT : récupérer l'id de l'autre membre et appeler le hook au niveau supérieur
     const otherMember = chatGroup?.members.find(m => m.endUserId !== myId);
     const otherUserId = otherMember?.endUserId;
 
-// Ensuite, fetch l'autre utilisateur
+    // Ensuite, fetch l'autre utilisateur
     const { data: otherUser } = useGetUserQuery(
         { userId: otherUserId },
         { skip: !otherUserId }
     );
-
-    console.log("Nom de l'autre utilisateur :", otherUser?.firstName);
 
         const conversationName = (() => {
             if (!chatGroup) return "";
@@ -66,7 +59,7 @@ export const useSendMessageController = ({ chatGroup, open }: Props) => {
             return otherUser ? `${otherUser.firstName} ${otherUser.lastName}` : chatGroup.name ?? "Chat";
         })();
 
-    // ✅ indique si c'est un groupe ou un direct (utile pour la vue)
+    // indique si c'est un groupe ou un direct (utile pour la vue)
     const isDirect = chatGroup?.groupType === "DIRECT";
 
     return {
@@ -76,7 +69,7 @@ export const useSendMessageController = ({ chatGroup, open }: Props) => {
         setMessage,
         handleSendMessage,
         bottomRef,
-        conversationName, // ✅ nom dérivé selon le type
-        isDirect,         // ✅ pour adapter l'UI si besoin
+        conversationName, //nom dérivé selon le type
+        isDirect,         //pour adapter l'UI si besoin
     };
 };
