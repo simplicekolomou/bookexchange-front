@@ -1,5 +1,3 @@
-import type {UserProfile} from "../../auth/profile/types/profile.types.ts";
-
 export interface MessageMetadata {
     bookId?: string;
     bookTitle?: string;
@@ -18,13 +16,24 @@ export interface Attachment {
     thumbnailUrl?: string;
 }
 
+export type GroupChatType = 'GROUP' | 'DIRECT';
 export interface GroupChat {
     id: string;
+    groupType: GroupChatType;
     name: string;
-    members: UserProfile[];
+    members: string[] | undefined[];
     myMembership: Membership[];
     notificationsEnabled: boolean;
     lastMessage: Message | null;
+}
+
+export interface AddGroupRequest {
+    name?: string | null;
+    groupType: GroupChatType;
+    members: {
+        endUserId: number;
+        notification: boolean;
+    }[];
 }
 
 export interface PagedResponse<T> {

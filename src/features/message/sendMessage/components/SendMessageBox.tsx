@@ -1,111 +1,169 @@
 import {
     Box,
-    CloseButton,
-    Drawer,
-    HStack,
-    Portal, Spinner,
+    Input,
     VStack,
+    Text,
+    HStack,
+    Icon,
+    CloseButton,
+    Spinner,
 } from "@chakra-ui/react";
-import type {GroupChat} from "../../types/message.types.ts";
-import {useSendMessageController} from "../hooks/useSendMessageController.ts";
+import { SearchIcon } from "lucide-react";
+import type { GroupChat } from "../../types/message.types.ts";
+import { useConversationController } from "../hooks/useConversationController.ts";
+import type { UserProfile } from "../../../auth/profile/types/profile.types.ts";
 
 interface SendMessageBoxProps {
     open?: boolean;
     onClose?: () => void;
     onGroupSelected?: (group: GroupChat) => void;
+    stackIndex?: number;
 }
 
-export const SendMessageBox = ({ onClose, open, onGroupSelected }: SendMessageBoxProps) => {
-
-    const controller = useSendMessageController({ onGroupSelected, onClose });
-    if (!controller) return null;
+export const SendMessageBox = ({open, onClose, onGroupSelected, stackIndex = 0}: SendMessageBoxProps) => {
     const {
-        localUsersForPagination,
+        users,               // liste des utilisateurs (paginer + recherche)
         isFetching,
         isLastPage,
         handleScroll,
         localError,
         t,
         handleUserClick,
-    } = controller;
+        searchTerm,
+        setSearchTerm,
+        isSearching,
+    } = useConversationController({
+        onGroupSelected,
+        onClose,
+    });
 
-    if (!localUsersForPagination) return null;
+    const rightOffset = 132 + stackIndex * 370;
+    if (!open) return null;
 
     return (
-        <Box bg={"red.500"}>
-            <Drawer.Root
-                open={open}
-                onOpenChange={(isOpen) => { if (!isOpen) if (onClose) {
-                    onClose();
-                } }}
+        <Box
+            position="fixed"
+            bottom="calc(var(--footer-height, 64px) + 30px)"
+            right={`${rightOffset}px`}
+            zIndex="dropdown"
+            width="350px"
+            pointerEvents="auto"
+        >
+            <Box
+                bg="bg.surface"
+                borderRadius="lg"
+                boxShadow="xl"
+                overflow="hidden"
+                display="flex"
+                flexDirection="column"
             >
-                {localError && (
-                    <Box color="red.500" p={2} textAlign="center">
-                        {localError}
-                    </Box>
-                )}
-                <Portal>
-                    <Drawer.Backdrop />
-                    <Drawer.Positioner padding={{ base: 0, md: 4 }}>
-                        <Drawer.Content
-                            bg="gray.700"
-                            display="flex"
-                            flexDirection="column"
-                            color="gray.300"
-                            h={{ base: "90%", md: "100%" }}
-                        >
-                            <Drawer.Header
-                                borderBottomWidth="1px"
-                                flexWrap="wrap"
-                                display="flex"
-                            >
-                                <Drawer.Title>
-                                    {t("sendMessage")}
-                                </Drawer.Title>
-                            </Drawer.Header>
+                {/* Header */}
+                <HStack
+                    justify="space-between"
+                    bg="colorPalette.default"
+                    px={3}
+                    py={2}
+                    color="white"
+                >
+                    <Text fontWeight="bold" fontSize="sm">
+                        {t("sendMessage")}
+                    </Text>
+                    <CloseButton
+                        size="sm"
+                        color="white"
+                        _hover={{bg: "whiteAlpha.300"}}
+                        onClick={onClose}
+                    />
+                </HStack>
 
-                            <Drawer.Body
-                                flex="1"
-                                overflowY="auto"
-                                onScroll={handleScroll}
-                            >
-                                <VStack align="stretch">
-                                    {localUsersForPagination.map(user => (
-                                        <Box
-                                            key={user.id}
-                                            gap={2}
-                                            p={2}
-                                            border={"1px solid"}
-                                            borderRadius={"md"}
-                                            cursor="pointer"
-                                            onClick={() => handleUserClick(user)}
-                                            bg={"gray.800"}
-                                        >
+                {/* Barre de recherche */}
+                <Box position="relative" mx="auto" maxW="320px" width="100%" mt={2}>
+                    <Icon
+                        as={SearchIcon}
+                        boxSize={4}
+                        color="fg.muted"
+                        position="absolute"
+                        left={3}
+                        top="50%"
+                        transform="translateY(-50%)"
+                        pointerEvents="none"
+                    />
+                    <Input
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        placeholder={t("searchUsers") || "Rechercher un utilisateur..."}
+                        bg="bg.subtle"
+                        borderColor="gray.300"
+                        _hover={{borderColor: "colorPalette.default"}}
+                        transition="all 0.2s"
+                        size="sm"
+                        width="100%"
+                        pl={8}
+                    />
+                </Box>
+
+                {/* Liste des utilisateurs */}
+                <Box
+                    height="400px"
+                    overflowY="auto"
+                    p={3}
+                    aria-label="Liste des utilisateurs"
+                    onScroll={handleScroll}
+                >
+                    {isSearching ? (
+                        <HStack justify="center" py={4}>
+                            <Spinner size="sm" color="colorPalette.default"/>
+                            <Text fontSize="xs" color="fg.muted">Recherche...</Text>
+                        </HStack>
+                    ) : (
+                        <VStack align="stretch" gap={2}>
+                            {users.length === 0 && searchTerm && !isFetching ? (
+                                <Text textAlign="center" fontSize="xs" color="fg.muted" py={4}>
+                                    Aucun utilisateur trouvé.
+                                </Text>
+                            ) : (
+                                users.map((user: UserProfile) => (
+                                    <Box
+                                        key={user.id}
+                                        p={3}
+                                        borderWidth="1px"
+                                        borderColor="gray.300"
+                                        borderRadius="lg"
+                                        cursor="pointer"
+                                        bg="bg.surface"
+                                        transition="all 0.2s"
+                                        _hover={{ bg: "bg.subtle", transform: "translateX(2px)" }}
+                                        onClick={() => handleUserClick(user)}
+                                    >
+                                        <Text fontSize="sm" fontWeight="medium">
                                             {user.firstName} {user.lastName}
-                                        </Box>
-                                    ))}
+                                        </Text>
+                                    </Box>
+                                ))
+                            )}
+                            {isFetching && !isSearching && (
+                                <HStack justify="center" py={2}>
+                                    <Spinner size="sm" color="colorPalette.default" />
+                                </HStack>
+                            )}
+                            {isLastPage && !isFetching && !isSearching && users.length > 0 && (
+                                <Text textAlign="center" fontSize="xs" color="fg.muted" py={2}>
+                                    {t("endOfList")}
+                                </Text>
+                            )}
+                        </VStack>
+                    )}
+                </Box>
 
-                                    {isFetching && (
-                                        <HStack justify="center" py={3}>
-                                            <Spinner size="sm" />
-                                        </HStack>
-                                    )}
-
-                                    {isLastPage && (
-                                        <Box textAlign="center" py={3}>Fin de la liste</Box>
-                                    )}
-                                </VStack>
-                            </Drawer.Body>
-
-                            <Drawer.Footer borderTopWidth="1px">
-                                <Drawer.CloseTrigger asChild bg={"gray.300"}>
-                                    <CloseButton size="sm" onClick={onClose} />
-                                </Drawer.CloseTrigger>
-                            </Drawer.Footer>
-                        </Drawer.Content>
-                    </Drawer.Positioner>
-                </Portal>
-            </Drawer.Root>
+                {/* Footer (juste l'erreur éventuelle) */}
+                {localError && (
+                    <HStack p={2} borderTopWidth="1px" borderColor="border.default" gap={2}>
+                        <Text color="red.500" fontSize="xs" flex="1">
+                            {localError}
+                        </Text>
+                    </HStack>
+                )}
+            </Box>
         </Box>
     );
-}
+};

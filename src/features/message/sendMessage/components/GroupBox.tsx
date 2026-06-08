@@ -39,9 +39,7 @@ export const GroupBox = ({ onClose, open, onGroupCreated, stackIndex = 0 }: Grou
         searchTerm,
         setSearchTerm,
         isSearching,
-        loadedUsers,
     } = useGroupBoxController({ onClose, onGroupCreated });
-    console.log("Loaded users for pagination:", loadedUsers);
 
     const rightOffset = 132 + stackIndex * 370;
     if (!open) return null;
@@ -83,14 +81,14 @@ export const GroupBox = ({ onClose, open, onGroupCreated, stackIndex = 0 }: Grou
                 </HStack>
 
                 {/* Champ nom du groupe */}
-                <Box p={3} borderBottomWidth="1px" borderColor="border.default">
+                <Box p={3} borderBottomWidth="1px" borderColor="gray.500">
                     <Input
                         value={groupName}
                         onChange={(e) => setGroupName(e.target.value)}
                         placeholder={t("groupNamePlaceholder") || "Nom du groupe"}
                         size="sm"
                         bg="bg.subtle"
-                        borderColor="border.default"
+                        borderColor="gray.300"
                         _hover={{ borderColor: "colorPalette.default" }}
                         transition="all 0.2s"
                         autoFocus
@@ -98,7 +96,7 @@ export const GroupBox = ({ onClose, open, onGroupCreated, stackIndex = 0 }: Grou
                 </Box>
 
                 {/* Barre de recherche */}
-                <Box position="relative">
+                <Box position="relative" mx="auto" maxW="320px" width="100%">
                     <Icon
                         as={SearchIcon}
                         boxSize={4}
@@ -117,12 +115,14 @@ export const GroupBox = ({ onClose, open, onGroupCreated, stackIndex = 0 }: Grou
                         borderColor="gray.300"
                         _hover={{ borderColor: "colorPalette.default" }}
                         transition="all 0.2s"
-                        pl={8}
                         size="sm"
+                        width="100%"
+                        mt="5px"
+                        pl={2}
                     />
                 </Box>
 
-                {/* Liste des utilisateurs (hauteur augmentée) */}
+                {/* Liste des utilisateurs */}
                 <Box
                     height="400px"
                     overflowY="auto"

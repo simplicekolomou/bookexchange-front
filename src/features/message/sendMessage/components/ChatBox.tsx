@@ -68,7 +68,7 @@ export const ChatBox = ({ chatGroup, onClose, open, stackIndex = 0 }: ChatBoxPro
                         color="white"
                     >
                         <Text fontWeight="bold" fontSize="sm">
-                            {chatGroup?.name ?? "Chat"}
+                            {chatGroup?.name ?? controller.conversationName}
                         </Text>
                         <HStack gap={1}>
                             <IconButton

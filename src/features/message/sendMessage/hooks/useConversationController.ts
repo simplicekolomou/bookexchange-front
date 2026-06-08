@@ -1,17 +1,19 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
     useAddGroupChatMutation,
     useLazyFindGroupByMembersQuery,
 } from "../../api/messageApi.ts";
-import type { GroupChat, PagedResponse } from "../../types/message.types.ts";
+import type { AddGroupRequest, GroupChat, PagedResponse } from "../../types/message.types.ts";
 import {
     useGetAllUsersQuery,
     useGetCurrentUserQuery,
     useGetUserQuery,
+    useFindUserQuery,
 } from "../../../auth/api/authApi.ts";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 import type { UserProfile } from "../../../auth/profile/types/profile.types.ts";
+import {useDebouncedController} from "../../../../hooks/useDebouncedController.ts";
 
 interface Props {
     onGroupSelected?: (group: GroupChat) => void;
@@ -25,14 +27,36 @@ export const useConversationController = ({ onGroupSelected, onClose }: Props) =
     const params = new URLSearchParams(location.search);
     const userId = params.get("user") ?? undefined;
 
+    // Recherche
+    const [searchTerm, setSearchTerm] = useState("");
+    const { debounced: debouncedSearch } = useDebouncedController(300, searchTerm);
+
+    // Pagination classique
     const [page, setPage] = useState(0);
     const size = 15;
-    const [localUsersForPagination, setLocalUsersForPagination] = useState<UserProfile[]>([]);
+    const [users, setUsers] = useState<UserProfile[]>([]);
     const [isLastPage, setIsLastPage] = useState(false);
     const [localError, setLocalError] = useState<string | null>(null);
     const loadingRef = useRef(false);
 
-    const { data: loadedUsers, isFetching } = useGetAllUsersQuery({ page, size });
+    // Requêtes API
+    const { data: loadedUsers, isFetching: isFetchingAll } = useGetAllUsersQuery(
+        { page, size },
+        { skip: !!debouncedSearch }
+    );
+    const { data: searchData, isFetching: isFetchingSearch } = useFindUserQuery(
+        {
+            page: 0,
+            size: 100,
+            firstName: debouncedSearch || undefined,
+            lastName: debouncedSearch || undefined,
+        },
+        { skip: !debouncedSearch }
+    );
+
+    const isFetching = debouncedSearch ? isFetchingSearch : isFetchingAll;
+    const data = debouncedSearch ? searchData : loadedUsers;
+
     const { data: currentUser } = useGetCurrentUserQuery();
     const { data: targetUser } = useGetUserQuery(
         { userId: userId ?? "" },
@@ -42,25 +66,38 @@ export const useConversationController = ({ onGroupSelected, onClose }: Props) =
     const [addGroup] = useAddGroupChatMutation();
     const [triggerFindGroup] = useLazyFindGroupByMembersQuery();
 
-    // ✅ hydratation de la liste paginée sans doublons
+    // Réinitialisation quand le terme de recherche change
     useEffect(() => {
-        if (!loadedUsers) return;
-        const newUsers = (loadedUsers as PagedResponse<UserProfile>).content ?? [];
+        if (debouncedSearch) {
+            setPage(0);
+            setUsers([]);
+            setIsLastPage(false);
+            loadingRef.current = false;
+        }
+    }, [debouncedSearch]);
 
-        setLocalUsersForPagination((prev) => {
+    // Mise à jour de la liste d'utilisateurs
+    useEffect(() => {
+        if (!data) return;
+        const newUsers = (data as PagedResponse<UserProfile>).content ?? [];
+        setUsers((prev) => {
+            if (debouncedSearch) {
+                return newUsers; // remplacement
+            }
+            // accumulation sans doublons
             const map = new Map(prev.map((u) => [u.id, u]));
-            newUsers.forEach((u: UserProfile) => map.set(u.id, u));
+            newUsers.forEach((u) => map.set(u.id, u));
             return Array.from(map.values());
         });
-
-        setIsLastPage((loadedUsers as PagedResponse<UserProfile>).last ?? false);
+        setIsLastPage((data as PagedResponse<UserProfile>).last ?? false);
         loadingRef.current = false;
-    }, [loadedUsers]);
+    }, [data, debouncedSearch]);
 
-    const handleUserClick = async (user: UserProfile) => {
+    // Création / ouverture d'une conversation directe
+    const handleAddDirectGroup = async (user: UserProfile) => {
         setLocalError(null);
         try {
-            // ✅ groupe existant → on l'ouvre directement
+            // Vérifier si le groupe existe déjà
             try {
                 const existingGroup = await triggerFindGroup(Number(user.id)).unwrap();
                 onGroupSelected?.(existingGroup);
@@ -72,19 +109,19 @@ export const useConversationController = ({ onGroupSelected, onClose }: Props) =
                     setLocalError(t("serverError"));
                     return;
                 }
-                // 404 → on crée
             }
 
-            // ✅ création du groupe
-            const newGroup: GroupChat = await addGroup({
-                name: `${user.firstName} ${user.lastName}`,
+            // Création du groupe direct
+            const newGroup: AddGroupRequest = {
+                groupType: "DIRECT",
+                name: null,
                 members: [
                     { notification: true, endUserId: Number(user.id) },
                     { notification: true, endUserId: Number(currentUser!.id) },
                 ],
-            }).unwrap();
-
-            onGroupSelected?.(newGroup);
+            };
+            const result: GroupChat = await addGroup(newGroup).unwrap();
+            onGroupSelected?.(result);
             onClose?.();
         } catch (error) {
             const status = (error as { status?: number })?.status;
@@ -92,14 +129,15 @@ export const useConversationController = ({ onGroupSelected, onClose }: Props) =
         }
     };
 
-    // ✅ ouverture automatique si ?user= dans l'URL
+    // Ouverture automatique si ?user= présent dans l'URL
     useEffect(() => {
         if (!userId || !targetUser) return;
-        handleUserClick(targetUser);
+        handleAddDirectGroup(targetUser);
     }, [userId, targetUser]);
 
-    // ✅ scroll infini sur la liste des utilisateurs
+    // Scroll infini (uniquement en mode non-recherche)
     const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+        if (debouncedSearch) return;
         const el = e.currentTarget;
         const nearBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 50;
         if (nearBottom && !isFetching && !isLastPage && !loadingRef.current) {
@@ -109,12 +147,15 @@ export const useConversationController = ({ onGroupSelected, onClose }: Props) =
     };
 
     return {
-        localUsersForPagination,
+        users,
         isFetching,
         isLastPage,
         handleScroll,
         localError,
         t,
-        handleUserClick,
+        handleUserClick: handleAddDirectGroup,
+        searchTerm,
+        setSearchTerm,
+        isSearching: debouncedSearch && isFetchingSearch,
     };
 };
