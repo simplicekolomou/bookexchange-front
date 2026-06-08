@@ -1,12 +1,12 @@
 import { Box, VStack, Spinner, Text, Button, Flex } from "@chakra-ui/react";
-import { ChatBox } from "../components/ChatBox.tsx";
-import { MessageCard } from "../components/MessageCard.tsx";
-import { MessageTabs } from "../components/MessageTabs.tsx";
-import { CreateGroupChat } from "../components/CreateGroupChat.tsx";
-import { CreateDirectChat } from "../components/CreateDirectChat.tsx";
-import { tokens } from "../../../../theme/theme.ts";
-import { useMessagingController } from "../hooks/useMessagingController.ts";
-import type { GroupChat } from "../../types/message.types.ts";
+import { ChatBox } from "../components/ChatBox";
+import { MessageCard } from "../components/MessageCard";
+import { MessageTabs } from "../components/MessageTabs";
+import { CreateGroupChat } from "../components/CreateGroupChat";
+import { CreateDirectChat } from "../components/CreateDirectChat";
+import { tokens } from "../../../../theme/theme";
+import { useMessagingController } from "../hooks/useMessagingController";
+import type { GroupChat } from "../../types/message.types";
 
 export const Messaging = () => {
     const {
@@ -73,8 +73,8 @@ export const Messaging = () => {
 
             <VStack align="stretch" gap={tokens.spacing.xs} mt={tokens.spacing.md}>
                 {groupChats.map((group: GroupChat, index) => {
-                    const groupIdKey = String(group?.id ?? group?.id ?? `g-${index}`);
-                    const isActive = activeChats.some((g) => String(g?.id) === String(group?.id));
+                    const groupIdKey = group?.id ? String(group.id) : `g-${index}`;
+                    const isActive = activeChats.some((g) => String(g?.id ?? "") === String(group?.id ?? ""));
                     return (
                         <MessageCard
                             key={groupIdKey}
@@ -86,15 +86,17 @@ export const Messaging = () => {
                 })}
             </VStack>
 
-            {activeChats.map((group, idx) => (
-                <ChatBox
-                    key={String(group?.id ?? `active-${idx}`)}
-                    chatGroup={group}
-                    open={true}
-                    onClose={() => closeChat(group?.id ?? `active-${idx}`)}
-                    stackIndex={idx}
-                />
-            ))}
+            {activeChats
+                .filter(Boolean) // enlever éventuels null/undefined
+                .map((group, idx) => (
+                    <ChatBox
+                        key={String(group?.id ?? `active-${idx}`)}
+                        chatGroup={group}
+                        open={true}
+                        onClose={() => closeChat(group?.id ?? `active-${idx}`)}
+                        stackIndex={idx}
+                    />
+                ))}
 
             <CreateDirectChat
                 open={isSendMessageBoxOpen}
@@ -104,7 +106,7 @@ export const Messaging = () => {
             <CreateGroupChat
                 open={isGroupBoxOpen}
                 onClose={closeGroupBox}
-                onGroupCreated={openChat}
+                onGroupSelected={openChat}
             />
         </Box>
     );

@@ -17,11 +17,11 @@ import {useCreateGroupChatController} from "../hooks/useCreateGroupChatControlle
 interface GroupBoxProps {
     onClose: () => void;
     open: boolean;
-    onGroupCreated: (group: GroupChat) => void;
+    onGroupSelected: (group: GroupChat) => void;
     stackIndex?: number;
 }
 
-export const CreateGroupChat = ({ onClose, open, onGroupCreated, stackIndex = 0 }: GroupBoxProps) => {
+export const CreateGroupChat = ({ onClose, open, onGroupSelected, stackIndex = 0 }: GroupBoxProps) => {
     const {
         users,
         isFetching,
@@ -39,7 +39,7 @@ export const CreateGroupChat = ({ onClose, open, onGroupCreated, stackIndex = 0 
         searchTerm,
         setSearchTerm,
         isSearching,
-    } = useCreateGroupChatController({ onClose, onGroupCreated });
+    } = useCreateGroupChatController({ onClose, onGroupSelected });
 
     // Calcul de la position en fonction de l'index dans la pile(stackIndex)
     const rightOffset = 132 + stackIndex * 370;

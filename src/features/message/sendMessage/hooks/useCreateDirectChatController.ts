@@ -26,8 +26,6 @@ export const useCreateDirectChatController = ({ onGroupSelected, onClose }: Prop
 
     const { users, isFetching, isLastPage, handleScroll, searchTerm, setSearchTerm, isSearching } =
         useSearchPaginatedUsersController({ size: 15 });
-
-    console.log("Les users recherchés : ", users);
     
     const [localError, setLocalError] = useState<string | null>(null);
     const { data: currentUser } = useGetCurrentUserQuery();

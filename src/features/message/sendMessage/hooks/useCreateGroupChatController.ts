@@ -8,17 +8,15 @@ import {useSearchPaginatedUsersController} from "./useSearchPaginatedUsersContro
 
 interface Props {
     onClose: () => void;
-    onGroupCreated: (group: GroupChat) => void;
+    onGroupSelected: (group: GroupChat) => void;
 }
 
-export const useCreateGroupChatController = ({ onClose, onGroupCreated }: Props) => {
+export const useCreateGroupChatController = ({ onClose, onGroupSelected }: Props) => {
     const { t } = useTranslation("message");
     const currentUserId = useSelector(selectCurrentUserId);
 
     const { users, isFetching, isLastPage, handleScroll, searchTerm, setSearchTerm, isSearching } =
         useSearchPaginatedUsersController({ size: 15 });
-
-    console.log("Les users recherchés : ", users);
 
     const [groupName, setGroupName] = useState("");
     const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
@@ -57,7 +55,7 @@ export const useCreateGroupChatController = ({ onClose, onGroupCreated }: Props)
             const result = await addGroup(newGroup).unwrap();
             setGroupName("");
             setSelectedUserIds([]);
-            onGroupCreated(result);
+            onGroupSelected(result);
             onClose();
         } catch (error) {
             const status = (error as { status?: number })?.status;
