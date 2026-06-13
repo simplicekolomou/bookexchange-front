@@ -65,7 +65,7 @@ export const useRegisterColler = () => {
         try {
             const result = await registerUser(newUser).unwrap();
             dispatch(setCredentials(result));
-            const userId = result.user?.id;
+            const userId = result?.id;
             navigate(`/user/${userId}/collection`, { replace: true });
         } catch (error) {
             const status = (error as { status?: number })?.status;

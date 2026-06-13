@@ -42,7 +42,7 @@ export const useLoginController = () => {
             dispatch(setCredentials(result));
 
             // Naviguer immédiatement avec l'ID renvoyé par l'API
-            const userId = result.user?.id;
+            const userId = result?.id;
             if (userId) {
                 navigate(`/user/${userId}/collection`);
             } else {

@@ -52,13 +52,15 @@ export interface PagedResponse<T> {
 }
 
 export interface Message {
-    id: string;
+    id?: string;
+    tempId?: string; // pour les messages optimistes côté client
     content: string;
     sendTime: Date;
     senderId: string;
-    isReadByMe: boolean;
-    readByIds: string[]; // IDs des utilisateurs qui ont lu le message
+    isReadByMe?: boolean;
+    readByIds?: string[]; // IDs des utilisateurs qui ont lu le message
     metadata?: MessageMetadata;
+    groupChatId: string
 }
 
 export interface Membership {
@@ -67,11 +69,23 @@ export interface Membership {
     notification: boolean;
 }
 
+export interface NotificationItem {
+    id: string;             // id généré côté client ou fourni par le serveur
+    chatId: string;         // garder le même type que GroupChat.id / Message.groupChatId
+    chatName?: string;
+    senderId?: string;      // utile pour filter/ignore les notifications de l'expéditeur
+    senderName?: string;
+    content?: string;
+    sendTime: string | Date; // le serveur renvoie probablement une ISO string
+    // champs optionnels supplémentaires selon payload serveur
+    [key: string]: unknown;
+}
 export interface MessageState {
     activeChats: GroupChat[];        // conversations ouvertes (ChatBox)
     activeTab: string;               // 'messages' | 'groups' | 'sendMessage'
     isGroupBoxOpen: boolean;
     isSendMessageBoxOpen: boolean;
+    notifications: NotificationItem[];
 }
 
 

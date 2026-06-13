@@ -1,3 +1,5 @@
+// typescript
+// File: `src/features/message/sendMessage/components/ChatBox.tsx`
 import {
     Box, IconButton, Input, VStack,
     Text, HStack, Icon, CloseButton,
@@ -6,6 +8,7 @@ import { SendHorizonalIcon, Minimize2, Maximize2 } from "lucide-react";
 import { useState } from "react";
 import type { GroupChat, Message } from "../../types/message.types.ts";
 import { useSendMessageController } from "../hooks/useSendMessageController.ts";
+import { MessageItem } from "./MessageItem";
 
 interface ChatBoxProps {
     chatGroup?: GroupChat | null;
@@ -14,16 +17,11 @@ interface ChatBoxProps {
     stackIndex?: number;
 }
 
-const formatTime = (date: Date | string) =>
-    new Date(date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-
 export const ChatBox = ({ chatGroup, onClose, open, stackIndex = 0 }: ChatBoxProps) => {
     const [minimized, setMinimized] = useState(false);
 
-    // calcul de l'offset à droite en fonction du nombre de fenêtres ouvertes (stackIndex)
     const rightOffset = 132 + stackIndex * 370;
 
-    // uniquement les props du hook allégé
     const controller = useSendMessageController({ chatGroup, open });
 
     if (!open || !controller?.messages) return null;
@@ -61,7 +59,6 @@ export const ChatBox = ({ chatGroup, onClose, open, stackIndex = 0 }: ChatBoxPro
                     display="flex"
                     flexDirection="column"
                 >
-                    {/* Header */}
                     <HStack
                         justify="space-between"
                         bg="colorPalette.default"
@@ -92,7 +89,6 @@ export const ChatBox = ({ chatGroup, onClose, open, stackIndex = 0 }: ChatBoxPro
                         </HStack>
                     </HStack>
 
-                    {/* Zone messages */}
                     <Box
                         height="400px"
                         overflowY="auto"
@@ -109,31 +105,11 @@ export const ChatBox = ({ chatGroup, onClose, open, stackIndex = 0 }: ChatBoxPro
                             </Box>
                         ) : (
                             <VStack align="stretch" gap={2}>
-                                {messages.map((msg: Message) => {
-                                    const isMe = msg.senderId === myId;
+                                {messages.map((msg: Message, idx) => {
+                                    const key = (msg as Message).id ?? (msg as Message).tempId ?? `msg-${idx}`;
                                     return (
-                                        <Box
-                                            key={msg.id}
-                                            alignSelf={isMe ? "flex-end" : "flex-start"}
-                                            bg={isMe ? "colorPalette.default" : "bg.subtle"}
-                                            color={isMe ? "white" : "fg.default"}
-                                            px={3}
-                                            py={2}
-                                            borderRadius="lg"
-                                            maxW="80%"
-                                            boxShadow="sm"
-                                        >
-                                            <Text fontSize="sm" wordBreak="break-word">
-                                                {msg.content}
-                                            </Text>
-                                            <Text
-                                                fontSize="xs"
-                                                opacity={0.6}
-                                                mt={0.5}
-                                                textAlign={isMe ? "right" : "left"}
-                                            >
-                                                {formatTime(msg.sendTime)}
-                                            </Text>
+                                        <Box key={key}>
+                                            <MessageItem msg={msg as Message} myId={myId} />
                                         </Box>
                                     );
                                 })}
@@ -142,7 +118,6 @@ export const ChatBox = ({ chatGroup, onClose, open, stackIndex = 0 }: ChatBoxPro
                         )}
                     </Box>
 
-                    {/* Saisie */}
                     <HStack p={2} borderTopWidth="1px" borderColor="border.default" gap={2}>
                         <Input
                             value={message}

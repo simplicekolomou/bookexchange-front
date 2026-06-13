@@ -1,57 +1,58 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
-import type { AuthResponse, AuthState, UpdateProfileRequest } from './types/auth.types.ts'
+import type { AuthState, UpdateProfileRequest } from './types/auth.types.ts'
 import type { RootState } from '../../app/store.ts'
+import type {UserProfile} from "./profile/types/profile.types.ts";
 
 const initialState: AuthState = {
-    token: null,
     isAuthenticated: false,
     isLoading: false,
-    user: null,
-    userProfile: null,
+    user: null
 }
 
 const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        // Login / Register — hydrate tout le state
-        setCredentials: (state, action: PayloadAction<AuthResponse>) => {
-            state.token = action.payload.accessToken
-            state.user = action.payload.user
+
+        // Hydratation après login / register / GET me
+        setCredentials: (state, action: PayloadAction<UserProfile>) => {
+            state.user = action.payload
             state.isAuthenticated = true
-            state.userProfile = action.payload.user
         },
 
-        // Mise à jour partielle du profil connecté (après updateProfile)
+        // Mise à jour partielle du profil
         userProfileUpdated: (state, action: PayloadAction<Partial<UpdateProfileRequest>>) => {
-            if (state.userProfile) {
-                state.userProfile = { ...state.userProfile, ...action.payload }
+            if (state.user) {
+                state.user = { ...state.user, ...action.payload }
             }
         },
 
-        // Mise à jour de la photo uniquement (après updateProfilePicture)
+        // Mise à jour de la photo uniquement
         userPictureUpdated: (state, action: PayloadAction<string>) => {
-            if (state.userProfile) {
-                state.userProfile.profilePicture = action.payload
+            if (state.user) {
+                state.user.profilePicture = action.payload
             }
         },
 
-        // Logout propre — pas de couplage avec baseApi ici
+        // Logout — isAuthenticated dérivé de user !== null
         logout: (state) => {
             state.user = null
-            state.token = null
             state.isAuthenticated = false
         },
     },
 })
 
-export const { setCredentials, userProfileUpdated, userPictureUpdated, logout } = authSlice.actions
+export const {
+    setCredentials,
+    userProfileUpdated,
+    userPictureUpdated,
+    logout,
+} = authSlice.actions
+
 export default authSlice.reducer
 
 // Selectors
-export const selectCurrentUser      = (state: RootState) => state.auth.user
-export const selectCurrentToken     = (state: RootState) => state.auth.token
-export const selectIsAuthenticated  = (state: RootState) => state.auth.isAuthenticated
-export const selectCurrentUserId    = (state: RootState) => state.auth.user?.id
-export const selectUserPicture      = (state: RootState) => state.auth.userProfile?.profilePicture ?? null
-export const selectUserProfile = (state: RootState) => state.auth.userProfile
+export const selectCurrentUser     = (state: RootState) => state.auth.user
+export const selectIsAuthenticated = (state: RootState) => state.auth.user !== null // ✅ dérivé
+export const selectCurrentUserId   = (state: RootState) => state.auth.user?.id
+export const selectUserPicture     = (state: RootState) => state.auth.user?.profilePicture ?? null

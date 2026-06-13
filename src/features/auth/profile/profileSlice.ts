@@ -39,5 +39,8 @@ const profileSlice = createSlice({
     },
 });
 
-export const { profileUpdated, passwordUpdated } = profileSlice.actions;
+export const {
+    profileUpdated,
+    passwordUpdated
+} = profileSlice.actions;
 export default profileSlice.reducer;

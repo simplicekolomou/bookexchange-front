@@ -13,6 +13,8 @@ import {Link as RouterLink, useNavigate} from "react-router-dom";
 import {SendHorizonalIcon} from "lucide-react";
 import type {UserProfile} from "../../features/auth/profile/types/profile.types.ts";
 import {useTranslation} from "react-i18next";
+import { selectCurrentUserId } from "../../features/auth/authSlice.ts";
+import {useSelector} from "react-redux";
 
 interface UserCardProps {
     user: UserProfile
@@ -20,12 +22,13 @@ interface UserCardProps {
 export const UserCard = ({user}: UserCardProps) => {
     const {t} = useTranslation("profile");
     const navigate = useNavigate();
+    const currentUserId = useSelector(selectCurrentUserId);
 
-    function handleSendMessage(idUser: string) {
+    function handleSendMessage(targetUserId: string) {
         // navigue vers la page de messaging en précisant l'utilisateur ciblé
         // et transmet l'ID dans l'état pour que ChatBox puisse ouvrir la conversation
         // et envoyer un message automatiquement si nécessaire.
-        navigate(`/send-message?user=${encodeURIComponent(idUser)}`, { state: { recipientId: idUser, sendNow: true } });
+       navigate(`/user/${currentUserId}/dms?openDirect=${targetUserId}`);
     }
 
     if(user){

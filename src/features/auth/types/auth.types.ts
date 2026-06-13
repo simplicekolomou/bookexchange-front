@@ -25,11 +25,9 @@ export interface AuthResponse {
 }
 
 export interface AuthState {
-    token: string | null
     isAuthenticated: boolean
     isLoading: boolean
-    user?: User | null
-    userProfile?: UserProfile | null
+    user?: UserProfile | null
 }
 
 export interface ResetPasswordRequest {

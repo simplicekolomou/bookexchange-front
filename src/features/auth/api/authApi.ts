@@ -2,43 +2,75 @@ import { baseApi } from '../../../services/baseApi.ts'
 import type {
     LoginCredentials,
     RegisterCredentials,
-    AuthResponse,
     ResetPasswordRequest,
     UpdatePasswordRequest,
     UpdateProfileRequest,
 } from '../types/auth.types.ts'
-import {setCredentials, userPictureUpdated, userProfileUpdated} from '../authSlice.ts'
-import type {UserProfile} from "../profile/types/profile.types.ts";
-import type {PagedResponse} from "../../message/types/message.types.ts";
+import type { UserProfile } from "../profile/types/profile.types.ts"
+import type { PagedResponse } from "../../message/types/message.types.ts"
+import {
+    setCredentials,
+    userPictureUpdated,
+    userProfileUpdated,
+    logout,
+} from '../authSlice.ts'
 
 export const authApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
-        // Auth de base
-        login: builder.mutation<AuthResponse, LoginCredentials>({
+
+        // Login — backend renvoie User, token dans le cookie httpOnly
+        login: builder.mutation<UserProfile, LoginCredentials>({
             query: (credentials) => ({
                 url: '/login',
                 method: 'POST',
                 body: credentials,
             }),
             invalidatesTags: ['Auth'],
-            // On hydrate authSlice dès le login
             async onQueryStarted(_, { dispatch, queryFulfilled }) {
-                const { data } = await queryFulfilled;
-                dispatch(setCredentials(data));
+                try {
+                    const { data } = await queryFulfilled;
+                    dispatch(setCredentials(data)); // User directement, plus AuthResponse
+                } catch { /* empty */ }
             },
         }),
 
-        // Inscription
-        register: builder.mutation<AuthResponse, RegisterCredentials>({
+        logout: builder.mutation<void, void>({
+            query: () => ({
+                url: '/logout',
+                method: 'POST',
+            }),
+            invalidatesTags: ['Auth'],
+        }),
+
+        // Register
+        register: builder.mutation<UserProfile, RegisterCredentials>({
             query: (credentials) => ({
                 url: '/register',
                 method: 'POST',
                 body: credentials,
             }),
-            // On connecte automatiquement l'utilisateur après inscription
             async onQueryStarted(_, { dispatch, queryFulfilled }) {
-                const { data } = await queryFulfilled;
-                dispatch(setCredentials(data));
+                try {
+                    const { data } = await queryFulfilled;
+                    dispatch(setCredentials(data));
+                } catch { /* empty */ }
+            },
+        }),
+
+        // GET /me — hydrate le store au refresh de page
+        getMe: builder.query<UserProfile, void>({
+            query: () => ({
+                url: '/me',
+                method: 'GET',
+            }),
+            providesTags: ['Auth'],
+            async onQueryStarted(_, { dispatch, queryFulfilled }) {
+                try {
+                    const { data } = await queryFulfilled;
+                    dispatch(setCredentials(data)); // réhydratation au refresh
+                } catch {
+                    dispatch(logout()); // cookie absent ou expiré
+                }
             },
         }),
 
@@ -47,19 +79,25 @@ export const authApi = baseApi.injectEndpoints({
             query: (email) => ({
                 url: '/forgot-password',
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                // body simple — RTK Query gère le Content-Type
                 body: { email },
             }),
         }),
 
-        // Réinitialisation du mot de passe
-        resetPassword: builder.mutation<AuthResponse, ResetPasswordRequest>({
+        // Reset password — hydrate le store après reset
+        resetPassword: builder.mutation<UserProfile, ResetPasswordRequest>({
             query: (body) => ({
                 url: '/reset-password',
                 method: 'POST',
                 body,
             }),
             invalidatesTags: ['Auth'],
+            async onQueryStarted(_, { dispatch, queryFulfilled }) {
+                try {
+                    const { data } = await queryFulfilled;
+                    dispatch(setCredentials(data));
+                } catch { /* empty */ }
+            },
         }),
 
         // Mise à jour du mot de passe
@@ -71,23 +109,22 @@ export const authApi = baseApi.injectEndpoints({
             }),
         }),
 
-        // Mise à jour du profil de l'utilisateur connecté
+        // Mise à jour du profil
         updateProfile: builder.mutation<void, UpdateProfileRequest>({
             query: (data) => ({
                 url: '/update-profile',
                 method: 'PUT',
                 body: data,
             }),
-            // On dispatche l'action dédiée du slice, pas setCredentials
             async onQueryStarted(data, { dispatch, queryFulfilled }) {
                 try {
-                    await queryFulfilled
-                    dispatch(userProfileUpdated(data))
+                    await queryFulfilled;
+                    dispatch(userProfileUpdated(data));
                 } catch { /* empty */ }
             },
         }),
 
-        // Récupération de la photo de profil de l'utilisateur connecté
+        // Photo de profil
         getProfilePicture: builder.query<string, void>({
             query: () => ({
                 url: '/users/me/profile-picture',
@@ -101,34 +138,37 @@ export const authApi = baseApi.injectEndpoints({
             providesTags: ['Picture'],
         }),
 
-        // Mise à jour de la photo de profil de l'utilisateur connecté
+        // Mise à jour de la photo
         updateProfilePicture: builder.mutation<{ profilePicture: string }, FormData>({
             query: (formData) => ({
                 url: '/update-profile-picture',
                 method: 'PUT',
                 body: formData,
             }),
-            // Invalide le cache de la photo après upload → refetch automatique
             invalidatesTags: ['Picture'],
-            async onQueryStarted(_, { dispatch, queryFulfilled}) {
+            async onQueryStarted(_, { dispatch, queryFulfilled }) {
                 try {
                     const { data } = await queryFulfilled;
-                    dispatch(userPictureUpdated(data.profilePicture)); // met à jour l'extension dans authSlice
+                    dispatch(userPictureUpdated(data.profilePicture));
                 } catch { /* empty */ }
             },
         }),
 
+        // Profil d'un utilisateur par id
         getUser: builder.query<UserProfile, { userId?: string }>({
-            query: ({ userId }) => ({
-                url: `/users/${userId}`,
-                method: 'GET',
-            }),
+            query: ({ userId }) => `/users/${userId}`,
             providesTags: ['Profile'],
         }),
 
-        findUser: builder.query<PagedResponse<UserProfile>, { firstName?: string, lastName?: string, size: number, page: number }>({
+        // Recherche d'utilisateurs
+        findUser: builder.query<PagedResponse<UserProfile>, {
+            firstName?: string;
+            lastName?: string;
+            size: number;
+            page: number;
+        }>({
             query: ({ firstName, lastName, size, page }) => ({
-                url: `/users/search`,
+                url: '/users/search',
                 method: 'GET',
                 params: {
                     ...(firstName ? { firstName } : {}),
@@ -140,26 +180,15 @@ export const authApi = baseApi.injectEndpoints({
             providesTags: ['Profile'],
         }),
 
+        // Liste paginée de tous les utilisateurs
         getAllUsers: builder.query<PagedResponse<UserProfile>, { page: number; size: number }>({
             query: ({ page, size }) => ({
-                url: `/users/all`,
+                url: '/users/all',
                 method: 'GET',
-                params: {
-                    page,
-                    size
-                }
+                params: { page, size },
             }),
             providesTags: ['Users'],
         }),
-
-        getCurrentUser: builder.query<UserProfile, void>({
-            query: () => ({
-                url: `/users/me`,
-                method: 'GET',
-            }),
-            providesTags: ['Profile'],
-        }),
-
     }),
     overrideExisting: false,
 });
@@ -167,6 +196,7 @@ export const authApi = baseApi.injectEndpoints({
 export const {
     useLoginMutation,
     useRegisterMutation,
+    useGetMeQuery,
     useForgotPasswordMutation,
     useResetPasswordMutation,
     useUpdatePasswordMutation,
@@ -176,5 +206,5 @@ export const {
     useGetUserQuery,
     useFindUserQuery,
     useGetAllUsersQuery,
-    useGetCurrentUserQuery,
+    useLogoutMutation,
 } = authApi;

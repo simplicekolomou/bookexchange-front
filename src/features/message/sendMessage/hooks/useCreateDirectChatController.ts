@@ -5,7 +5,7 @@ import {
 } from "../../api/messageApi";
 import type { AddGroupRequest, GroupChat } from "../../types/message.types";
 import {
-    useGetCurrentUserQuery,
+    useGetMeQuery,
     useGetUserQuery,
 } from "../../../auth/api/authApi";
 import { useTranslation } from "react-i18next";
@@ -28,7 +28,7 @@ export const useCreateDirectChatController = ({ onGroupSelected, onClose }: Prop
         useSearchPaginatedUsersController({ size: 15 });
     
     const [localError, setLocalError] = useState<string | null>(null);
-    const { data: currentUser } = useGetCurrentUserQuery();
+    const { data: currentUser } = useGetMeQuery();
     const { data: targetUser } = useGetUserQuery(
         { userId: userId ?? "" },
         { skip: !userId }

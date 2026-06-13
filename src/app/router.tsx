@@ -1,4 +1,4 @@
-import {createBrowserRouter} from "react-router-dom";
+import {createBrowserRouter, Outlet} from "react-router-dom";
 import {Home} from "../features/home/Home.tsx";
 import {BookDetailPage} from "../features/book/details/pages/BookDetailPage.tsx";
 import {ProtectedRoute} from "../routes/ProtectedRoute.tsx";
@@ -18,6 +18,7 @@ import ForgotPassword from "../features/auth/forgotPassword/pages/ForgotPassword
 import {UpdatePassword} from "../features/auth/updatePassword/pages/UpdatePassword.tsx";
 import Settings from "../features/auth/settings/pages/Settings.tsx";
 import { PublicOnlyRoute } from "../routes/PublicOnlyRoute.tsx";
+import {WebSocketProvider} from "../features/message/websocket/provider/WebSocketProvider.tsx";
 
 export const router = createBrowserRouter(
     [
@@ -77,12 +78,17 @@ export const router = createBrowserRouter(
                             element: <UpdatePassword />
                         },
                         {
-                            path: "/dms",
-                            element: <Messaging />
-                        },
-                        {
-                            path: "/send-message",
-                            element: <CreateDirectChat />
+                            element: <WebSocketProvider url={import.meta.env.VITE_WS_URL}><Outlet /></WebSocketProvider>,
+                            children: [
+                                {
+                                    path: "/user/:userId/dms",
+                                    element: <Messaging />
+                                },
+                                {
+                                    path: "/send-message",
+                                    element: <CreateDirectChat />
+                                },
+                            ]
                         },
                         {
                             path: "/user/:userId/collection",

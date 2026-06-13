@@ -4,19 +4,18 @@ import {
     type FetchArgs,
     type FetchBaseQueryError,
 } from '@reduxjs/toolkit/query/react';
-import {logout, selectCurrentToken} from '../features/auth/authSlice';
-import type {RootState} from "../app/store.ts";
+import {logout} from '../features/auth/authSlice';
 
 const baseQuery = fetchBaseQuery({
     baseUrl: '/api',
-    credentials: 'include',
-    prepareHeaders: (headers, { getState }) => {
-        const state = getState() as RootState;
+    credentials: 'include', // Envoie le cookie avec chaque requête
+    prepareHeaders: (headers) => {
+        /*const state = getState() as RootState;
         const token = selectCurrentToken(state);
         if (token) {
             headers.set('authorization', `Bearer ${token}`);
         }
-        headers.set('content-type', 'application/json');
+        headers.set('content-type', 'application/json');*/
         return headers;
     },
 });
@@ -37,8 +36,9 @@ export const baseQueryWithUnauthorizedHandler: BaseQueryFn<
     FetchBaseQueryError
 > = async (args, api, extraOptions) => {
     const result = await baseQuery(args, api, extraOptions);
-    const status = result.error?.status as number | string | undefined;
-    if (status === 403 || status === '403' || status === 401 || status === '401') {
+    const status = result.error?.status;
+
+    if (status === 401 || status === 403) {
         api.dispatch(logout());
     }
 

@@ -1,12 +1,12 @@
 import type { GroupChat } from "../../types/message.types.ts";
-import {Box, Flex, Text, Icon, HStack, Badge} from "@chakra-ui/react";
+import {Box, Flex, Text, Icon, HStack} from "@chakra-ui/react";
 import { tokens } from "../../../../theme/theme.ts";
 import { Trash2 } from "lucide-react";
 import { DeleteDialog } from "../../delete/components/DeleteDialog.tsx";
 import { useMessageCardController } from "../hooks/useMessageCardController.ts";
 import {useDeleteMessageController} from "../../delete/hooks/useDeleteMessageController.ts";
 import {useSendMessageController} from "../hooks/useSendMessageController.ts";
-import {BiEnvelope} from "react-icons/bi";
+import {NotificationBell} from "../notifications/components/NotificationBell.tsx";
 
 type MessageCardProps = {
     group: GroupChat;
@@ -29,7 +29,6 @@ export const MessageCard = ({ group, onSelected, isActive = false }: MessageCard
     } = useDeleteMessageController({group});
 
     const lastMessageDate = group?.lastMessage?.sendTime ? new Date(group.lastMessage.sendTime).toLocaleString() : undefined;
-    const unRead = group.unReadMessagesCount ?? 10;
     return (
         <>
             <Box
@@ -56,6 +55,7 @@ export const MessageCard = ({ group, onSelected, isActive = false }: MessageCard
                     boxShadow: "outline",
                 }}
                 position="relative"
+                minH="70px"
             >
                 {localError && (
                     <Box color="red.500" mb={tokens.spacing.xs} fontSize="sm">
@@ -98,20 +98,7 @@ export const MessageCard = ({ group, onSelected, isActive = false }: MessageCard
                     top="70%"
                 >
                     <HStack gap={2}>
-                        <Icon as={BiEnvelope} boxSize={7} color="gray.400" />
-                        <Badge
-                            position="absolute"
-                            top="-10px"
-                            right="-9px"
-                            colorScheme="red"
-                            borderRadius="full"
-                            fontSize="xs"
-                            bg={"red.400"}
-                            w="6"
-                            h="6"
-                        >
-                            {unRead}
-                        </Badge>
+                        <NotificationBell />
                     </HStack>
                 </Box>
             </Box>
