@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import {
-    useAddGroupChatMutation,
-    useLazyFindGroupByMembersQuery,
+    useAddChatMutation,
+    useLazyFindChatByMembersQuery,
 } from "../../api/messageApi";
-import type { AddGroupRequest, GroupChat } from "../../types/message.types";
+import type { AddGroupRequest, Chat } from "../../types/message.types";
 import {
     useGetMeQuery,
     useGetUserQuery,
@@ -14,7 +14,7 @@ import type { UserProfile } from "../../../auth/profile/types/profile.types";
 import {useSearchPaginatedUsersController} from "./useSearchPaginatedUsersController.ts";
 
 interface Props {
-    onGroupSelected?: (group: GroupChat) => void;
+    onGroupSelected?: (group: Chat) => void;
     onClose?: () => void;
 }
 
@@ -33,8 +33,8 @@ export const useCreateDirectChatController = ({ onGroupSelected, onClose }: Prop
         { userId: userId ?? "" },
         { skip: !userId }
     );
-    const [addGroup] = useAddGroupChatMutation();
-    const [triggerFindGroup] = useLazyFindGroupByMembersQuery();
+    const [addGroup] = useAddChatMutation();
+    const [triggerFindGroup] = useLazyFindChatByMembersQuery();
 
     const handleAddDirectGroup = async (user: UserProfile) => {
         setLocalError(null);
@@ -54,7 +54,7 @@ export const useCreateDirectChatController = ({ onGroupSelected, onClose }: Prop
             }
             // Création
             const newGroup: AddGroupRequest = {
-                groupType: "DIRECT",
+                chatType: "DIRECT",
                 name: null,
                 members: [
                     { notification: true, endUserId: Number(user.id) },

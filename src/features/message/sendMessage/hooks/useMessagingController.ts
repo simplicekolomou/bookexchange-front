@@ -1,8 +1,8 @@
-import { useGetMyGroupChatsQuery } from "../../api/messageApi.ts";
+import { useGetMyChatsQuery } from "../../api/messageApi.ts";
 import { useDispatch, useSelector } from "react-redux";
 import { subscribeToPush } from "../../../../utils/notification.ts";
 import { useTranslation } from "react-i18next";
-import type { GroupChat } from "../../types/message.types";
+import type { Chat } from "../../types/message.types";
 import {
     addActiveChat,
     removeActiveChat,
@@ -31,9 +31,9 @@ export const useMessagingController = () => {
         data: rawGroupChats = [],
         isLoading: isGroupLoading,
         isError: isGroupError,
-    } = useGetMyGroupChatsQuery();
+    } = useGetMyChatsQuery();
 
-    const groupChats: GroupChat[] = Array.isArray(rawGroupChats) ? rawGroupChats.filter(Boolean) as GroupChat[] : [];
+    const groupChats: Chat[] = Array.isArray(rawGroupChats) ? rawGroupChats.filter(Boolean) as Chat[] : [];
 
     const [open, setOpen] = useState(true);
     const { t } = useTranslation("notification");
@@ -44,7 +44,7 @@ export const useMessagingController = () => {
         Notification.permission !== "denied";
 
     // Ouvre une chatbox, max 3, pas de doublon
-    const openChat = (group?: GroupChat | null) => {
+    const openChat = (group?: Chat | null) => {
         if (!group) return;
         if (activeChats.length >= MAX_CHATS) return;
         dispatch(addActiveChat(group));

@@ -9,14 +9,14 @@ import {
     Spinner,
 } from "@chakra-ui/react";
 import { SearchIcon } from "lucide-react";
-import type { GroupChat } from "../../types/message.types.ts";
+import type { Chat } from "../../types/message.types.ts";
 import { useCreateDirectChatController } from "../hooks/useCreateDirectChatController.ts";
 import type { UserProfile } from "../../../auth/profile/types/profile.types.ts";
 
 interface SendMessageBoxProps {
     open?: boolean;
     onClose?: () => void;
-    onGroupSelected?: (group: GroupChat) => void;
+    onGroupSelected?: (group: Chat) => void;
     stackIndex?: number;
 }
 

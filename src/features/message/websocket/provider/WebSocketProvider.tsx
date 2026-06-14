@@ -1,10 +1,7 @@
-import React, {
-    useEffect, useRef, useState,
-    useCallback, useMemo
-} from 'react';
-import { Client, type IMessage } from '@stomp/stompjs';
-import type { WebSocketStatus } from '../types/websocket.types';
-import { WebSocketContext, type WebSocketContextType } from "./websocketContext.ts";
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {Client, type IMessage} from '@stomp/stompjs';
+import {WebSocketContext} from "./websocketContext.ts";
+import type {WebSocketContextType, WebSocketStatus} from "../types/websocket.types.ts";
 
 interface WebSocketProviderProps {
     url: string | null;
@@ -61,10 +58,8 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ url, child
 
             // withCredentials pour que le navigateur envoie le cookie sur le handshake
             webSocketFactory: () => {
-                const ws = new WebSocket(url);
-                // Note : withCredentials n'existe pas sur WebSocket natif
                 // Le cookie est envoyé automatiquement si same-origin ou CORS configuré
-                return ws;
+                return new WebSocket(url);
             },
 
             reconnectDelay: 5000,

@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { useAddGroupChatMutation } from "../../api/messageApi";
+import { useAddChatMutation } from "../../api/messageApi";
 import { useTranslation } from "react-i18next";
-import type { AddGroupRequest, GroupChat, GroupChatType } from "../../types/message.types";
+import type { AddGroupRequest, Chat, ChatType } from "../../types/message.types";
 import { useSelector } from "react-redux";
 import { selectCurrentUserId } from "../../../auth/authSlice";
 import {useSearchPaginatedUsersController} from "./useSearchPaginatedUsersController.ts";
 
 interface Props {
     onClose: () => void;
-    onGroupSelected: (group: GroupChat) => void;
+    onGroupSelected: (group: Chat) => void;
 }
 
 export const useCreateGroupChatController = ({ onClose, onGroupSelected }: Props) => {
@@ -21,7 +21,7 @@ export const useCreateGroupChatController = ({ onClose, onGroupSelected }: Props
     const [groupName, setGroupName] = useState("");
     const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
     const [localError, setLocalError] = useState<string | null>(null);
-    const [addGroup, { isLoading }] = useAddGroupChatMutation();
+    const [addGroup, { isLoading }] = useAddChatMutation();
 
     const toggleMember = (userId: string) => {
         setSelectedUserIds((prev) =>
@@ -30,7 +30,7 @@ export const useCreateGroupChatController = ({ onClose, onGroupSelected }: Props
     };
 
     const handleCreateGroupChat = async () => {
-        const groupType: GroupChatType = "GROUP";
+        const groupType: ChatType = "GROUP";
         setLocalError(null);
 
         if (!groupName.trim()) {
@@ -46,7 +46,7 @@ export const useCreateGroupChatController = ({ onClose, onGroupSelected }: Props
             const allMemberIds = [...new Set([currentUserId, ...selectedUserIds])].filter(Boolean);
             const newGroup: AddGroupRequest = {
                 name: groupName.trim(),
-                groupType,
+                chatType: groupType,
                 members: allMemberIds.map((id) => ({
                     notification: true,
                     endUserId: Number(id),

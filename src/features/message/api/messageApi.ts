@@ -1,67 +1,98 @@
 import {baseApi} from "../../../services/baseApi.ts";
-import type {AddGroupRequest, GroupChat, Message} from "../types/message.types.ts";
+import type {AddGroupRequest, Chat, Message} from "../types/message.types.ts";
 
 export const messageApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
 
-        getMessagesByGroupChat: builder.query<Message[], string>({
-            query: (groupChatId) => ({
-                url: `/messages/group/${groupChatId}`,
+        getMessagesByChat: builder.query<Message[], string>({
+            query: (chatId) => ({
+                url: `/messages/chats/${chatId}`,
                 method: 'GET',
             }),
             providesTags: ['Message'],
         }),
 
-        getMyGroupChats: builder.query<GroupChat[], void>({
+        getMyChats: builder.query<Chat[], void>({
             query: () => ({
-                url: `/groups/user/me`,
+                url: `/chats/user/me`,
                 method: 'GET',
             }),
-            providesTags: ['Group'],
+            providesTags: ['Chat'],
         }),
 
-        addGroupChat: builder.mutation<GroupChat, AddGroupRequest>({
-            query: ({name, groupType, members }) => ({
-                url: '/groups',
+        addChat: builder.mutation<Chat, AddGroupRequest>({
+            query: ({name, chatType, members }) => ({
+                url: '/chats',
                 method: 'POST',
-                body: { name, groupType, members },
+                body: { name, chatType, members },
             }),
-            invalidatesTags: ['Group'],
+            invalidatesTags: ['Chat'],
         }),
 
-        deleteGroup : builder.mutation<void, string>({
-            query: (groupId) => ({
-                url: `/groups/${groupId}`,
+        deleteChat : builder.mutation<void, string>({
+            query: (chatId) => ({
+                url: `/chats/${chatId}`,
                 method: 'DELETE',
             }),
-            invalidatesTags: ['Group'],
+            invalidatesTags: ['Chat'],
         }),
 
-        findGroupByMembers: builder.query<GroupChat, number>({
-            query: (idUser) => ({
-                url: `/groups/one-to-one/${idUser}`,
-                method: "GET",
-            }),
-            providesTags: ['Group'],
-        }),
-
-        sendMessage: builder.mutation<void, { groupChatId: string, content: string }>({
-            query: ({ groupChatId, content }) => ({
-                url: `/messages/group/${groupChatId}`,
+        sendMessage: builder.mutation<void, { chatId: string, content: string }>({
+            query: ({ chatId, content }) => ({
+                url: `/messages/chats/${chatId}`,
                 method: 'POST',
                 body: { content },
             }),
             invalidatesTags: ['Message'],
         }),
+
+        findChatByMembers: builder.query<Chat, number>({
+            query: (idUser) => ({
+                url: `/groups/one-to-one/${idUser}`,
+                method: "GET",
+            }),
+            providesTags: ['Chat'],
+        }),
+
+        // Marquer un message spécifique comme lu
+        markMessageAsRead: builder.mutation<void, { messageId: number }>({
+            query: ({ messageId }) => ({
+                url: `/messages/${messageId}/read`,
+                method: 'POST',
+            }),
+            // Invalider les compteurs de non-lus pour ce chat
+            invalidatesTags: (_result, _error,
+                              { messageId }) => [{ type: 'UnreadCount', id: messageId }],
+        }),
+
+        // Marquer tous les messages d'une conversation comme lus
+        markAllMessageOfChatAsRead: builder.mutation<void, { chatId: string }>({
+            query: ({ chatId }) => ({
+                url: `/messages/chats/${chatId}/read`,
+                method: 'POST',
+            }),
+            invalidatesTags: (_result, _error,
+                              { chatId }) => [{ type: 'UnreadCount', id: chatId }],
+        }),
+
+        // 3. Obtenir le compteur de non-lus pour une conversation spécifique
+        getUnreadCountForChat: builder.query<number, { chatId: string }>({
+            query: ({ chatId }) => ({
+              url: `/messages/chats/${chatId}/unread-count`,
+              method:  'GET',
+            }),
+            providesTags: (_result, _error, { chatId }) => [{ type: 'UnreadCount', id: chatId }],
+        }),
+
     }),
 });
 
 export const {
-    useGetMyGroupChatsQuery,
-    useGetMessagesByGroupChatQuery,
-    useAddGroupChatMutation,
-    useDeleteGroupMutation,
-    useFindGroupByMembersQuery,
-    useLazyFindGroupByMembersQuery,
-    useSendMessageMutation
+    useGetMessagesByChatQuery,
+    useGetMyChatsQuery,
+    useAddChatMutation,
+    useDeleteChatMutation,
+    useLazyFindChatByMembersQuery,
+    useMarkAllMessageOfChatAsReadMutation,
+    useGetUnreadCountForChatQuery,
 } = messageApi;

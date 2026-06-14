@@ -11,13 +11,13 @@ import {
     Button,
 } from "@chakra-ui/react";
 import { SendHorizonalIcon, SearchIcon } from "lucide-react";
-import type { GroupChat } from "../../types/message.types.ts";
+import type { Chat } from "../../types/message.types.ts";
 import {useCreateGroupChatController} from "../hooks/useCreateGroupChatController.ts";
 
 interface GroupBoxProps {
     onClose: () => void;
     open: boolean;
-    onGroupSelected: (group: GroupChat) => void;
+    onGroupSelected: (group: Chat) => void;
     stackIndex?: number;
 }
 

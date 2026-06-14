@@ -6,7 +6,7 @@ import { CreateGroupChat } from "../components/CreateGroupChat";
 import { CreateDirectChat } from "../components/CreateDirectChat";
 import { tokens } from "../../../../theme/theme";
 import { useMessagingController } from "../hooks/useMessagingController";
-import type { GroupChat } from "../../types/message.types";
+import type { Chat } from "../../types/message.types";
 
 export const Messaging = () => {
     const {
@@ -72,13 +72,13 @@ export const Messaging = () => {
             )}
 
             <VStack align="stretch" gap={tokens.spacing.xs} mt={tokens.spacing.md}>
-                {groupChats.map((group: GroupChat, index) => {
+                {groupChats.map((group: Chat, index) => {
                     const groupIdKey = group?.id ? String(group.id) : `g-${index}`;
                     const isActive = activeChats.some((g) => String(g?.id ?? "") === String(group?.id ?? ""));
                     return (
                         <MessageCard
                             key={groupIdKey}
-                            group={group}
+                            chat={group}
                             isActive={isActive}
                             onSelected={(g) => { if (g) openChat(g); }}
                         />
@@ -91,7 +91,7 @@ export const Messaging = () => {
                 .map((group, idx) => (
                     <ChatBox
                         key={String(group?.id ?? `active-${idx}`)}
-                        chatGroup={group}
+                        chat={group}
                         open={true}
                         onClose={() => closeChat(group?.id ?? `active-${idx}`)}
                         stackIndex={idx}

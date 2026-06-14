@@ -16,29 +16,30 @@ export interface Attachment {
     thumbnailUrl?: string;
 }
 
-export type GroupChatType = 'GROUP' | 'DIRECT';
+export type ChatType = 'GROUP' | 'DIRECT';
 
 export interface Member {
     id: string;
     notification: boolean;
     endUserId: string;
-    groupChatId: string;
+    chatId: string;
 }
 
-export interface GroupChat {
+export interface Chat {
     id: string;
-    groupType: GroupChatType;
+    chatType: ChatType;
     name: string;
     members: Member[];
     myMembership: Membership[];
     notificationsEnabled: boolean;
     lastMessage: Message | null;
     unReadMessagesCount?: number;
+    notifications?: NotificationItem[];
 }
 
 export interface AddGroupRequest {
     name?: string | null;
-    groupType: GroupChatType;
+    chatType: ChatType;
     members: {
         endUserId: number;
         notification: boolean;
@@ -60,32 +61,31 @@ export interface Message {
     isReadByMe?: boolean;
     readByIds?: string[]; // IDs des utilisateurs qui ont lu le message
     metadata?: MessageMetadata;
-    groupChatId: string
+    chatId: string
 }
 
 export interface Membership {
     userId: string;
-    groupId: string;
+    chatId: string;
     notification: boolean;
 }
 
 export interface NotificationItem {
-    id: string;             // id généré côté client ou fourni par le serveur
-    chatId: string;         // garder le même type que GroupChat.id / Message.groupChatId
+    id: string;
+    chatId: string;
     chatName?: string;
-    senderId?: string;      // utile pour filter/ignore les notifications de l'expéditeur
+    senderId?: string;
     senderName?: string;
     content?: string;
-    sendTime: string | Date; // le serveur renvoie probablement une ISO string
-    // champs optionnels supplémentaires selon payload serveur
-    [key: string]: unknown;
+    sendTime: string | Date;
 }
 export interface MessageState {
-    activeChats: GroupChat[];        // conversations ouvertes (ChatBox)
+    activeChats: Chat[];        // conversations ouvertes (ChatBox)
     activeTab: string;               // 'messages' | 'groups' | 'sendMessage'
     isGroupBoxOpen: boolean;
     isSendMessageBoxOpen: boolean;
     notifications: NotificationItem[];
+    unreadMessageCount: number; // compteur global de messages non lus
 }
 
 

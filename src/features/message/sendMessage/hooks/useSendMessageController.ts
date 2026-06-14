@@ -1,30 +1,32 @@
 import { useEffect, useRef, useState } from "react";
-import { useGetMessagesByGroupChatQuery } from "../../api/messageApi.ts";
-import type { GroupChat, Message } from "../../types/message.types.ts";
-import { useSelector } from "react-redux";
+import type { Chat, Message } from "../../types/message.types.ts";
+import {useDispatch, useSelector} from "react-redux";
 import { selectCurrentUser } from "../../../auth/authSlice.ts";
 import { useGetUserQuery } from "../../../auth/api/authApi.ts";
-import { useWebSocket } from "../../websocket/hooks/useWebSocket.ts";
+import { useWebSocketController } from "../../websocket/hooks/useWebSocketController.ts";
+import {useGetMessagesByChatQuery} from "../../api/messageApi.ts";
+import {baseApi} from "../../../../services/baseApi.ts";
 
 interface Props {
-    chatGroup?: GroupChat | null;
+    chat?: Chat | null;
     open?: boolean;
 }
 
 // message étendu pour inclure tempId côté client
 type LocalMessage = Message & { tempId?: string };
 
-export const useSendMessageController = ({ chatGroup, open }: Props) => {
+export const useSendMessageController = ({ chat, open }: Props) => {
     const bottomRef = useRef<HTMLDivElement | null>(null);
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState<LocalMessage[]>([]);
-    const { sendToDestination, subscribe } = useWebSocket();
+    const { sendToDestination, subscribe } = useWebSocketController();
+    const dispatch = useDispatch();
 
     const currentUser = useSelector(selectCurrentUser);
     const myId = currentUser?.id;
-    const chatId = chatGroup?.id;
+    const chatId = chat?.id;
 
-    const { data: initialMessages } = useGetMessagesByGroupChatQuery(chatId!, {
+    const { data: initialMessages } = useGetMessagesByChatQuery(chatId!, {
         skip: !chatId,
     });
 
@@ -36,12 +38,12 @@ export const useSendMessageController = ({ chatGroup, open }: Props) => {
 
     useEffect(() => {
         if (!chatId) return;
-        const topic = `/topic/chat/${chatId}`;
+        const topic = `/topic/messages/chats/${chatId}`;
         const subscription = subscribe?.(topic, (stompMessage) => {
             try {
-                const data: Message = JSON.parse(stompMessage.body);
+                const data = JSON.parse(stompMessage.body);
 
-                if (data.groupChatId !== chatId) return;
+                if (data.chatId !== chatId) return;
 
                 setMessages(prev => {
                     // si le message du serveur existe déjà (même id), ne rien faire
@@ -61,6 +63,10 @@ export const useSendMessageController = ({ chatGroup, open }: Props) => {
                         return next;
                     }
 
+                    // sinon, c'est un nouveau message, on l'ajoute et on invalide le compteur de non-lus
+                    const chatId = data.chatId;
+                    dispatch(baseApi.util.invalidateTags([{ type: 'UnreadCount', id: chatId }]));
+
                     // sinon ajouter
                     return [...prev, data as LocalMessage];
                 });
@@ -68,11 +74,14 @@ export const useSendMessageController = ({ chatGroup, open }: Props) => {
                 console.error("Erreur lors du parsing du message STOMP", error);
             }
         });
-        return () => subscription?.unsubscribe();
+
+        return () => {
+            subscription?.unsubscribe();
+        }
     }, [chatId, subscribe]);
 
     const handleSendMessage = async (text: string) => {
-        if (!text.trim() || !chatGroup) return;
+        if (!text.trim() || !chat) return;
 
         const tempId = `temp-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
@@ -80,20 +89,17 @@ export const useSendMessageController = ({ chatGroup, open }: Props) => {
             content: text.trim(),
             senderId: myId!,
             sendTime: new Date(),
-            groupChatId: chatGroup.id,
+            chatId: chat.id,
             tempId,
         } as LocalMessage;
-
         // Ajout optimiste avec tempId
         setMessages(prev => [...prev, newMessage]);
         setMessage("");
 
         // Envoi STOMP vers backend
-        sendToDestination?.(`/app/chat/${chatGroup.id}`, JSON.stringify({
+        sendToDestination?.(`/app/chats/${chat.id}`, JSON.stringify({
             content: text.trim(),
-            groupChatId: chatGroup.id,
-            // si le backend peut transmettre un clientId, on pourrait envoyer tempId ici
-            // clientTempId: tempId
+            chatId: chat.id,
         }));
     };
 
@@ -101,18 +107,18 @@ export const useSendMessageController = ({ chatGroup, open }: Props) => {
         if (open) bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages, open]);
 
-    const otherMember = chatGroup?.members.find(m => m.endUserId !== myId);
+    const otherMember = chat?.members.find(m => m.endUserId !== myId);
     const otherUserId = otherMember?.endUserId;
     const { data: otherUser } = useGetUserQuery(
         { userId: otherUserId },
         { skip: !otherUserId }
     );
     const conversationName = (() => {
-        if (!chatGroup) return "";
-        if (chatGroup.groupType === "GROUP") return chatGroup.name ?? "Groupe";
-        return otherUser ? `${otherUser.firstName} ${otherUser.lastName}` : chatGroup.name ?? "Chat";
+        if (!chat) return "";
+        if (chat.chatType === "GROUP") return chat.name ?? "Groupe";
+        return otherUser ? `${otherUser.firstName} ${otherUser.lastName}` : chat.name ?? "Chat";
     })();
-    const isDirect = chatGroup?.groupType === "DIRECT";
+    const isDirect = chat?.chatType === "DIRECT";
 
     return {
         messages,

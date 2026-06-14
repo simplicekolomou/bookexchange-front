@@ -12,7 +12,6 @@ import {
     selectUserPicture,
 } from "../../features/auth/authSlice.ts";
 import {useGetProfilePictureQuery, useLogoutMutation} from "../../features/auth/api/authApi.ts";
-import { persistor } from "../../app/store.ts";
 import { useSelector } from "react-redux";
 import { baseApi } from "../../services/baseApi.ts";
 
@@ -40,7 +39,6 @@ export const UserMenu = () => {
         } finally {
             dispatch(logout());
             dispatch(baseApi.util.resetApiState());   // vide le cache RTK Query
-            await persistor.purge();                  // vide le localStorage persist
             navigate("/login");
         }
     };

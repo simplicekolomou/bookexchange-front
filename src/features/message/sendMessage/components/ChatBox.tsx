@@ -1,32 +1,36 @@
-// typescript
-// File: `src/features/message/sendMessage/components/ChatBox.tsx`
 import {
     Box, IconButton, Input, VStack,
     Text, HStack, Icon, CloseButton,
 } from "@chakra-ui/react";
 import { SendHorizonalIcon, Minimize2, Maximize2 } from "lucide-react";
-import { useState } from "react";
-import type { GroupChat, Message } from "../../types/message.types.ts";
+import {useRef, useState} from "react";
+import type { Chat, Message } from "../../types/message.types.ts";
 import { useSendMessageController } from "../hooks/useSendMessageController.ts";
 import { MessageItem } from "./MessageItem";
+import {useMarkAllMessageOfChatAsReadMutation} from "../../api/messageApi.ts";
 
 interface ChatBoxProps {
-    chatGroup?: GroupChat | null;
+    chat: Chat;
     onClose: () => void;
     open: boolean;
     stackIndex?: number;
 }
 
-export const ChatBox = ({ chatGroup, onClose, open, stackIndex = 0 }: ChatBoxProps) => {
+export const ChatBox = ({ chat, onClose, open, stackIndex = 0 }: ChatBoxProps) => {
     const [minimized, setMinimized] = useState(false);
-
+    const controller = useSendMessageController({ chat: chat, open });
+    const { messages, myId, message, setMessage, handleSendMessage, bottomRef } = controller;
     const rightOffset = 132 + stackIndex * 370;
+    const inputRef = useRef<HTMLInputElement>(null);
+    const [markChatAsRead] = useMarkAllMessageOfChatAsReadMutation();
 
-    const controller = useSendMessageController({ chatGroup, open });
+    const handleInputFocus = () => {
+        if (chat.id) {
+            markChatAsRead({ chatId: chat.id });
+        }
+    };
 
     if (!open || !controller?.messages) return null;
-
-    const { messages, myId, message, setMessage, handleSendMessage, bottomRef } = controller;
 
     return (
         <Box
@@ -67,7 +71,7 @@ export const ChatBox = ({ chatGroup, onClose, open, stackIndex = 0 }: ChatBoxPro
                         color="white"
                     >
                         <Text fontWeight="bold" fontSize="sm">
-                            {chatGroup?.name ?? controller.conversationName}
+                            {chat?.name ?? controller.conversationName}
                         </Text>
                         <HStack gap={1}>
                             <IconButton
@@ -120,6 +124,8 @@ export const ChatBox = ({ chatGroup, onClose, open, stackIndex = 0 }: ChatBoxPro
 
                     <HStack p={2} borderTopWidth="1px" borderColor="border.default" gap={2}>
                         <Input
+                            ref={inputRef}
+                            onFocus={handleInputFocus}
                             value={message}
                             placeholder="Écrire un message…"
                             size="sm"

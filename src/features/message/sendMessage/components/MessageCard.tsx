@@ -1,34 +1,42 @@
-import type { GroupChat } from "../../types/message.types.ts";
-import {Box, Flex, Text, Icon, HStack} from "@chakra-ui/react";
+import type { Chat } from "../../types/message.types.ts";
+import { Box, Flex, Text, Icon } from "@chakra-ui/react";
 import { tokens } from "../../../../theme/theme.ts";
 import { Trash2 } from "lucide-react";
 import { DeleteDialog } from "../../delete/components/DeleteDialog.tsx";
 import { useMessageCardController } from "../hooks/useMessageCardController.ts";
-import {useDeleteMessageController} from "../../delete/hooks/useDeleteMessageController.ts";
-import {useSendMessageController} from "../hooks/useSendMessageController.ts";
-import {NotificationBell} from "../notifications/components/NotificationBell.tsx";
+import { useDeleteMessageController } from "../../delete/hooks/useDeleteMessageController.ts";
+import { useSendMessageController } from "../hooks/useSendMessageController.ts";
+import {useGetUnreadCountForChatQuery, useMarkAllMessageOfChatAsReadMutation} from "../../api/messageApi.ts";
+import React from "react";
 
 type MessageCardProps = {
-    group: GroupChat;
+    chat: Chat;
     isActive?: boolean;
-    onSelected: (group: GroupChat | null) => void;
+    onSelected: (chat: Chat | null) => void;
 };
 
-export const MessageCard = ({ group, onSelected, isActive = false }: MessageCardProps) => {
+export const MessageCard = ({ chat, onSelected, isActive = false }: MessageCardProps) => {
     const {
         handleActivate,
         handleKeyDown,
         t,
-    } = useMessageCardController({ group, onSelected });
-    const {conversationName}= useSendMessageController({chatGroup: group});
+    } = useMessageCardController({ chat: chat, onSelected });
+    const { conversationName } = useSendMessageController({ chat: chat });
     const {
         isDialogOpen,
         setDialogOpen,
         handleConfirmDelete,
         localError,
-    } = useDeleteMessageController({group});
+    } = useDeleteMessageController({ chat: chat });
+    const { data: unreadMessages } = useGetUnreadCountForChatQuery({ chatId: chat.id });
+    const [markReadFor] = useMarkAllMessageOfChatAsReadMutation();
 
-    const lastMessageDate = group?.lastMessage?.sendTime ? new Date(group.lastMessage.sendTime).toLocaleString() : undefined;
+    const unreadCount = unreadMessages ?? 0;
+
+    const lastMessageDate = chat?.lastMessage?.sendTime
+        ? new Date(chat.lastMessage.sendTime).toLocaleString()
+        : undefined;
+
     return (
         <>
             <Box
@@ -42,7 +50,12 @@ export const MessageCard = ({ group, onSelected, isActive = false }: MessageCard
                 role="button"
                 aria-pressed={isActive}
                 tabIndex={0}
-                onClick={handleActivate}
+                onClick={
+                    () => {
+                        markReadFor({ chatId: chat.id });
+                        handleActivate();
+                    }
+                }
                 onKeyDown={handleKeyDown}
                 transition="all 0.2s"
                 _hover={{
@@ -65,7 +78,7 @@ export const MessageCard = ({ group, onSelected, isActive = false }: MessageCard
                 <Flex direction="column" gap={tokens.spacing.xs}>
                     <Flex justifyContent="space-between" alignItems="center">
                         <Text fontWeight="bold" fontSize="md" color="fg.default">
-                            {group.name ?? conversationName}
+                            {chat.name ?? conversationName}
                         </Text>
                         <Icon
                             as={Trash2}
@@ -81,10 +94,10 @@ export const MessageCard = ({ group, onSelected, isActive = false }: MessageCard
                             color={"gray.500"}
                         />
                     </Flex>
-                    {group.lastMessage && (
+                    {chat.lastMessage && (
                         <>
                             <Text fontSize="sm" color="fg.default">
-                                {group.lastMessage.content}
+                                {chat.lastMessage.content}
                             </Text>
                             <Text fontSize="xs" color="fg.muted" fontStyle="italic">
                                 {lastMessageDate}
@@ -92,14 +105,22 @@ export const MessageCard = ({ group, onSelected, isActive = false }: MessageCard
                         </>
                     )}
                 </Flex>
-                <Box
-                    position="absolute"
-                    right={3}
-                    top="70%"
-                >
-                    <HStack gap={2}>
-                        <NotificationBell />
-                    </HStack>
+                <Box position="absolute" right={3} top="70%">
+                    {unreadCount > 0 && (
+                        <Box
+                            bg="red.500"
+                            color="white"
+                            borderRadius="full"
+                            px={2}
+                            py={0.5}
+                            fontSize="xs"
+                            fontWeight="bold"
+                            minW="20px"
+                            textAlign="center"
+                        >
+                            {unreadCount > 9 ? "9+" : unreadCount}
+                        </Box>
+                    )}
                 </Box>
             </Box>
 
@@ -114,7 +135,7 @@ export const MessageCard = ({ group, onSelected, isActive = false }: MessageCard
                     onSelected(null);
                 }}
                 title={t("delete.title")}
-                body={`${t("delete.confirm")} "${group.name}" ?`}
+                body={`${t("delete.confirm")} "${chat.name}" ?`}
                 confirmLabel={t("actions.delete")}
                 cancelLabel={t("actions.cancel")}
             />

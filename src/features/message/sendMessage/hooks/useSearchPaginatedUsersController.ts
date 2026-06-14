@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useFindUserQuery, useGetAllUsersQuery } from "../../../auth/api/authApi";
 import type { UserProfile } from "../../../auth/profile/types/profile.types";
 import { skipToken } from "@reduxjs/toolkit/query";
@@ -10,8 +10,6 @@ interface Props {
 }
 
 export const useSearchPaginatedUsersController = ({ size = 15}: Props) => {
-    //const { firstName: useFirstName = true, lastName: useLastName = true } = searchFields;
-
     const [searchTerm, setSearchTerm] = useState("");
     const debouncedController = useDebouncedController(300, searchTerm);
     const isSearchMode = Boolean(debouncedController.debounced.trim());
@@ -71,7 +69,7 @@ export const useSearchPaginatedUsersController = ({ size = 15}: Props) => {
         }
     }, [isSearchMode, searchData, pagedUsers]);
 
-    // quand on entre en recherche, on réinitialise la pagination de la liste initiale
+    // Quand on entre en recherche, on réinitialise la pagination de la liste initiale
     useEffect(() => {
         if (isSearchMode) {
             setPage(0);
