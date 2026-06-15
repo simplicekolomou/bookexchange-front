@@ -3,6 +3,7 @@ import { useSelector } from "react-redux"
 import { selectIsAuthenticated } from "../features/auth/authSlice.ts"
 import { useGetMeQuery } from "../features/auth/api/authApi.ts"
 import { Spinner, Flex } from "@chakra-ui/react"
+import FirebaseInitializer from "./FirebaseIntializer.tsx";
 
 export const ProtectedRoute = () => {
     // getMe hydrate le store au refresh — isLoading pendant la vérification
@@ -17,5 +18,15 @@ export const ProtectedRoute = () => {
             </Flex>
         );
     }
-    return (isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />);
+    return (isAuthenticated ?
+            (
+                <>
+                    <FirebaseInitializer />
+                    <Outlet />
+                </>
+            ) :
+            (
+                <Navigate to="/login" replace />
+            )
+    );
 };

@@ -18,8 +18,6 @@ export const Messaging = () => {
         closeChat,
         value,
         show,
-        open,
-        handleSubscribeToPush,
         t,
         isGroupBoxOpen,
         isSendMessageBoxOpen,
@@ -45,13 +43,12 @@ export const Messaging = () => {
             borderRadius={tokens.radius.lg}
             boxShadow="sm"
         >
-            {show && open && (
+            {show && (
                 <Button
                     variant="solid"
                     colorScheme="blue"
                     size="sm"
                     mb={tokens.spacing.md}
-                    onClick={handleSubscribeToPush}
                 >
                     {t("notification:question")}
                 </Button>

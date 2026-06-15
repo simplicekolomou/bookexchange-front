@@ -1,6 +1,5 @@
 import { useGetMyChatsQuery } from "../../api/messageApi.ts";
 import { useDispatch, useSelector } from "react-redux";
-import { subscribeToPush } from "../../../../utils/notification.ts";
 import { useTranslation } from "react-i18next";
 import type { Chat } from "../../types/message.types";
 import {
@@ -16,7 +15,6 @@ import {
     selectIsGroupBoxOpen,
     selectIsSendMessageBoxOpen,
 } from "../../messageSlice.ts";
-import {useState} from "react";
 
 const MAX_CHATS = 3;
 
@@ -35,7 +33,6 @@ export const useMessagingController = () => {
 
     const groupChats: Chat[] = Array.isArray(rawGroupChats) ? rawGroupChats.filter(Boolean) as Chat[] : [];
 
-    const [open, setOpen] = useState(true);
     const { t } = useTranslation("notification");
 
     const show =
@@ -53,11 +50,6 @@ export const useMessagingController = () => {
     // Ferme une chatbox par id
     const closeChat = (groupId: string) => {
         dispatch(removeActiveChat(groupId));
-    };
-
-    const handleSubscribeToPush = async () => {
-        setOpen(false);
-        await subscribeToPush();
     };
 
     // Au clic sur un onglet
@@ -87,7 +79,6 @@ export const useMessagingController = () => {
         setValue: (tab: string) => dispatch(setActiveTab(tab)), // si besoin d’un setter direct
         show,
         open,
-        handleSubscribeToPush,
         t,
         handleTabChange,
         isGroupBoxOpen,
