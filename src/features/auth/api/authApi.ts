@@ -21,7 +21,7 @@ export const authApi = baseApi.injectEndpoints({
         // Login — backend renvoie User, token dans le cookie httpOnly
         login: builder.mutation<UserProfile, LoginCredentials>({
             query: (credentials) => ({
-                url: `https://bookexchange-api-production.up.railway.app/login`,
+                url: `/login`,
                 method: 'POST',
                 body: credentials,
             }),
@@ -36,7 +36,7 @@ export const authApi = baseApi.injectEndpoints({
 
         logout: builder.mutation<void, void>({
             query: () => ({
-                url: `https://bookexchange-api-production.up.railway.app/logout`,
+                url: `/logout`,
                 method: 'POST',
             }),
             invalidatesTags: ['Auth'],
@@ -77,7 +77,7 @@ export const authApi = baseApi.injectEndpoints({
         // Mot de passe oublié
         forgotPassword: builder.mutation<void, string>({
             query: (email) => ({
-                url: `https://bookexchange-api-production.up.railway.app/forgot-password`,
+                url: `/forgot-password`,
                 method: 'PUT',
                 // body simple — RTK Query gère le Content-Type
                 body: { email },
@@ -87,7 +87,7 @@ export const authApi = baseApi.injectEndpoints({
         // Reset password — hydrate le store après reset
         resetPassword: builder.mutation<UserProfile, ResetPasswordRequest>({
             query: (body) => ({
-                url: `https://bookexchange-api-production.up.railway.app/reset-password`,
+                url: `/reset-password`,
                 method: 'POST',
                 body,
             }),
@@ -103,7 +103,7 @@ export const authApi = baseApi.injectEndpoints({
         // Mise à jour du mot de passe
         updatePassword: builder.mutation<void, UpdatePasswordRequest>({
             query: (data) => ({
-                url: `https://bookexchange-api-production.up.railway.app/update-password`,
+                url: `/update-password`,
                 method: 'PUT',
                 body: data,
             }),
@@ -112,7 +112,7 @@ export const authApi = baseApi.injectEndpoints({
         // Mise à jour du profil
         updateProfile: builder.mutation<void, UpdateProfileRequest>({
             query: (data) => ({
-                url: `https://bookexchange-api-production.up.railway.app/update-profile`,
+                url: `/update-profile`,
                 method: 'PUT',
                 body: data,
             }),
@@ -127,7 +127,7 @@ export const authApi = baseApi.injectEndpoints({
         // Photo de profil
         getProfilePicture: builder.query<string, void>({
             query: () => ({
-                url: `https://bookexchange-api-production.up.railway.app/users/me/profile-picture`,
+                url: `/users/me/profile-picture`,
                 method: 'GET',
                 responseHandler: async (response) => {
                     const blob = await response.blob();
@@ -141,7 +141,7 @@ export const authApi = baseApi.injectEndpoints({
         // Mise à jour de la photo
         updateProfilePicture: builder.mutation<{ profilePicture: string }, FormData>({
             query: (formData) => ({
-                url: `https://bookexchange-api-production.up.railway.app/update-profile-picture`,
+                url: `/update-profile-picture`,
                 method: 'PUT',
                 body: formData,
             }),
@@ -156,7 +156,7 @@ export const authApi = baseApi.injectEndpoints({
 
         // Profil d'un utilisateur par id
         getUser: builder.query<UserProfile, { userId?: string }>({
-            query: ({ userId }) => `https://bookexchange-api-production.up.railway.app/users/${userId}`,
+            query: ({ userId }) => `/users/${userId}`,
             providesTags: ['Profile'],
         }),
 
@@ -168,7 +168,7 @@ export const authApi = baseApi.injectEndpoints({
             page: number;
         }>({
             query: ({ firstName, lastName, size, page }) => ({
-                url: `https://bookexchange-api-production.up.railway.app/users/search`,
+                url: `/users/search`,
                 method: 'GET',
                 params: {
                     ...(firstName ? { firstName } : {}),
@@ -183,7 +183,7 @@ export const authApi = baseApi.injectEndpoints({
         // Liste paginée de tous les utilisateurs
         getAllUsers: builder.query<PagedResponse<UserProfile>, { page: number; size: number }>({
             query: ({ page, size }) => ({
-                url: `https://bookexchange-api-production.up.railway.app/users/all`,
+                url: `/users/all`,
                 method: 'GET',
                 params: { page, size },
             }),

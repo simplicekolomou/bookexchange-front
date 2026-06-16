@@ -7,7 +7,7 @@ import {
 import {logout} from '../features/auth/authSlice';
 
 const baseQuery = fetchBaseQuery({
-    baseUrl: '',
+    baseUrl: 'https://bookexchange-api-production.up.railway.app',
     credentials: 'include', // Envoie le cookie avec chaque requête
     prepareHeaders: (headers) => {
         /*const state = getState() as RootState;
