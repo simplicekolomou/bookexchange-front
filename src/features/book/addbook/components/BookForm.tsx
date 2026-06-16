@@ -46,7 +46,7 @@ export const BookForm = ({ mode, initialData, onSubmitSuccess, bookId }: BookFor
     return (
         <>
             {/* Search Bar */}
-            {mode === "add" || mode === "wishList" && (
+            {(mode === "add" || mode === "wishList") && (
                 <Box marginBottom={"1em"}>
                     <BookSearchCombobox
                         onSelect={(b: VolumeShort) => {
