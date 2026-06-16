@@ -7,6 +7,7 @@ import {
 import {logout} from '../features/auth/authSlice';
 
 const baseQuery = fetchBaseQuery({
+    // Forcer la base URL à être dynamique en fonction de l'origine de la page
     baseUrl: `${window.location.origin}/api`,
     credentials: 'include', // Envoie le cookie avec chaque requête
     prepareHeaders: (headers) => {

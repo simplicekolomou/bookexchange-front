@@ -3,10 +3,6 @@
     {
       "source": "/api/:path*",
       "destination": "https://bookexchange-api-production.up.railway.app/:path*"
-    },
-    {
-      "source": "/((?!api/).*)",
-      "destination": "/index.html"
     }
   ]
 }
