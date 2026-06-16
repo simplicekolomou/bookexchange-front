@@ -1,7 +1,7 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {Client, type IMessage} from '@stomp/stompjs';
-import {WebSocketContext} from "./websocketContext.ts";
-import type {WebSocketContextType, WebSocketStatus} from "../types/websocket.types.ts";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Client, type IMessage } from '@stomp/stompjs';
+import { WebSocketContext } from './websocketContext.ts';
+import type { WebSocketContextType, WebSocketStatus } from '../types/websocket.types.ts';
 import SockJS from 'sockjs-client';
 
 interface WebSocketProviderProps {
@@ -52,12 +52,11 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ url, child
         }
 
         const client = new Client({
-            brokerURL: url, // URL propre — ws://localhost:8080/ws
+            // On utilise webSocketFactory pour SockJS, pas besoin de brokerURL
+            // On passe l'option withCredentials: true pour que le navigateur envoie les cookies HttpOnly
+            webSocketFactory: () => new SockJS(url, null, { withCredentials: true } as any),
 
-            // withCredentials pour que le navigateur envoie le cookie sur le handshake
-            webSocketFactory: () => new SockJS(url!),
-
-            // Le cookie httpOnly est envoyé automatiquement lors du handshake WebSocket
+            // connectHeaders peut rester vide car le cookie sera envoyé automatiquement
             connectHeaders: {},
 
             reconnectDelay: 5000,
