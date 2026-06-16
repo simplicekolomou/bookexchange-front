@@ -4,7 +4,7 @@ import type {BookCopy} from '../types/book.types.ts';
 import type {UserProfile} from "../../auth/profile/types/profile.types.ts";
 import type {PagedResponse} from "../../message/types/message.types.ts";
 
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+const apiBaseUrl = import.meta.env.VITE_API_URL;
 export const booksApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         getMyBooks: builder.query<BookCopy[], void>({

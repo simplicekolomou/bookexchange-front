@@ -15,13 +15,14 @@ import {
     logout,
 } from '../authSlice.ts'
 
+const apiBaseUrl = import.meta.env.VITE_API_URL;
 export const authApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
 
         // Login — backend renvoie User, token dans le cookie httpOnly
         login: builder.mutation<UserProfile, LoginCredentials>({
             query: (credentials) => ({
-                url: '/login',
+                url: `/${apiBaseUrl}/login`,
                 method: 'POST',
                 body: credentials,
             }),
@@ -36,7 +37,7 @@ export const authApi = baseApi.injectEndpoints({
 
         logout: builder.mutation<void, void>({
             query: () => ({
-                url: '/logout',
+                url: `/${apiBaseUrl}/logout`,
                 method: 'POST',
             }),
             invalidatesTags: ['Auth'],
@@ -45,7 +46,7 @@ export const authApi = baseApi.injectEndpoints({
         // Register
         register: builder.mutation<UserProfile, RegisterCredentials>({
             query: (credentials) => ({
-                url: '/register',
+                url: `/${apiBaseUrl}/register`,
                 method: 'POST',
                 body: credentials,
             }),
@@ -60,7 +61,7 @@ export const authApi = baseApi.injectEndpoints({
         // GET /me — hydrate le store au refresh de page
         getMe: builder.query<UserProfile, void>({
             query: () => ({
-                url: '/me',
+                url: `/${apiBaseUrl}/me`,
                 method: 'GET',
             }),
             providesTags: ['Auth'],
@@ -77,7 +78,7 @@ export const authApi = baseApi.injectEndpoints({
         // Mot de passe oublié
         forgotPassword: builder.mutation<void, string>({
             query: (email) => ({
-                url: '/forgot-password',
+                url: `/${apiBaseUrl}/forgot-password`,
                 method: 'PUT',
                 // body simple — RTK Query gère le Content-Type
                 body: { email },
@@ -87,7 +88,7 @@ export const authApi = baseApi.injectEndpoints({
         // Reset password — hydrate le store après reset
         resetPassword: builder.mutation<UserProfile, ResetPasswordRequest>({
             query: (body) => ({
-                url: '/reset-password',
+                url: `/${apiBaseUrl}/reset-password`,
                 method: 'POST',
                 body,
             }),
@@ -103,7 +104,7 @@ export const authApi = baseApi.injectEndpoints({
         // Mise à jour du mot de passe
         updatePassword: builder.mutation<void, UpdatePasswordRequest>({
             query: (data) => ({
-                url: '/update-password',
+                url: `/${apiBaseUrl}/update-password`,
                 method: 'PUT',
                 body: data,
             }),
@@ -112,7 +113,7 @@ export const authApi = baseApi.injectEndpoints({
         // Mise à jour du profil
         updateProfile: builder.mutation<void, UpdateProfileRequest>({
             query: (data) => ({
-                url: '/update-profile',
+                url: `/${apiBaseUrl}/update-profile`,
                 method: 'PUT',
                 body: data,
             }),
@@ -127,7 +128,7 @@ export const authApi = baseApi.injectEndpoints({
         // Photo de profil
         getProfilePicture: builder.query<string, void>({
             query: () => ({
-                url: '/users/me/profile-picture',
+                url: `/${apiBaseUrl}/users/me/profile-picture`,
                 method: 'GET',
                 responseHandler: async (response) => {
                     const blob = await response.blob();
@@ -141,7 +142,7 @@ export const authApi = baseApi.injectEndpoints({
         // Mise à jour de la photo
         updateProfilePicture: builder.mutation<{ profilePicture: string }, FormData>({
             query: (formData) => ({
-                url: '/update-profile-picture',
+                url: `/${apiBaseUrl}/update-profile-picture`,
                 method: 'PUT',
                 body: formData,
             }),
@@ -156,7 +157,7 @@ export const authApi = baseApi.injectEndpoints({
 
         // Profil d'un utilisateur par id
         getUser: builder.query<UserProfile, { userId?: string }>({
-            query: ({ userId }) => `/users/${userId}`,
+            query: ({ userId }) => `/${apiBaseUrl}/users/${userId}`,
             providesTags: ['Profile'],
         }),
 
@@ -168,7 +169,7 @@ export const authApi = baseApi.injectEndpoints({
             page: number;
         }>({
             query: ({ firstName, lastName, size, page }) => ({
-                url: '/users/search',
+                url: `/${apiBaseUrl}/users/search`,
                 method: 'GET',
                 params: {
                     ...(firstName ? { firstName } : {}),
@@ -183,7 +184,7 @@ export const authApi = baseApi.injectEndpoints({
         // Liste paginée de tous les utilisateurs
         getAllUsers: builder.query<PagedResponse<UserProfile>, { page: number; size: number }>({
             query: ({ page, size }) => ({
-                url: '/users/all',
+                url: `/${apiBaseUrl}/users/all`,
                 method: 'GET',
                 params: { page, size },
             }),
