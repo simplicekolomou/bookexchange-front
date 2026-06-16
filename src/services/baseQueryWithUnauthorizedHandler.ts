@@ -7,7 +7,7 @@ import {
 import {logout} from '../features/auth/authSlice';
 
 const baseQuery = fetchBaseQuery({
-    baseUrl: '/api',
+    baseUrl: '',
     credentials: 'include', // Envoie le cookie avec chaque requête
     prepareHeaders: (headers) => {
         /*const state = getState() as RootState;
