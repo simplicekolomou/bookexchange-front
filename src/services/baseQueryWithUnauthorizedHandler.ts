@@ -38,7 +38,7 @@ export const baseQueryWithUnauthorizedHandler: BaseQueryFn<
     const result = await baseQuery(args, api, extraOptions);
     const status = result.error?.status;
 
-    if (status === 401 || status === 403) {
+    if (status === 401) {
         api.dispatch(logout());
     }
 
