@@ -7,7 +7,7 @@ import {
 import {logout} from '../features/auth/authSlice';
 
 const baseQuery = fetchBaseQuery({
-    baseUrl: 'https://bookexchange-api-production.up.railway.app',
+    baseUrl: 'api',
     credentials: 'include', // Envoie le cookie avec chaque requête
     prepareHeaders: (headers) => {
         /*const state = getState() as RootState;
@@ -38,7 +38,7 @@ export const baseQueryWithUnauthorizedHandler: BaseQueryFn<
     const result = await baseQuery(args, api, extraOptions);
     const status = result.error?.status;
 
-    if (status === 401) {
+    if (status === 401 || status === 403) {
         api.dispatch(logout());
     }
 
