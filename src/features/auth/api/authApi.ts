@@ -45,7 +45,7 @@ export const authApi = baseApi.injectEndpoints({
         // Register
         register: builder.mutation<UserProfile, RegisterCredentials>({
             query: (credentials) => ({
-                url: `https://bookexchange-api-production.up.railway.app/register`,
+                url: `/register`,
                 method: 'POST',
                 body: credentials,
             }),
@@ -60,7 +60,7 @@ export const authApi = baseApi.injectEndpoints({
         // GET /me — hydrate le store au refresh de page
         getMe: builder.query<UserProfile, void>({
             query: () => ({
-                url: `https://bookexchange-api-production.up.railway.app/me`,
+                url: `/me`,
                 method: 'GET',
             }),
             providesTags: ['Auth'],
