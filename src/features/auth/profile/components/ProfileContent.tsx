@@ -1,26 +1,43 @@
-import { Box, Text, VStack, HStack, Badge, Icon, Card, Grid } from '@chakra-ui/react';
+import {Box, Text, VStack, HStack, Badge, Icon, Card, Grid, Button} from '@chakra-ui/react';
 import { Award, BookOpen, Heart, Repeat, Star } from 'lucide-react';
 import type { BookCopy, WishlistItem } from '../../../book/types/book.types.ts';
 import { BookCard } from '../../../../components/ui/BookCard.tsx';
 import React from 'react';
 import {tokens} from "../../../../theme/theme.ts";
+import { Link } from "react-router-dom";
+
+type ExchangeItem = {
+    id?: string | number;
+    bookTitle: string;
+    bookAuthor?: string;
+    type: string;
+    date: string | number | Date;
+};
+
+type RatingItem = {
+    id?: string | number;
+    fromUserName: string;
+    stars: number;
+    date: string | number | Date;
+    comment?: string;
+};
 
 interface ProfileContentProps {
     activeTab: string;
-    books: BookCopy[];
-    wishlist: WishlistItem[];
-    exchange: [];
-    rating: [];
+    books?: BookCopy[];
+    wishlist?: WishlistItem[];
+    exchange?: ExchangeItem[];
+    rating?: RatingItem[];
 }
 
 export const ProfileContent = ({
                                    activeTab,
-                                   books,
-                                   wishlist,
-                                   exchange,
-                                   rating,
+                                   books = [],
+                                   wishlist = [],
+                                   exchange = [],
+                                   rating = [],
                                }: ProfileContentProps) => {
-    const renderEmptyState = (icon: React.ElementType, message: string) => (
+    const renderEmptyState = (icon: React.ElementType, message: string, buttonTitle?: string, buttonLink?: string) => (
         <Box
             textAlign="center"
             py={tokens.spacing.xl}
@@ -31,13 +48,22 @@ export const ProfileContent = ({
             <Text color="fg.muted" fontSize="sm">
                 {message}
             </Text>
+            {buttonTitle && (
+                buttonLink ? (
+                    <Link to={buttonLink}>
+                        <Button mt={tokens.spacing.md}>{buttonTitle}</Button>
+                    </Link>
+                ) : (
+                    <Button mt={tokens.spacing.md}>{buttonTitle}</Button>
+                )
+            )}
         </Box>
     );
 
     // Collection
     if (activeTab === 'collection') {
-        if (books.length === 0) {
-            return renderEmptyState(BookOpen, "Aucun livre dans la collection");
+        if (books?.length === 0) {
+            return renderEmptyState(BookOpen, "Aucun livre dans la collection", "Ajouter un livre à votre liste de souhait");
         }
 
         return (
@@ -50,7 +76,7 @@ export const ProfileContent = ({
                 }}
                 gap={tokens.spacing.md}
             >
-                {books.map((book) => (
+                {books?.map((book) => (
                     <BookCard key={book.id} book={book} viewMode="grid" />
                 ))}
             </Grid>
@@ -60,16 +86,24 @@ export const ProfileContent = ({
     // Wishlist
     if (activeTab === 'wishlist') {
         if (wishlist.length === 0) {
-            return renderEmptyState(Heart, "Aucun livre dans la liste de souhaits");
+            return renderEmptyState(
+                Heart,
+                "Aucun livre dans la liste de souhaits",
+                "Ajouter un livre à votre liste de souhait",
+                "/add-book-to-wishlist"
+            );
         }
 
         return (
-            <VStack gap={tokens.spacing.md} align="stretch">
+            <VStack
+                gap={tokens.spacing.md}
+                align="stretch"
+            >
                 {wishlist.map((item) => (
                     <Card.Root
                         key={item.id}
                         borderWidth="1px"
-                        borderColor="border.default"
+                        borderColor="gray.400"
                         borderRadius={tokens.radius.md}
                         bg="bg.surface"
                         transition="all 0.2s"
@@ -92,7 +126,7 @@ export const ProfileContent = ({
     // Exchange
     if (activeTab === 'exchange') {
         if (exchange.length === 0) {
-            return renderEmptyState(Repeat, "Aucun échange récent");
+            return renderEmptyState(Repeat, "Aucun échange récent", "Commencez à échanger des livres avec d'autres utilisateurs");
         }
 
         return (
@@ -101,7 +135,7 @@ export const ProfileContent = ({
                 mt={tokens.spacing.md}
             >
                 {/* À décommenter quand les données seront disponibles */}
-                {exchange.map((exchangeItem: any, idx: number) => (
+                {exchange.map((exchangeItem, idx: number) => (
                     <Card.Root
                         key={idx}
                         borderWidth="1px"
@@ -138,12 +172,16 @@ export const ProfileContent = ({
     // Rating
     if (activeTab === 'rating') {
         if (rating.length === 0) {
-            return renderEmptyState(Award, "Aucune note reçue");
+            return renderEmptyState(
+                Award,
+                "Aucune note reçue",
+                "Notez vos échanges pour recevoir des évaluations de la part des autres utilisateurs"
+            );
         }
 
         return (
             <VStack gap={tokens.spacing.md} align="stretch">
-                {rating.map((ratingItem: any, idx: number) => (
+                {rating.map((ratingItem, idx: number) => (
                     <Card.Root
                         key={idx}
                         borderWidth="1px"

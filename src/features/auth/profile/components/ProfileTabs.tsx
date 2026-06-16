@@ -27,13 +27,11 @@ export const ProfileTabs = ({ value, onChange }: ProfileTabsProps) => {
                     { id: 'rating', label: 'Notes', icon: Award },
                 ].map((tab) => (
                     <Tabs.Trigger
+                        width="25%"
                         key={tab.id}
                         value={tab.id}
                         display="flex"
                         alignItems="center"
-                        gap={2}
-                        px={{ base: 3, sm: 4 }}
-                        py={1.5}
                         borderWidth="1px"
                         borderColor="colorPalette.default"
                         borderRadius={tokens.radius.md}
@@ -49,12 +47,13 @@ export const ProfileTabs = ({ value, onChange }: ProfileTabsProps) => {
                             transform: 'translateY(-1px)',
                             boxShadow: 'sm',
                         }}
+                        justifyContent="center"
                     >
                         <tab.icon size={16} color="currentColor" />
                         <Text
                             display={{ base: 'none', sm: 'inline' }}
                             color="inherit"
-                            fontWeight="medium"
+                            fontWeight="bold"
                         >
                             {tab.label}
                         </Text>

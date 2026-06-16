@@ -1,14 +1,15 @@
-import type {AddBookRequest, VolumeShort} from '../types/book.types.ts';
+import type {AddBookRequest, VolumeShort, WishlistItem} from '../types/book.types.ts';
 import {baseApi} from "../../../services/baseApi.ts";
 import type {BookCopy} from '../types/book.types.ts';
 import type {UserProfile} from "../../auth/profile/types/profile.types.ts";
 import type {PagedResponse} from "../../message/types/message.types.ts";
 
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 export const booksApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         getMyBooks: builder.query<BookCopy[], void>({
             query: () => ({
-                url: '/book-copies/user/me',
+                url: `/${apiBaseUrl}/book-copies/user/me`,
                 method: 'GET',
             }),
             providesTags: ['Book'],
@@ -16,7 +17,7 @@ export const booksApi = baseApi.injectEndpoints({
 
         getBookCopy: builder.query<BookCopy, { copyId: number }>({
             query: ({ copyId }) => ({
-                url: `/book-copies/${copyId}`,
+                url: `/${apiBaseUrl}/book-copies/${copyId}`,
                 method: 'GET',
             }),
             providesTags: ['Book']
@@ -24,14 +25,14 @@ export const booksApi = baseApi.injectEndpoints({
 
         getBookOwner: builder.query<UserProfile, {userId: number}>({
             query: ({ userId }) => ({
-                url: `/users/${userId}`,
+                url: `/${apiBaseUrl}/users/${userId}`,
                 method: 'GET',
             }),
         }),
 
         getUserBooks: builder.query<BookCopy[], { userId: number }>({
             query: ({ userId }) => ({
-                url: `/book-copies/user/${userId}`,
+                url: `/${apiBaseUrl}/book-copies/user/${userId}`,
                 method: 'GET',
             }),
             providesTags: ['Book'],
@@ -39,7 +40,7 @@ export const booksApi = baseApi.injectEndpoints({
 
         addBookCopy: builder.mutation<void, AddBookRequest>({
             query: (bookData) => ({
-                url: '/book-copies/user/me',
+                url: `/${apiBaseUrl}/book-copies/user/me`,
                 method: 'POST',
                 body: bookData,
             }),
@@ -48,7 +49,7 @@ export const booksApi = baseApi.injectEndpoints({
 
         updateBookCopy: builder.mutation<void, AddBookRequest>({
             query: (bookData) => ({
-                url: '/book-copies/user/me',
+                url: `/${apiBaseUrl}/book-copies/user/me`,
                 method: 'PUT',
                 body: bookData,
             }),
@@ -60,7 +61,7 @@ export const booksApi = baseApi.injectEndpoints({
             { title?: string; author?: string; lang?: string; limit?: number }
         >({
             query: ({ title, author, lang = 'fre', limit = 10 }) => ({
-                url: '/books/search',
+                url: `/${apiBaseUrl}/books/search`,
                 method: 'GET',
                 params: {
                     ...(title ? { title } : {}),
@@ -74,7 +75,7 @@ export const booksApi = baseApi.injectEndpoints({
 
         findBook: builder.query<PagedResponse<BookCopy>, { isbn?: string; author?: string; title?: string; size?: number, page?: number, availability?: string, bookState?: string }>({
             query: ({ isbn, author, title, size, page, availability, bookState }) => ({
-                url: '/book-copies/search/book',
+                url: `/${apiBaseUrl}/book-copies/search/book`,
                 method: 'GET',
                 params: {
                     ...(isbn ? { isbn } : {}),
@@ -87,6 +88,23 @@ export const booksApi = baseApi.injectEndpoints({
                 },
             }),
             providesTags: ['Book'],
+        }),
+
+        addBookCopyToWishList: builder.mutation<void, AddBookRequest>({
+            query: (bookData) => ({
+                url: `/${apiBaseUrl}/book-wish/user/me`,
+                method: 'POST',
+                body: bookData,
+            }),
+             invalidatesTags: ['WishList'],
+        }),
+
+        getMyWishList: builder.query<WishlistItem[], void>({
+            query: () => ({
+                url: `/${apiBaseUrl}/book-wish/user/me`,
+                method: 'GET',
+            }),
+            providesTags: ['WishList'],
         }),
     }),
     overrideExisting: false,
@@ -101,4 +119,6 @@ export const {
     useAddBookCopyMutation,
     useUpdateBookCopyMutation,
     useFindBookQuery,
+    useAddBookCopyToWishListMutation,
+    useGetMyWishListQuery,
 } = booksApi;

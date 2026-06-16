@@ -19,6 +19,7 @@ import {UpdatePassword} from "../features/auth/updatePassword/pages/UpdatePasswo
 import Settings from "../features/auth/settings/pages/Settings.tsx";
 import { PublicOnlyRoute } from "../routes/PublicOnlyRoute.tsx";
 import {WebSocketProvider} from "../features/message/websocket/provider/WebSocketProvider.tsx";
+import AddBookToWishListPage from "../features/book/wishedlist/pages/AddBookToWishListPage.tsx";
 
 export const router = createBrowserRouter(
     [
@@ -97,6 +98,10 @@ export const router = createBrowserRouter(
                         {
                             path: "/:bookCopyId/details",
                             element: <BookDetailPage/>
+                        },
+                        {
+                            path: "/add-book-to-wishlist/",
+                            element: <AddBookToWishListPage />
                         }
                     ],
                 },

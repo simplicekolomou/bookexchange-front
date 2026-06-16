@@ -3,10 +3,12 @@ import { ProfileHeader } from '../components/ProfileHeaderProps.tsx'
 import { ProfileTabs } from '../components/ProfileTabs.tsx';
 import { ProfileContent } from '../components/ProfileContent.tsx';
 import {useProfileController} from "../hook/useProfileController.ts";
+import {useGetMyBooksQuery, useGetMyWishListQuery} from "../../../book/api/bookApi.ts";
 
 export const Profile = () => {
     const { activeTab, setActiveTab, handleBack, handleMessage, user } = useProfileController();
-    // TODO - Fetch les données de l'utilisateur et les passer aux composants enfants
+    const {data: books} = useGetMyBooksQuery();
+    const {data: wishlist} = useGetMyWishListQuery();
     return (
         <>
             <Box
@@ -16,7 +18,8 @@ export const Profile = () => {
             >
                 <Container
                     maxW="6xl"
-                    py={8}
+                    h="full"
+                    py={2}
                     bg="bg.surface"
                     borderRadius="md"
                     borderWidth="1px"
@@ -36,8 +39,8 @@ export const Profile = () => {
 
                     <ProfileContent
                         activeTab={activeTab}
-                        books={[]}
-                        wishlist={[]}
+                        books={books}
+                        wishlist={wishlist}
                         exchange={[]}
                         rating={[]}
                     />

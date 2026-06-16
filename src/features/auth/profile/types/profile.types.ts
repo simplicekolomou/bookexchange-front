@@ -15,21 +15,6 @@ export interface ProfileStats {
     memberSince: string
 }
 
-export interface UpdateProfileData {
-    firstName?: string
-    lastName?: string
-    bio?: string
-    address?: Address
-    isVisible?: boolean
-    profilePicture?: string
-}
-
-export interface ChangePasswordData {
-    currentPassword: string
-    newPassword: string
-    confirmPassword: string
-}
-
 export interface NotificationSettings {
     emailNotifications: boolean
     bookRequests: boolean

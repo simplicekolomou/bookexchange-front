@@ -5,7 +5,7 @@ import {url, z} from "zod";
 import { useTranslation } from "react-i18next";
 import {createListCollection, useListCollection} from "@chakra-ui/react";
 import {
-    useAddBookCopyMutation, useGetBookSuggestionsQuery,
+    useAddBookCopyMutation, useAddBookCopyToWishListMutation, useGetBookSuggestionsQuery,
     useUpdateBookCopyMutation,
 } from "../../api/bookApi.ts";
 import { toaster } from "../../../../components/ui/toasterInstance.tsx";
@@ -31,7 +31,7 @@ export interface BookFormType {
 // Types & paramètres du hook
 // -------------------------------------------------------------------
 export interface BookFormProps {
-    mode: "add" | "edit";
+    mode: "add" | "edit" | "wishList";
     initialData?: Partial<BookFormType>;
     onSubmitSuccess?: () => void;
     bookId?: number; // requis en mode "edit"
@@ -165,6 +165,7 @@ export const useAddbookController = (props?: BookFormProps | null) => {
 
     const [addBookCopy] = useAddBookCopyMutation();
     const [updateBookCopy] = useUpdateBookCopyMutation();
+    const [addBookToWishlist] = useAddBookCopyToWishListMutation();
 
     // Champ dynamique pour les auteurs
     const { fields, append, remove } = useFieldArray({
@@ -199,8 +200,10 @@ export const useAddbookController = (props?: BookFormProps | null) => {
 
             if (mode === "add") {
                 await addBookCopy(bookData).unwrap();
-            } else {
+            } else if(mode === "edit" && bookId) {
                 await updateBookCopy(bookData).unwrap();
+            }else {
+                await addBookToWishlist(bookData).unwrap();
             }
 
             toaster.create({

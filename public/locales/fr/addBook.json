@@ -61,5 +61,8 @@
     "invalidBookState": "L'état du livre doit être Neuf, Très bon, Bon ou Décent.",
     "requiredDescription": "La description est requise.",
     "invalidAvailability": "La disponibilité doit être A échanger, A vendre, A donner ou Pour garder."
+  },
+  "wishList": {
+    "title": "Ajouter un livre à votre liste de souhaits"
   }
 }

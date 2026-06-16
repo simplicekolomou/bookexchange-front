@@ -14,7 +14,7 @@ export const useProfilePictureController = () => {
     }, [profilePictureUrl]);
 
     return {
-        profilePictureUrl: profilePictureUrl || null,
+        profilePictureUrl,
         refetch,
         error,
     };

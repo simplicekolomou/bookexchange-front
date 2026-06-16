@@ -12,6 +12,7 @@ import { ArrowLeft, MessageCircle, Ban, Star } from 'lucide-react';
 import type { UserProfile } from '../types/profile.types.ts';
 import {tokens} from "../../../../theme/theme.ts";
 import {useProfileController} from "../hook/useProfileController.ts";
+import {useProfilePictureController} from "../hook/useProfilePictureController.ts";
 
 interface ProfileHeaderProps {
     isOwnProfile: boolean;
@@ -29,12 +30,13 @@ export const ProfileHeader = ({
                                   averageRating,
                               }: ProfileHeaderProps) => {
     const {starRating, initials} = useProfileController(averageRating);
+    const { profilePictureUrl } = useProfilePictureController();
 
     return (
         <Box>
             {/* Bouton retour */}
             <Button
-                variant="ghost"
+                variant="solid"
                 onClick={onBack}
                 mb={tokens.spacing.lg}
                 color="fg.default"
@@ -78,7 +80,7 @@ export const ProfileHeader = ({
                             <Avatar.Fallback bg="colorPalette.default" color="white" fontWeight="bold">
                                 {initials || '?'}
                             </Avatar.Fallback>
-                            <Avatar.Image src={user?.profilePicture ?? undefined} />
+                            <Avatar.Image src={profilePictureUrl ?? ""} />
                         </Avatar.Root>
 
                         {/* Infos utilisateur */}
