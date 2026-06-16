@@ -2,6 +2,7 @@ import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {Client, type IMessage} from '@stomp/stompjs';
 import {WebSocketContext} from "./websocketContext.ts";
 import type {WebSocketContextType, WebSocketStatus} from "../types/websocket.types.ts";
+import SockJS from 'sockjs-client';
 
 interface WebSocketProviderProps {
     url: string | null;
@@ -53,14 +54,11 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ url, child
         const client = new Client({
             brokerURL: url, // URL propre — ws://localhost:8080/ws
 
+            // withCredentials pour que le navigateur envoie le cookie sur le handshake
+            webSocketFactory: () => new SockJS(url!),
+
             // Le cookie httpOnly est envoyé automatiquement lors du handshake WebSocket
             connectHeaders: {},
-
-            // withCredentials pour que le navigateur envoie le cookie sur le handshake
-            webSocketFactory: () => {
-                // Le cookie est envoyé automatiquement si same-origin ou CORS configuré
-                return new WebSocket(url);
-            },
 
             reconnectDelay: 5000,
             heartbeatIncoming: 4000,
