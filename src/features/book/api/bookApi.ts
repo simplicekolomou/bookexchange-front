@@ -4,12 +4,11 @@ import type {BookCopy} from '../types/book.types.ts';
 import type {UserProfile} from "../../auth/profile/types/profile.types.ts";
 import type {PagedResponse} from "../../message/types/message.types.ts";
 
-const apiBaseUrl = import.meta.env.VITE_API_URL;
 export const booksApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         getMyBooks: builder.query<BookCopy[], void>({
             query: () => ({
-                url: `${apiBaseUrl}/book-copies/user/me`,
+                url: `https://bookexchange-api-production.up.railway.app/book-copies/user/me`,
                 method: 'GET',
             }),
             providesTags: ['Book'],
@@ -17,7 +16,7 @@ export const booksApi = baseApi.injectEndpoints({
 
         getBookCopy: builder.query<BookCopy, { copyId: number }>({
             query: ({ copyId }) => ({
-                url: `${apiBaseUrl}/book-copies/${copyId}`,
+                url: `https://bookexchange-api-production.up.railway.app/book-copies/${copyId}`,
                 method: 'GET',
             }),
             providesTags: ['Book']
@@ -25,14 +24,14 @@ export const booksApi = baseApi.injectEndpoints({
 
         getBookOwner: builder.query<UserProfile, {userId: number}>({
             query: ({ userId }) => ({
-                url: `${apiBaseUrl}/users/${userId}`,
+                url: `https://bookexchange-api-production.up.railway.app/users/${userId}`,
                 method: 'GET',
             }),
         }),
 
         getUserBooks: builder.query<BookCopy[], { userId: number }>({
             query: ({ userId }) => ({
-                url: `${apiBaseUrl}/book-copies/user/${userId}`,
+                url: `https://bookexchange-api-production.up.railway.app/book-copies/user/${userId}`,
                 method: 'GET',
             }),
             providesTags: ['Book'],
@@ -40,7 +39,7 @@ export const booksApi = baseApi.injectEndpoints({
 
         addBookCopy: builder.mutation<void, AddBookRequest>({
             query: (bookData) => ({
-                url: `${apiBaseUrl}/book-copies/user/me`,
+                url: `https://bookexchange-api-production.up.railway.app/book-copies/user/me`,
                 method: 'POST',
                 body: bookData,
             }),
@@ -49,7 +48,7 @@ export const booksApi = baseApi.injectEndpoints({
 
         updateBookCopy: builder.mutation<void, AddBookRequest>({
             query: (bookData) => ({
-                url: `${apiBaseUrl}/book-copies/user/me`,
+                url: `https://bookexchange-api-production.up.railway.app/book-copies/user/me`,
                 method: 'PUT',
                 body: bookData,
             }),
@@ -61,7 +60,7 @@ export const booksApi = baseApi.injectEndpoints({
             { title?: string; author?: string; lang?: string; limit?: number }
         >({
             query: ({ title, author, lang = 'fre', limit = 10 }) => ({
-                url: `${apiBaseUrl}/books/search`,
+                url: `https://bookexchange-api-production.up.railway.app/books/search`,
                 method: 'GET',
                 params: {
                     ...(title ? { title } : {}),
@@ -75,7 +74,7 @@ export const booksApi = baseApi.injectEndpoints({
 
         findBook: builder.query<PagedResponse<BookCopy>, { isbn?: string; author?: string; title?: string; size?: number, page?: number, availability?: string, bookState?: string }>({
             query: ({ isbn, author, title, size, page, availability, bookState }) => ({
-                url: `${apiBaseUrl}/book-copies/search/book`,
+                url: `https://bookexchange-api-production.up.railway.app/book-copies/search/book`,
                 method: 'GET',
                 params: {
                     ...(isbn ? { isbn } : {}),
@@ -92,7 +91,7 @@ export const booksApi = baseApi.injectEndpoints({
 
         addBookCopyToWishList: builder.mutation<void, AddBookRequest>({
             query: (bookData) => ({
-                url: `${apiBaseUrl}/book-wish/user/me`,
+                url: `https://bookexchange-api-production.up.railway.app/book-wish/user/me`,
                 method: 'POST',
                 body: bookData,
             }),
@@ -101,7 +100,7 @@ export const booksApi = baseApi.injectEndpoints({
 
         getMyWishList: builder.query<WishlistItem[], void>({
             query: () => ({
-                url: `${apiBaseUrl}/book-wish/user/me`,
+                url: `https://bookexchange-api-production.up.railway.app/book-wish/user/me`,
                 method: 'GET',
             }),
             providesTags: ['WishList'],
