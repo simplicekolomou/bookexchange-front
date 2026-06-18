@@ -79,7 +79,7 @@ export const router = createBrowserRouter(
                             element: <UpdatePassword />
                         },
                         {
-                            element: <WebSocketProvider url={import.meta.env.VITE_WS_URL}><Outlet /></WebSocketProvider>,
+                            element: <WebSocketProvider url={import.meta.env.VITE_WS_URL || '/api/ws'}><Outlet /></WebSocketProvider>,
                             children: [
                                 {
                                     path: "/user/:userId/dms",
