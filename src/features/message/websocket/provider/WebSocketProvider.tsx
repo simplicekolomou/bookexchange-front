@@ -63,7 +63,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ url, child
             return;
         }
 
-        console.log("Le token WebSocket est :", wsToken);
+        console.log("Le token WebSocket est :", wsToken.wsToken);
 
         const client = new Client({
             // On utilise webSocketFactory pour SockJS, pas besoin de brokerURL
@@ -72,7 +72,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ url, child
 
             // connectHeaders peut rester vide car le cookie sera envoyé automatiquement
             connectHeaders: {
-                Authorization: `Bearer ${wsToken}`
+                Authorization: `Bearer ${wsToken.wsToken}`
             },
 
             reconnectDelay: 5000,

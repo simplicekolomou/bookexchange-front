@@ -190,7 +190,7 @@ export const authApi = baseApi.injectEndpoints({
             providesTags: ['Users'],
         }),
 
-        getWebsocketToken: builder.query<{ token: string }, void>({
+        getWebsocketToken: builder.query<{ wsToken: string }, void>({
             query: () => ({
                 url: `/ws-token`,
                 method: 'GET',
@@ -200,7 +200,7 @@ export const authApi = baseApi.injectEndpoints({
                 try {
                     const { data } = await queryFulfilled;
                     // data est maintenant { token: "eyJ..." }
-                    console.log("Token WS récupéré :", data.token);
+                    console.log("Token WS récupéré :", data.wsToken);
                 } catch (error) {
                     console.error("Erreur lors de la récupération du token WS :", error);
                 }
