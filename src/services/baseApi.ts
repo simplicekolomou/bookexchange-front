@@ -11,7 +11,7 @@ export const baseApi = createApi({
      */
     baseQuery: baseQueryWithUnauthorizedHandler,
     // Tags globaux pour l'invalidation des caches
-    tagTypes: ['User', 'Auth', 'Profile', 'Picture', 'Book', 'Message', 'Chat', 'Users', 'UnreadCount', 'WishList'],
+    tagTypes: ['User', 'Auth', 'Profile', 'Picture', 'Book', 'Message', 'Chat', 'Users', 'UnreadCount', 'WishList', 'WsToken'],
     // Endpoints seront injectés dans les features
     endpoints: () => ({}),
 })

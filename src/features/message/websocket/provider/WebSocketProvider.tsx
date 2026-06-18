@@ -14,7 +14,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ url, child
     const [status, setStatus] = useState<WebSocketStatus>('CLOSED');
     const [lastMessage, setLastMessage] = useState<IMessage | null>(null);
     const clientRef = useRef<Client | null>(null);
-    const { data: wsToken, isLoading } = useGetWebsocketTokenQuery();
+    const { data: wsToken, isLoading, isSuccess } = useGetWebsocketTokenQuery();
 
     const sendToDestination = useCallback((
         destination: string,
@@ -53,7 +53,10 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ url, child
             return;
         }
 
-        if(!wsToken || isLoading) return;
+        if(!wsToken || isLoading || !isSuccess) {
+            console.log("Le token WebSocket n'est pas encore disponible ou est en cours de chargement.");
+            return;
+        }
 
         console.log("Le token WebSocket est :", wsToken);
 
