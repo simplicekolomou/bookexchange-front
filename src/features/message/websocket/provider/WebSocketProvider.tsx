@@ -54,8 +54,11 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ url, child
         const client = new Client({
             // On utilise webSocketFactory pour SockJS, pas besoin de brokerURL
             // On passe l'option withCredentials: true pour que le navigateur envoie les cookies HttpOnly
-            webSocketFactory: () => new SockJS(url, null, { withCredentials: true } as any),
-
+            webSocketFactory: () => {
+                // Le 2e argument (null) est réservé par SockJS, on ne s'en sert pas
+                // Cast en `any` pour contourner le typage strict des options (withCredentials)
+                return new SockJS('https://ton-backend.up.railway.app/ws', null, { withCredentials: true } as any);
+            },
             // connectHeaders peut rester vide car le cookie sera envoyé automatiquement
             connectHeaders: {},
 
