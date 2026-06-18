@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { Chat, Message } from "../../types/message.types.ts";
 import {useDispatch, useSelector} from "react-redux";
 import { selectCurrentUser } from "../../../auth/authSlice.ts";
-import { useGetUserQuery } from "../../../auth/api/authApi.ts";
+import {useGetUserQuery, useGetWebsocketTokenQuery} from "../../../auth/api/authApi.ts";
 import { useWebSocketController } from "../../websocket/hooks/useWebSocketController.ts";
 import {useGetMessagesByChatQuery} from "../../api/messageApi.ts";
 import {baseApi} from "../../../../services/baseApi.ts";
@@ -21,6 +21,7 @@ export const useSendMessageController = ({ chat, open }: Props) => {
     const [messages, setMessages] = useState<LocalMessage[]>([]);
     const { sendToDestination, subscribe } = useWebSocketController();
     const dispatch = useDispatch();
+    const { data: wsToken} = useGetWebsocketTokenQuery();
 
     const currentUser = useSelector(selectCurrentUser);
     const myId = currentUser?.id;
@@ -129,5 +130,6 @@ export const useSendMessageController = ({ chat, open }: Props) => {
         bottomRef,
         conversationName,
         isDirect,
+        wsToken,
     };
 };

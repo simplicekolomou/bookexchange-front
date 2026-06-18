@@ -3,7 +3,7 @@ import { Client, type IMessage } from '@stomp/stompjs';
 import { WebSocketContext } from './websocketContext.ts';
 import type { WebSocketContextType, WebSocketStatus } from '../types/websocket.types.ts';
 import SockJS from 'sockjs-client';
-import {useGetWebsocketTokenQuery} from "../../../auth/api/authApi.ts";
+import {useSendMessageController} from "../../sendMessage/hooks/useSendMessageController.ts";
 
 interface WebSocketProviderProps {
     url: string | null;
@@ -14,7 +14,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ url, child
     const [status, setStatus] = useState<WebSocketStatus>('CLOSED');
     const [lastMessage, setLastMessage] = useState<IMessage | null>(null);
     const clientRef = useRef<Client | null>(null);
-    const { data: wsToken, isLoading, isSuccess } = useGetWebsocketTokenQuery();
+    const { wsToken } = useSendMessageController({});
 
     const sendToDestination = useCallback((
         destination: string,
@@ -53,7 +53,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ url, child
             return;
         }
 
-        if(!wsToken || isLoading || !isSuccess) {
+        if(!wsToken) {
             console.log("Le token WebSocket n'est pas encore disponible ou est en cours de chargement.");
             return;
         }
@@ -99,7 +99,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ url, child
             clientRef.current?.deactivate();
             clientRef.current = null;
         };
-    }, [url, wsToken, isLoading]);
+    }, [url, wsToken]);
 
     const value = useMemo<WebSocketContextType>(() => ({
         status,
