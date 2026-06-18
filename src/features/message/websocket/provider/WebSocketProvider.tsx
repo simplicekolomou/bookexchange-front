@@ -3,6 +3,7 @@ import { Client, type IMessage } from '@stomp/stompjs';
 import { WebSocketContext } from './websocketContext.ts';
 import type { WebSocketContextType, WebSocketStatus } from '../types/websocket.types.ts';
 import SockJS from 'sockjs-client';
+import {useGetWebsocketTokenQuery} from "../../../auth/api/authApi.ts";
 
 interface WebSocketProviderProps {
     url: string | null;
@@ -13,6 +14,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ url, child
     const [status, setStatus] = useState<WebSocketStatus>('CLOSED');
     const [lastMessage, setLastMessage] = useState<IMessage | null>(null);
     const clientRef = useRef<Client | null>(null);
+    const {data: wsToken } = useGetWebsocketTokenQuery();
 
     const sendToDestination = useCallback((
         destination: string,
@@ -57,7 +59,9 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ url, child
             webSocketFactory: () => new SockJS(url, null, { withCredentials: true } as any),
 
             // connectHeaders peut rester vide car le cookie sera envoyé automatiquement
-            connectHeaders: {},
+            connectHeaders: {
+                Authorization: `Bearer ${wsToken}`
+            },
 
             reconnectDelay: 5000,
             heartbeatIncoming: 4000,

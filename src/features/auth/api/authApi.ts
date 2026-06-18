@@ -189,6 +189,13 @@ export const authApi = baseApi.injectEndpoints({
             }),
             providesTags: ['Users'],
         }),
+
+        getWebsocketToken: builder.query<string, void>({
+            query: () => ({
+                url: `/ws-token`,
+                method: 'GET',
+            }),
+        }),
     }),
     overrideExisting: false,
 });
@@ -207,4 +214,5 @@ export const {
     useFindUserQuery,
     useGetAllUsersQuery,
     useLogoutMutation,
+    useGetWebsocketTokenQuery,
 } = authApi;
