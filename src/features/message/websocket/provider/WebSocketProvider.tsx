@@ -16,6 +16,8 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ url, child
     const clientRef = useRef<Client | null>(null);
     const {data: wsToken } = useGetWebsocketTokenQuery();
 
+    console.log("Le token WebSocket est :", wsToken);
+
     const sendToDestination = useCallback((
         destination: string,
         body: string,
