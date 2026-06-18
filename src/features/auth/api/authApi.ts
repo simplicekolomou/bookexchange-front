@@ -205,6 +205,22 @@ export const authApi = baseApi.injectEndpoints({
                 }
              }
         }),
+
+        getMyToken: builder.query<string, void>({
+            query: () => ({
+                url: `/access-token`,
+                method: 'GET',
+            }),
+            providesTags: ['MyToken'],
+             async onQueryStarted(_, {queryFulfilled }) {
+                 try {
+                     const {data} = await queryFulfilled;
+                     console.log("Token récupéré :", data);
+                 } catch (error) {
+                     console.error("Erreur lors de la récupération du token :", error);
+                 }
+             }
+        }),
     }),
     overrideExisting: false,
 });
@@ -224,4 +240,5 @@ export const {
     useGetAllUsersQuery,
     useLogoutMutation,
     useGetWebsocketTokenQuery,
+    useGetMyTokenQuery,
 } = authApi;

@@ -12,7 +12,7 @@ const baseQuery = fetchBaseQuery({
     credentials: 'include', // Envoie le cookie avec chaque requête
     prepareHeaders: (headers) => {
         /*const state = getState() as RootState;
-        const token = selectCurrentToken(state);
+        const token =
         if (token) {
             headers.set('authorization', `Bearer ${token}`);
         }
