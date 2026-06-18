@@ -16,8 +16,6 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ url, child
     const clientRef = useRef<Client | null>(null);
     const {data: wsToken } = useGetWebsocketTokenQuery();
 
-    console.log("Le token WebSocket est :", wsToken);
-
     const sendToDestination = useCallback((
         destination: string,
         body: string,
@@ -54,6 +52,10 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ url, child
             setLastMessage(null);
             return;
         }
+
+        if(!wsToken) return;
+
+        console.log("Le token WebSocket est :", wsToken);
 
         const client = new Client({
             // On utilise webSocketFactory pour SockJS, pas besoin de brokerURL
