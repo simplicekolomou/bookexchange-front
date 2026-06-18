@@ -63,7 +63,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ url, child
             return;
         }
 
-        console.log("Le token WebSocket est :", wsToken);
+        console.log("Le token WebSocket est :", wsToken.token);
 
         const client = new Client({
             // On utilise webSocketFactory pour SockJS, pas besoin de brokerURL
