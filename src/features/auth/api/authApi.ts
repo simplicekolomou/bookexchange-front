@@ -192,7 +192,7 @@ export const authApi = baseApi.injectEndpoints({
 
         getWebsocketToken: builder.query<string, void>({
             query: () => ({
-                url: `/api/ws-token`,
+                url: `/ws-token`,
                 method: 'GET',
             }),
             providesTags: ['WsToken'],
