@@ -190,36 +190,21 @@ export const authApi = baseApi.injectEndpoints({
             providesTags: ['Users'],
         }),
 
-        getWebsocketToken: builder.query<string, void>({
+        getWebsocketToken: builder.query<{ token: string }, void>({
             query: () => ({
                 url: `/ws-token`,
                 method: 'GET',
             }),
             providesTags: ['WsToken'],
-             async onQueryStarted(_, {queryFulfilled }) {
+            async onQueryStarted(_, { queryFulfilled }) {
                 try {
                     const { data } = await queryFulfilled;
-                    console.log("Token WebSocket récupéré :", data);
+                    // data est maintenant { token: "eyJ..." }
+                    console.log("Token WS récupéré :", data.token);
                 } catch (error) {
-                    console.error("Erreur lors de la récupération du token WebSocket :", error);
+                    console.error("Erreur lors de la récupération du token WS :", error);
                 }
-             }
-        }),
-
-        getMyToken: builder.query<string, void>({
-            query: () => ({
-                url: `/access-token`,
-                method: 'GET',
-            }),
-            providesTags: ['MyToken'],
-             async onQueryStarted(_, {queryFulfilled }) {
-                 try {
-                     const {data} = await queryFulfilled;
-                     console.log("Token récupéré :", data);
-                 } catch (error) {
-                     console.error("Erreur lors de la récupération du token :", error);
-                 }
-             }
+            }
         }),
     }),
     overrideExisting: false,
@@ -240,5 +225,4 @@ export const {
     useGetAllUsersQuery,
     useLogoutMutation,
     useGetWebsocketTokenQuery,
-    useGetMyTokenQuery,
 } = authApi;

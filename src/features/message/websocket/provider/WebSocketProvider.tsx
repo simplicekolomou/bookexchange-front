@@ -68,11 +68,11 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ url, child
         const client = new Client({
             // On utilise webSocketFactory pour SockJS, pas besoin de brokerURL
             // On passe l'option withCredentials: true pour que le navigateur envoie les cookies HttpOnly
-            webSocketFactory: () => new SockJS(url, null, { withCredentials: true } as any),
+            webSocketFactory: () => new SockJS(url),
 
             // connectHeaders peut rester vide car le cookie sera envoyé automatiquement
             connectHeaders: {
-                Authorization: `Bearer ${wsToken}`
+                Authorization: `Bearer ${wsToken.token}`
             },
 
             reconnectDelay: 5000,
