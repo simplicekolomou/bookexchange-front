@@ -11,12 +11,6 @@ const baseQuery = fetchBaseQuery({
     baseUrl: `${window.location.origin}/api`,
     credentials: 'include', // Envoie le cookie avec chaque requête
     prepareHeaders: (headers) => {
-        /*const state = getState() as RootState;
-        const token =
-        if (token) {
-            headers.set('authorization', `Bearer ${token}`);
-        }
-        headers.set('content-type', 'application/json');*/
         return headers;
     },
 });

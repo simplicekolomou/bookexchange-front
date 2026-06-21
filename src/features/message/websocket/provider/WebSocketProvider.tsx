@@ -104,7 +104,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ url, child
             clientRef.current?.deactivate();
             clientRef.current = null;
         };
-    }, [url, wsToken, user]);
+    }, [url, wsToken, user, isSuccess]);
 
     const value = useMemo<WebSocketContextType>(() => ({
         status,
