@@ -5,7 +5,7 @@ import type {RootState} from "../../app/store.ts";
 const initialState: MessageState = {
     activeChats: [],
     activeTab: 'messages',
-    isGroupBoxOpen: false,
+    isChatBoxOpen: false,
     isSendMessageBoxOpen: false,
     notifications: [],
     unreadMessageCount: 0,

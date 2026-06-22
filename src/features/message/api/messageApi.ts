@@ -1,5 +1,5 @@
 import {baseApi} from "../../../services/baseApi.ts";
-import type {AddGroupRequest, Chat, Message} from "../types/message.types.ts";
+import type {AddChatRequest, Chat, Message} from "../types/message.types.ts";
 
 export const messageApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
@@ -20,7 +20,7 @@ export const messageApi = baseApi.injectEndpoints({
             providesTags: ['Chat'],
         }),
 
-        addChat: builder.mutation<Chat, AddGroupRequest>({
+        addChat: builder.mutation<Chat, AddChatRequest>({
             query: ({name, chatType, members }) => ({
                 url: '/chats',
                 method: 'POST',
@@ -46,10 +46,11 @@ export const messageApi = baseApi.injectEndpoints({
             invalidatesTags: ['Message'],
         }),
 
-        findChatByMembers: builder.query<Chat, number>({
-            query: (idUser) => ({
-                url: `/groups/one-to-one/${idUser}`,
+        findChatByMembers: builder.query<Chat, {chatType: string, targetUserId: string}>({
+            query: ({ chatType, targetUserId }) => ({
+                url: `/chats/get-chat`,
                 method: "GET",
+                params: { chatType, targetUserId },
             }),
             providesTags: ['Chat'],
         }),

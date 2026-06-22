@@ -3,7 +3,7 @@ import {
     useAddChatMutation,
     useLazyFindChatByMembersQuery,
 } from "../../api/messageApi";
-import type { AddGroupRequest, Chat } from "../../types/message.types";
+import type { AddChatRequest, Chat } from "../../types/message.types";
 import {
     useGetMeQuery,
     useGetUserQuery,
@@ -14,11 +14,11 @@ import type { UserProfile } from "../../../auth/profile/types/profile.types";
 import {useSearchPaginatedUsersController} from "./useSearchPaginatedUsersController.ts";
 
 interface Props {
-    onGroupSelected?: (group: Chat) => void;
+    onChatSelected?: (chat: Chat) => void;
     onClose?: () => void;
 }
 
-export const useCreateDirectChatController = ({ onGroupSelected, onClose }: Props) => {
+export const useCreateDirectChatController = ({ onChatSelected, onClose }: Props) => {
     const { t } = useTranslation("message");
     const location = useLocation();
     const params = new URLSearchParams(location.search);
@@ -33,16 +33,16 @@ export const useCreateDirectChatController = ({ onGroupSelected, onClose }: Prop
         { userId: userId ?? "" },
         { skip: !userId }
     );
-    const [addGroup] = useAddChatMutation();
-    const [triggerFindGroup] = useLazyFindChatByMembersQuery();
+    const [addChat] = useAddChatMutation();
+    const [triggerFindChat] = useLazyFindChatByMembersQuery();
 
-    const handleAddDirectGroup = async (user: UserProfile) => {
+    const handleAddDirectChat = async (user: UserProfile) => {
         setLocalError(null);
         try {
             // Vérifier existence
             try {
-                const existingGroup = await triggerFindGroup(Number(user.id)).unwrap();
-                onGroupSelected?.(existingGroup);
+                const existingChat = await triggerFindChat({chatType: "DIRECT", targetUserId: user.id}).unwrap();
+                onChatSelected?.(existingChat);
                 onClose?.();
                 return;
             } catch (error) {
@@ -53,7 +53,7 @@ export const useCreateDirectChatController = ({ onGroupSelected, onClose }: Prop
                 }
             }
             // Création
-            const newGroup: AddGroupRequest = {
+            const newChat: AddChatRequest = {
                 chatType: "DIRECT",
                 name: null,
                 members: [
@@ -61,8 +61,8 @@ export const useCreateDirectChatController = ({ onGroupSelected, onClose }: Prop
                     { notification: true, endUserId: Number(currentUser!.id) },
                 ],
             };
-            const result = await addGroup(newGroup).unwrap();
-            onGroupSelected?.(result);
+            const result = await addChat(newChat).unwrap();
+            onChatSelected?.(result);
             onClose?.();
         } catch (error) {
             const status = (error as { status?: number })?.status;
@@ -74,7 +74,7 @@ export const useCreateDirectChatController = ({ onGroupSelected, onClose }: Prop
     useEffect(() => {
         if (!userId || !targetUser) return;
         (async () => {
-            await handleAddDirectGroup(targetUser);
+            await handleAddDirectChat(targetUser);
         })();
     }, [userId, targetUser]);
 
@@ -85,7 +85,7 @@ export const useCreateDirectChatController = ({ onGroupSelected, onClose }: Prop
         handleScroll,
         localError,
         t,
-        handleUserClick: handleAddDirectGroup,
+        handleUserClick: handleAddDirectChat,
         searchTerm,
         setSearchTerm,
         isSearching,

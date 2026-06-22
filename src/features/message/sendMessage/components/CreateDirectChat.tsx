@@ -33,7 +33,7 @@ export const CreateDirectChat = ({open, onClose, onGroupSelected, stackIndex = 0
         setSearchTerm,
         isSearching,
     } = useCreateDirectChatController({
-        onGroupSelected,
+        onChatSelected: onGroupSelected,
         onClose,
     });
 

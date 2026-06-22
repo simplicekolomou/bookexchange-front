@@ -37,7 +37,7 @@ export interface Chat {
     notifications?: NotificationItem[];
 }
 
-export interface AddGroupRequest {
+export interface AddChatRequest {
     name?: string | null;
     chatType: ChatType;
     members: {
@@ -81,8 +81,8 @@ export interface NotificationItem {
 }
 export interface MessageState {
     activeChats: Chat[];        // conversations ouvertes (ChatBox)
-    activeTab: string;               // 'messages' | 'groups' | 'sendMessage'
-    isGroupBoxOpen: boolean;
+    activeTab: string;               // 'messages' | 'chats' | 'sendMessage'
+    isChatBoxOpen: boolean;
     isSendMessageBoxOpen: boolean;
     notifications: NotificationItem[];
     unreadMessageCount: number; // compteur global de messages non lus

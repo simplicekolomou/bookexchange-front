@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAddChatMutation } from "../../api/messageApi";
 import { useTranslation } from "react-i18next";
-import type { AddGroupRequest, Chat, ChatType } from "../../types/message.types";
+import type { AddChatRequest, Chat, ChatType } from "../../types/message.types";
 import { useSelector } from "react-redux";
 import { selectCurrentUserId } from "../../../auth/authSlice";
 import {useSearchPaginatedUsersController} from "./useSearchPaginatedUsersController.ts";
@@ -44,7 +44,7 @@ export const useCreateGroupChatController = ({ onClose, onGroupSelected }: Props
 
         try {
             const allMemberIds = [...new Set([currentUserId, ...selectedUserIds])].filter(Boolean);
-            const newGroup: AddGroupRequest = {
+            const newGroup: AddChatRequest = {
                 name: groupName.trim(),
                 chatType: groupType,
                 members: allMemberIds.map((id) => ({
