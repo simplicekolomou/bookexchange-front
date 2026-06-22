@@ -6,13 +6,13 @@ import {
     addActiveChat,
     removeActiveChat,
     setActiveTab,
-    openGroupBox,
-    closeGroupBox,
+    openChatBox,
+    closeChatBox,
     openSendMessageBox,
     closeSendMessageBox,
     selectActiveChats,
     selectActiveTab,
-    selectIsGroupBoxOpen,
+    selectIsChatBoxOpen,
     selectIsSendMessageBoxOpen,
 } from "../../messageSlice.ts";
 
@@ -22,16 +22,16 @@ export const useMessagingController = () => {
     const dispatch = useDispatch();
     const activeChats = useSelector(selectActiveChats);
     const activeTab = useSelector(selectActiveTab);
-    const isGroupBoxOpen = useSelector(selectIsGroupBoxOpen);
+    const isChatBoxOpen = useSelector(selectIsChatBoxOpen);
     const isSendMessageBoxOpen = useSelector(selectIsSendMessageBoxOpen);
 
     const {
-        data: rawGroupChats = [],
-        isLoading: isGroupLoading,
-        isError: isGroupError,
+        data: rawChats = [],
+        isLoading: isChatLoading,
+        isError: isChatError,
     } = useGetMyChatsQuery();
 
-    const groupChats: Chat[] = Array.isArray(rawGroupChats) ? rawGroupChats.filter(Boolean) as Chat[] : [];
+    const chats: Chat[] = Array.isArray(rawChats) ? rawChats.filter(Boolean) as Chat[] : [];
 
     const { t } = useTranslation("notification");
 
@@ -41,27 +41,27 @@ export const useMessagingController = () => {
         Notification.permission !== "denied";
 
     // Ouvre une chatbox, max 3, pas de doublon
-    const openChat = (group?: Chat | null) => {
-        if (!group) return;
+    const openChat = (chat?: Chat | null) => {
+        if (!chat) return;
         if (activeChats.length >= MAX_CHATS) return;
-        dispatch(addActiveChat(group));
+        dispatch(addActiveChat(chat));
     };
 
     // Ferme une chatbox par id
-    const closeChat = (groupId: string) => {
-        dispatch(removeActiveChat(groupId));
+    const closeChat = (chatId: string) => {
+        dispatch(removeActiveChat(chatId));
     };
 
     // Au clic sur un onglet
     const handleTabChange = (newValue: string) => {
         dispatch(setActiveTab(newValue));
-        if (newValue === 'groups') dispatch(openGroupBox());
+        if (newValue === 'groups') dispatch(openChatBox());
         if (newValue === 'sendMessage') dispatch(openSendMessageBox());
     };
 
     // À la fermeture des boîtes
-    const handleCloseGroupBox = () => {
-        dispatch(closeGroupBox());
+    const handleCloseChatBox = () => {
+        dispatch(closeChatBox());
     };
 
     const handleCloseSendMessageBox = () => {
@@ -69,21 +69,21 @@ export const useMessagingController = () => {
     };
 
     return {
-        groupChats,
-        isGroupLoading,
-        isGroupError,
+        chats,
+        isChatLoading,
+        isChatError,
         activeChats,
         openChat,
         closeChat,
         value: activeTab,
-        setValue: (tab: string) => dispatch(setActiveTab(tab)), // si besoin d’un setter direct
+        setValue: (tab: string) => dispatch(setActiveTab(tab)),
         show,
         open,
         t,
         handleTabChange,
-        isGroupBoxOpen,
-        closeGroupBox: handleCloseGroupBox,
+        isChatBoxOpen,
+        handleCloseChatBox,
         isSendMessageBoxOpen,
-        closeSendMessageBox: handleCloseSendMessageBox,
+        handleCloseSendMessageBox,
     };
 };

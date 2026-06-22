@@ -10,23 +10,23 @@ import type { Chat } from "../../types/message.types";
 
 export const Messaging = () => {
     const {
-        groupChats,
-        isGroupLoading,
-        isGroupError,
+        chats,
+        isChatLoading,
+        isChatError,
         activeChats,
         openChat,
         closeChat,
         value,
         show,
         t,
-        isGroupBoxOpen,
+        isChatBoxOpen,
         isSendMessageBoxOpen,
-        closeGroupBox,
-        closeSendMessageBox,
+        handleCloseChatBox,
+        handleCloseSendMessageBox,
         handleTabChange
     } = useMessagingController();
 
-    if (isGroupLoading) {
+    if (isChatLoading) {
         return (
             <Flex justify="center" align="center" minH="200px">
                 <Spinner size="lg" color="colorPalette.default" />
@@ -56,26 +56,26 @@ export const Messaging = () => {
 
             <MessageTabs value={value} onChange={handleTabChange} />
 
-            {isGroupError && (
+            {isChatError && (
                 <Text color={tokens.colors.textMuted} textAlign="center" mt={tokens.spacing.md}>
                     Erreur de chargement des discussions
                 </Text>
             )}
 
-            {!isGroupError && groupChats.length === 0 && (
+            {!isChatError && chats.length === 0 && (
                 <Text color="fg.muted" textAlign="center" mt={tokens.spacing.lg}>
                     Aucune discussion pour le moment.
                 </Text>
             )}
 
             <VStack align="stretch" gap={tokens.spacing.xs} mt={tokens.spacing.md}>
-                {groupChats.map((group: Chat, index) => {
-                    const groupIdKey = group?.id ? String(group.id) : `g-${index}`;
-                    const isActive = activeChats.some((g) => String(g?.id ?? "") === String(group?.id ?? ""));
+                {chats.map((chat: Chat, index) => {
+                    const chatIdKey = chat?.id ? String(chat.id) : `g-${index}`;
+                    const isActive = activeChats.some((g) => String(g?.id ?? "") === String(chat?.id ?? ""));
                     return (
                         <MessageCard
-                            key={groupIdKey}
-                            chat={group}
+                            key={chatIdKey}
+                            chat={chat}
                             isActive={isActive}
                             onSelected={(g) => { if (g) openChat(g); }}
                         />
@@ -98,11 +98,11 @@ export const Messaging = () => {
             <CreateDirectChat
                 open={isSendMessageBoxOpen}
                 onGroupSelected={openChat}
-                onClose={closeSendMessageBox}
+                onClose={handleCloseSendMessageBox}
             />
             <CreateGroupChat
-                open={isGroupBoxOpen}
-                onClose={closeGroupBox}
+                open={isChatBoxOpen}
+                onClose={handleCloseChatBox}
                 onChatSelected={openChat}
             />
         </Box>

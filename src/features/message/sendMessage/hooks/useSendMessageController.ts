@@ -45,31 +45,36 @@ export const useSendMessageController = ({ chat, open }: Props) => {
 
                 if (data.chatId !== chatId) return;
 
+                // On détermine si c’est un nouveau message (pas déjà présent)
+                let isNewServerMessage = false;
+
                 setMessages(prev => {
-                    // si le message du serveur existe déjà (même id), ne rien faire
+                    // Message déjà existant (même id) → on ignore
                     if (prev.some(m => m.id === data.id)) return prev;
 
-                    // tenter de trouver un message optimiste correspondant (pas d'id, même content + senderId)
-                    const tempIdx = prev.findIndex(m =>
-                        !m.id &&
-                        m.content === data.content &&
-                        m.senderId === data.senderId
+                    // Message optimiste correspondant ?
+                    const tempIdx = prev.findIndex(
+                        m =>
+                            !m.id &&
+                            m.content === data.content &&
+                            m.senderId === data.senderId
                     );
 
                     if (tempIdx !== -1) {
-                        // remplacer l'optimistic message par la version serveur (avec id)
                         const next = [...prev];
                         next[tempIdx] = data as LocalMessage;
                         return next;
                     }
 
-                    // sinon, c'est un nouveau message, on l'ajoute et on invalide le compteur de non-lus
-                    const chatId = data.chatId;
-                    dispatch(baseApi.util.invalidateTags([{ type: 'UnreadCount', id: chatId }]));
-
-                    // sinon ajouter
+                    // C’est bien un nouveau message
+                    isNewServerMessage = true;
                     return [...prev, data as LocalMessage];
                 });
+
+                // Dispatch **après** la mise à jour d’état, en dehors du rendu
+                if (isNewServerMessage) {
+                    dispatch(baseApi.util.invalidateTags([{ type: 'UnreadCount', id: chatId }]));
+                }
             } catch (error) {
                 console.error("Erreur lors du parsing du message STOMP", error);
             }
@@ -77,8 +82,8 @@ export const useSendMessageController = ({ chat, open }: Props) => {
 
         return () => {
             subscription?.unsubscribe();
-        }
-    }, [chatId, subscribe]);
+        };
+    }, [chatId, subscribe, dispatch]);
 
     const handleSendMessage = async (text: string) => {
         if (!text.trim() || !chat) return;
