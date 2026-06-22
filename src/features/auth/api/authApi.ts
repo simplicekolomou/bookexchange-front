@@ -196,15 +196,6 @@ export const authApi = baseApi.injectEndpoints({
                 method: 'GET',
             }),
             providesTags: ['WsToken'],
-            async onQueryStarted(_, { queryFulfilled }) {
-                try {
-                    const { data } = await queryFulfilled;
-                    // data est maintenant { token: "eyJ..." }
-                    console.log("Token WS récupéré :", data.wsToken);
-                } catch (error) {
-                    console.error("Erreur lors de la récupération du token WS :", error);
-                }
-            }
         }),
     }),
     overrideExisting: false,
