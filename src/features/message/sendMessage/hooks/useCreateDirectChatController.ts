@@ -36,23 +36,28 @@ export const useCreateDirectChatController = ({ onChatSelected, onClose }: Props
     const [addChat] = useAddChatMutation();
     const [triggerFindChat] = useLazyFindChatByMembersQuery();
 
+    /**
+     * Cherche un chat direct existant, sinon le crée.
+     * On ne se base plus sur un code HTTP (404) pour détecter l'absence de chat :
+     * l'API renvoie maintenant `null` dans le body si rien n'existe, avec un 200 OK.
+     * Cela évite un log d'erreur réseau dans la console du navigateur pour un cas
+     * qui n'est pas vraiment une erreur, juste une absence de résultat.
+     */
     const handleAddDirectChat = async (user: UserProfile) => {
         setLocalError(null);
         try {
-            // Vérifier existence
-            try {
-                const existingChat = await triggerFindChat({chatType: "DIRECT", targetUserId: user.id}).unwrap();
+            const existingChat = await triggerFindChat({
+                chatType: "DIRECT",
+                targetUserId: user.id,
+            }).unwrap();
+
+            if (existingChat) {
                 onChatSelected?.(existingChat);
                 onClose?.();
                 return;
-            } catch (error) {
-                const status = (error as { status?: number })?.status;
-                if (status !== 404) {
-                    setLocalError(t("serverError"));
-                    return;
-                }
             }
-            // Création
+
+            // existingChat est null : aucun chat trouvé, on en crée un
             const newChat: AddChatRequest = {
                 chatType: "DIRECT",
                 name: null,
@@ -64,6 +69,7 @@ export const useCreateDirectChatController = ({ onChatSelected, onClose }: Props
             const result = await addChat(newChat).unwrap();
             onChatSelected?.(result);
             onClose?.();
+
         } catch (error) {
             const status = (error as { status?: number })?.status;
             setLocalError(status === 401 ? t("unAuthenticated") : t("serverError"));

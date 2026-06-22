@@ -103,7 +103,7 @@ export const Messaging = () => {
             <CreateGroupChat
                 open={isGroupBoxOpen}
                 onClose={closeGroupBox}
-                onGroupSelected={openChat}
+                onChatSelected={openChat}
             />
         </Box>
     );

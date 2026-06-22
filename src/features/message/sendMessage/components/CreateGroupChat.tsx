@@ -17,21 +17,21 @@ import {useCreateGroupChatController} from "../hooks/useCreateGroupChatControlle
 interface GroupBoxProps {
     onClose: () => void;
     open: boolean;
-    onGroupSelected: (group: Chat) => void;
+    onChatSelected: (chat: Chat) => void;
     stackIndex?: number;
 }
 
-export const CreateGroupChat = ({ onClose, open, onGroupSelected, stackIndex = 0 }: GroupBoxProps) => {
+export const CreateGroupChat = ({ onClose, open, onChatSelected, stackIndex = 0 }: GroupBoxProps) => {
     const {
         users,
         isFetching,
         isLastPage,
-        groupName,
-        setGroupName,
+        chatName,
+        setChatName,
         selectedUserIds,
         toggleMember,
         handleScroll,
-        handleCreateGroup,
+        handleCreateGroupChat,
         handleClose,
         isLoading,
         localError,
@@ -39,7 +39,7 @@ export const CreateGroupChat = ({ onClose, open, onGroupSelected, stackIndex = 0
         searchTerm,
         setSearchTerm,
         isSearching,
-    } = useCreateGroupChatController({ onClose, onGroupSelected });
+    } = useCreateGroupChatController({ onClose, onChatSelected: onChatSelected });
 
     // Calcul de la position en fonction de l'index dans la pile(stackIndex)
     const rightOffset = 132 + stackIndex * 370;
@@ -84,8 +84,8 @@ export const CreateGroupChat = ({ onClose, open, onGroupSelected, stackIndex = 0
                 {/* Champ nom du groupe */}
                 <Box p={3} borderBottomWidth="1px" borderColor="gray.500">
                     <Input
-                        value={groupName}
-                        onChange={(e) => setGroupName(e.target.value)}
+                        value={chatName}
+                        onChange={(e) => setChatName(e.target.value)}
                         placeholder={t("groupNamePlaceholder") || "Nom du groupe"}
                         size="sm"
                         bg="bg.subtle"
@@ -193,8 +193,8 @@ export const CreateGroupChat = ({ onClose, open, onGroupSelected, stackIndex = 0
                         size="sm"
                         colorScheme="blue"
                         loading={isLoading}
-                        disabled={!groupName.trim() || selectedUserIds.length < 2}
-                        onClick={handleCreateGroup}
+                        disabled={!chatName.trim() || selectedUserIds.length < 2}
+                        onClick={handleCreateGroupChat}
                         gap={2}
                         flexShrink={0}
                     >

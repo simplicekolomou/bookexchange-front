@@ -32,10 +32,10 @@ const messageSlice = createSlice({
 
         // Gestion des modales
         openGroupBox: (state) => {
-            state.isGroupBoxOpen = true;
+            state.isChatBoxOpen = true;
         },
         closeGroupBox: (state) => {
-            state.isGroupBoxOpen = false;
+            state.isChatBoxOpen = false;
             // Optionnel : si vous souhaitez garder l'onglet actif, ne pas changer activeTab
         },
         openSendMessageBox: (state) => {
@@ -59,6 +59,6 @@ export const {
 
 export const selectActiveChats = (state: RootState) => state.message.activeChats;
 export const selectActiveTab = (state: RootState) => state.message.activeTab;
-export const selectIsGroupBoxOpen = (state: RootState) => state.message.isGroupBoxOpen;
+export const selectIsGroupBoxOpen = (state: RootState) => state.message.isChatBoxOpen;
 export const selectIsSendMessageBoxOpen = (state: RootState) => state.message.isSendMessageBoxOpen;
 export default messageSlice.reducer;

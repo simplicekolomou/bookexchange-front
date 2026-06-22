@@ -8,20 +8,20 @@ import {useSearchPaginatedUsersController} from "./useSearchPaginatedUsersContro
 
 interface Props {
     onClose: () => void;
-    onGroupSelected: (group: Chat) => void;
+    onChatSelected: (chat: Chat) => void;
 }
 
-export const useCreateGroupChatController = ({ onClose, onGroupSelected }: Props) => {
+export const useCreateGroupChatController = ({ onClose, onChatSelected }: Props) => {
     const { t } = useTranslation("message");
     const currentUserId = useSelector(selectCurrentUserId);
 
     const { users, isFetching, isLastPage, handleScroll, searchTerm, setSearchTerm, isSearching } =
         useSearchPaginatedUsersController({ size: 15 });
 
-    const [groupName, setGroupName] = useState("");
+    const [chatName, setChatName] = useState("");
     const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
     const [localError, setLocalError] = useState<string | null>(null);
-    const [addGroup, { isLoading }] = useAddChatMutation();
+    const [addChat, { isLoading }] = useAddChatMutation();
 
     const toggleMember = (userId: string) => {
         setSelectedUserIds((prev) =>
@@ -30,10 +30,10 @@ export const useCreateGroupChatController = ({ onClose, onGroupSelected }: Props
     };
 
     const handleCreateGroupChat = async () => {
-        const groupType: ChatType = "GROUP";
+        const chatType: ChatType = "GROUP";
         setLocalError(null);
 
-        if (!groupName.trim()) {
+        if (!chatName.trim()) {
             setLocalError(t("createGroup.nameRequired"));
             return;
         }
@@ -44,18 +44,18 @@ export const useCreateGroupChatController = ({ onClose, onGroupSelected }: Props
 
         try {
             const allMemberIds = [...new Set([currentUserId, ...selectedUserIds])].filter(Boolean);
-            const newGroup: AddChatRequest = {
-                name: groupName.trim(),
-                chatType: groupType,
+            const newChat: AddChatRequest = {
+                name: chatName.trim(),
+                chatType: chatType,
                 members: allMemberIds.map((id) => ({
                     notification: true,
                     endUserId: Number(id),
                 })),
             };
-            const result = await addGroup(newGroup).unwrap();
-            setGroupName("");
+            const result = await addChat(newChat).unwrap();
+            setChatName("");
             setSelectedUserIds([]);
-            onGroupSelected(result);
+            onChatSelected(result);
             onClose();
         } catch (error) {
             const status = (error as { status?: number })?.status;
@@ -68,7 +68,7 @@ export const useCreateGroupChatController = ({ onClose, onGroupSelected }: Props
     };
 
     const handleClose = () => {
-        setGroupName("");
+        setChatName("");
         setSelectedUserIds([]);
         setLocalError(null);
         setSearchTerm("");
@@ -80,12 +80,12 @@ export const useCreateGroupChatController = ({ onClose, onGroupSelected }: Props
         isFetching,
         isLastPage,
         isSearching,
-        groupName,
-        setGroupName,
+        chatName,
+        setChatName,
         selectedUserIds,
         toggleMember,
         handleScroll,
-        handleCreateGroup: handleCreateGroupChat,
+        handleCreateGroupChat,
         handleClose,
         isLoading,
         localError,

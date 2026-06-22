@@ -46,7 +46,7 @@ export const messageApi = baseApi.injectEndpoints({
             invalidatesTags: ['Message'],
         }),
 
-        findChatByMembers: builder.query<Chat, {chatType: string, targetUserId: string}>({
+        findChatByMembers: builder.query<Chat, {chatType: string, targetUserId?: string}>({
             query: ({ chatType, targetUserId }) => ({
                 url: `/chats/get-chat`,
                 method: "GET",
