@@ -59,11 +59,8 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ url, child
         }
 
         if(!wsToken || !isSuccess || !user) {
-            console.log("Le token WebSocket n'est pas encore disponible ou est en cours de chargement.");
             return;
         }
-
-        console.log("Le token WebSocket est :", wsToken.wsToken);
 
         const client = new Client({
             // On utilise webSocketFactory pour SockJS, pas besoin de brokerURL
@@ -80,19 +77,15 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ url, child
             heartbeatOutgoing: 4000,
 
             onConnect: () => {
-                console.log('STOMP connected');
                 setStatus('OPEN');
             },
             onDisconnect: () => {
-                console.log('STOMP disconnected');
                 setStatus('CLOSED');
             },
-            onStompError: (frame) => {
-                console.error('STOMP error:', frame.headers['message'], frame.body);
+            onStompError: () => {
                 setStatus('CLOSED');
             },
-            onWebSocketError: (event) => {
-                console.error('WebSocket error:', event);
+            onWebSocketError: () => {
                 setStatus('CLOSED');
             },
         });
