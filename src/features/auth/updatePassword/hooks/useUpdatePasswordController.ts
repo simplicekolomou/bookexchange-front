@@ -6,10 +6,10 @@ import {useNavigate} from "react-router-dom";
 import {useSelector} from "react-redux";
 import {selectCurrentUser} from "../../authSlice.ts";
 import {useUpdatePasswordMutation} from "../../api/authApi.ts";
+import {useState} from "react";
 
 const buildSchema = (t: (key: string) => string) =>
-    z
-        .object({
+    z.object({
             currentPassword: z
                 .string()
                 .min(6, t("validation.passwordMinLength")),
@@ -35,17 +35,10 @@ export const useUpdatePasswordController = () => {
     const { t } = useTranslation("auth");
     const [updatePassword, { isLoading }] = useUpdatePasswordMutation();
     const user = useSelector(selectCurrentUser);
+    const [localError, setLocalError] = useState("");
 
-    const schema = buildSchema(t);
-
-    const {
-        register,
-        handleSubmit,
-        setError,
-        reset,
-        formState: { errors },
-    } = useForm<UpdatePasswordForm>({
-        resolver: zodResolver(schema),
+    const form = useForm<UpdatePasswordForm>({
+        resolver: zodResolver(buildSchema(t)),
         defaultValues: {
             currentPassword: "",
             newPassword: "",
@@ -54,38 +47,30 @@ export const useUpdatePasswordController = () => {
     });
 
     const onSubmit = async (data: UpdatePasswordForm) => {
+        setLocalError("");
         try {
             await updatePassword({currentPassword: data.currentPassword, newPassword: data.newPassword}).unwrap();
 
-            reset(); // vider les champs sensibles après succès
+            form.reset(); // vider les champs sensibles après succès
             navigate(`/user/${user?.id}/collection`);
         } catch (err) {
             const status = (err as { status?: number })?.status;
 
             if (status === 401) {
-                setError("currentPassword", { // Erreur sur le champ concerné, pas sur root
-                    message: t("resetPassword.incorrectCurrentPassword"),
-                });
+                setLocalError(t("resetPassword.incorrectCurrentPassword"));
             } else if (status === 403) {
-                setError("root", {
-                    message: t("resetPassword.forbidden"),
-                });
+                setLocalError(t("resetPassword.forbidden"));
             } else {
                 // Fallback générique pour 404, 500, erreur réseau, etc.
-                setError("root", {
-                    message: t("resetPassword.serverError"),
-                });
+                setLocalError(t("resetPassword.serverError"));
             }
         }
     };
 
     return {
-        form: {
-            register,
-            handleSubmit,
-            formState: { errors },
-        },
         onSubmit,
         isLoading,
+        localError,
+        form,
     };
 }

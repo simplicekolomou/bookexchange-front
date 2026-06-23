@@ -1,4 +1,3 @@
-// File: `src/features/message/sendMessage/components/MessageItem.tsx`
 import { Box, Text, Spinner } from "@chakra-ui/react";
 import type { Message } from "../../types/message.types.ts";
 import { useGetUserQuery } from "../../../auth/api/authApi.ts";

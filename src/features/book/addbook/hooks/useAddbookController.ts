@@ -13,6 +13,93 @@ import {Availability, BookStateLabel, type VolumeShort} from "../../types/book.t
 import type { isbns } from "../../types/book.types.ts";
 import {useDebouncedController} from "../../../../hooks/useDebouncedController.ts";
 
+const authorSchema = (t: (key: string) => string) =>
+    z.object({
+    name: z.string().min(1, { message: t("validation.requiredAuthor") }),
+    });
+
+// -------------------------------------------------------------------
+// 3. Fonctions de validation ISBN (conservées)
+// -------------------------------------------------------------------
+function isValidISBN(isbn: string): boolean {
+    const clean = isbn.replace(/[-\s]/g, "");
+    return isValidISBN10(clean) || isValidISBN13(clean) || clean.length === 0;
+}
+
+function isValidISBN10(isbn: string): boolean {
+    isbn = isbn.replace(/[-\s]/g, "");
+    if (!/^\d{9}[\dX]$/.test(isbn)) return false;
+    let sum = 0;
+    for (let i = 0; i < 10; i++) {
+        const char = isbn[i] === "X" ? 10 : Number(isbn[i]);
+        sum += char * (10 - i);
+    }
+    return sum % 11 === 0;
+}
+
+function isValidISBN13(isbn: string): boolean {
+    isbn = isbn.replace(/[-\s]/g, "");
+    if (!/^\d{13}$/.test(isbn)) return false;
+    let sum = 0;
+    for (let i = 0; i < 13; i++) {
+        const digit = Number(isbn[i]);
+        sum += i % 2 === 0 ? digit : digit * 3;
+    }
+    return sum % 10 === 0;
+}
+
+// -------------------------------------------------------------------
+// Schéma Zod & types dérivés
+// -------------------------------------------------------------------
+const conditionEnum = BookStateLabel.map((item) => item.value) as [
+    string,
+    ...string[],
+];
+
+const availabilityEnum = Availability.map((item) => item.value) as [
+    string,
+    ...string[],
+];
+
+// Schéma de validation du formulaire
+const bookFormSchema = (t: (key: string) => string) =>
+    z.object({
+    title: z
+        .string()
+        .min(1, { message: t("validation.requiredTitle") }),
+    authors: z
+        .array(authorSchema(t))
+        .min(1, { message: t("validation.requiredAuthor") }),
+    isbns: z
+        .string()
+        .refine(isValidISBN, { message: t("validation.invalidISBN") }),
+    bookState: z
+        .enum(conditionEnum, { message: t("validation.invalidBookState") }),
+    format: z
+        .string()
+        .min(1, { message: t("validation.invalidFormat") }),
+    edition: z
+        .string()
+        .min(1, { message: t("validation.invalidEdition") }),
+    coverImage: z
+        .string()
+        .pipe(url())
+        .optional()
+        .or(z.literal("")),
+    userCoverImage: z
+        .instanceof(File)
+        .nullable(),
+    description: z
+        .string()
+        .min(1, { message: t("validation.requiredDescription") }),
+    isAvailable: z
+        .boolean(),
+    availability: z
+        .enum(availabilityEnum, { message: t("validation.invalidAvailability") }),
+});
+
+type BookForm = z.infer<ReturnType<typeof bookFormSchema>>;
+
 export interface BookFormType {
     title: string;
     authors: { name: string }[];
@@ -42,89 +129,7 @@ export interface BookFormProps {
 // -------------------------------------------------------------------
 export const useAddbookController = (props?: BookFormProps | null) => {
     const { t } = useTranslation(["addBook"]);
-    // -------------------------------------------------------------------
-    // Schéma Zod & types dérivés
-    // -------------------------------------------------------------------
-    const conditionEnum = BookStateLabel.map((item) => item.value) as [
-        string,
-        ...string[],
-    ];
-    const availabilityEnum = Availability.map((item) => item.value) as [
-        string,
-        ...string[],
-    ];
 
-    const authorSchema = z.object({
-        name: z.string().min(1, { message: t("validation.requiredAuthor") }),
-    });
-
-// -------------------------------------------------------------------
-// 3. Fonctions de validation ISBN (conservées)
-// -------------------------------------------------------------------
-    function isValidISBN(isbn: string): boolean {
-        const clean = isbn.replace(/[-\s]/g, "");
-        return isValidISBN10(clean) || isValidISBN13(clean) || clean.length === 0;
-    }
-
-    function isValidISBN10(isbn: string): boolean {
-        isbn = isbn.replace(/[-\s]/g, "");
-        if (!/^\d{9}[\dX]$/.test(isbn)) return false;
-        let sum = 0;
-        for (let i = 0; i < 10; i++) {
-            const char = isbn[i] === "X" ? 10 : Number(isbn[i]);
-            sum += char * (10 - i);
-        }
-        return sum % 11 === 0;
-    }
-
-    function isValidISBN13(isbn: string): boolean {
-        isbn = isbn.replace(/[-\s]/g, "");
-        if (!/^\d{13}$/.test(isbn)) return false;
-        let sum = 0;
-        for (let i = 0; i < 13; i++) {
-            const digit = Number(isbn[i]);
-            sum += i % 2 === 0 ? digit : digit * 3;
-        }
-        return sum % 10 === 0;
-    }
-
-    // Schéma de validation du formulaire
-    const bookFormSchema = z.object({
-        title: z
-            .string()
-            .min(1, { message: t("validation.requiredTitle") }),
-        authors: z
-            .array(authorSchema)
-            .min(1, { message: t("validation.requiredAuthor") }),
-        isbns: z
-            .string()
-            .refine(isValidISBN, { message: t("validation.invalidISBN") }),
-        bookState: z
-            .enum(conditionEnum, { message: t("validation.invalidBookState") }),
-        format: z
-            .string()
-            .min(1, { message: t("validation.invalidFormat") }),
-        edition: z
-            .string()
-            .min(1, { message: t("validation.invalidEdition") }),
-        coverImage: z
-            .string()
-            .pipe(url())
-            .optional()
-            .or(z.literal("")),
-        userCoverImage: z
-            .instanceof(File)
-            .nullable(),
-        description: z
-            .string()
-            .min(1, { message: t("validation.requiredDescription") }),
-        isAvailable: z
-            .boolean(),
-        availability: z
-            .enum(availabilityEnum, { message: t("validation.invalidAvailability") }),
-    });
-
-    type BookForm = z.infer<typeof bookFormSchema>;
     const {
         mode = "add",
         initialData,
@@ -138,16 +143,8 @@ export const useAddbookController = (props?: BookFormProps | null) => {
     const [inputValue, setInputValue] = useState(initialQuery);
     const debouncedController = useDebouncedController(300, inputValue);
 
-    const {
-        control,
-        register,
-        handleSubmit,
-        reset,
-        formState: { errors, isSubmitting },
-        setValue,
-        watch,
-    } = useForm<BookForm>({
-        resolver: zodResolver(bookFormSchema),
+    const form = useForm<BookForm>({
+        resolver: zodResolver(bookFormSchema(t)),
         defaultValues: {
             title: initialData?.title ?? "",
             authors: initialData?.authors ?? [{ name: "" }],
@@ -162,6 +159,8 @@ export const useAddbookController = (props?: BookFormProps | null) => {
             availability: initialData?.availability ?? availabilityEnum[0],
         }
     });
+
+    const { control, reset } = form;
 
     const [addBookCopy] = useAddBookCopyMutation();
     const [updateBookCopy] = useUpdateBookCopyMutation();
@@ -319,13 +318,14 @@ export const useAddbookController = (props?: BookFormProps | null) => {
 
     return {
         // Form state & handlers
-        control,
+        /*control,
         register,
         handleSubmit,
         errors,
         isSubmitting,
         setValue,
-        watch,
+        watch,*/
+        form,
         onSubmit,
         handleReset,
         // Field array

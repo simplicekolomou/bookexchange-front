@@ -103,7 +103,7 @@ export const useSettingsController = () => {
     };
 
     // Soumission avec react-hook-form
-    const handleSubmit = form.handleSubmit(async (data) => {
+    const onSubmit = (async (data: SettingsFormData) => {
         setLocalError("");
 
         const updateInfo: UpdateProfileRequest = {
@@ -163,6 +163,6 @@ export const useSettingsController = () => {
         isUpdateSuccess,
         handlePrivacyToggle,
         handleFileChange,
-        handleSubmit,   // ← fonction de soumission prête
+        onSubmit,   // ← fonction de soumission prête
     };
 };

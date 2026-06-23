@@ -31,16 +31,17 @@ export const SettingsForm = () => {
         localError,
         handlePrivacyToggle,
         handleFileChange,
-        handleSubmit,
+        onSubmit,
     } = useSettingsController();
 
     const {
         register,
         formState: { errors },
+        handleSubmit,
     } = form;
 
     return (
-        <form onSubmit={handleSubmit} method="POST" noValidate>
+        <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <Fieldset.Root>
                 <Card.Root
                     borderColor="border.default"

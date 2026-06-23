@@ -16,7 +16,7 @@ export const useProfileController = (averageRating: number = 3) => {
     };
 
     const handleMessage = () => {
-        // Logique pour envoyer un message
+        // TOTO : Implémenter la logique d'envoi de message
         console.log('Envoyer un message à');
     };
 

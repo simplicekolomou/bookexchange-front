@@ -8,6 +8,33 @@ import { useAppDispatch } from "../../../../app/hooks.ts";
 import { setCredentials } from "../../authSlice.ts";
 import {useRegisterMutation} from "../../api/authApi.ts";
 
+// Schéma Zod avec messages localisés (recréé si la langue change)
+const schema = (t: (key: string) =>string) => z.object({
+    firstName: z
+        .string()
+        .min(2, t("validation.firstNameMinLength"))
+        .max(100, t("validation.firstNameMaxLength")),
+    lastName: z
+        .string()
+        .min(2, t("validation.lastNameMinLength"))
+        .max(60, t("validation.lastNameMaxLength")),
+    email: z
+        .string()
+        .min(2, t("validation.requiredEmail"))
+        .pipe(email(t("validation.invalidEmail"))),
+    password: z
+        .string()
+        .min(6, t("validation.passwordMinLength")),
+    confirmPassword: z
+        .string()
+})
+    .refine((data) => data.password === data.confirmPassword, {
+        message: t("validation.passwordsMustMatch"),
+        path: ["confirmPassword"],
+    });
+
+type RegisterForm = z.infer<ReturnType<typeof schema>>;
+
 export const useRegisterColler = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
@@ -15,35 +42,8 @@ export const useRegisterColler = () => {
     const [localError, setLocalError] = useState("");
     const [registerUser] = useRegisterMutation();
 
-    // Schéma Zod avec messages localisés (recréé si la langue change)
-    const schema = z.object({
-        firstName: z
-            .string()
-            .min(2, t("validation.firstNameMinLength"))
-            .max(100, t("validation.firstNameMaxLength")),
-        lastName: z
-            .string()
-            .min(2, t("validation.lastNameMinLength"))
-            .max(60, t("validation.lastNameMaxLength")),
-        email: z
-            .string()
-            .min(2, t("validation.requiredEmail"))
-            .pipe(email(t("validation.invalidEmail"))),
-        password: z
-            .string()
-            .min(6, t("validation.passwordMinLength")),
-        confirmPassword: z
-            .string()
-        })
-        .refine((data) => data.password === data.confirmPassword, {
-            message: t("validation.passwordsMustMatch"),
-            path: ["confirmPassword"],
-        });
-
-    type RegisterForm = z.infer<typeof schema>;
-
     const form = useForm<RegisterForm>({
-        resolver: zodResolver(schema),
+        resolver: zodResolver(schema(t)),
         defaultValues: {
             firstName: "",
             lastName: "",

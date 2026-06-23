@@ -14,10 +14,23 @@ import { Mail, ArrowLeft, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useForgotPasswordController } from "../hooks/useForgotPasswordController.ts";
 import { tokens } from "../../../../theme/theme.ts";
+import {useTranslation} from "react-i18next";
 
 export const ForgotPasswordForm = () => {
-    const { register, handleSubmit, errors, isLoading, isSubmitted, t } =
-        useForgotPasswordController();
+    const { t } = useTranslation("forgotPassword");
+    const { form, onSubmit, isSuccess, isLoading } = useForgotPasswordController();
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitSuccessful },
+    } = form;
+
+    /**
+     * isSubmitted est true uniquement si la soumission du formulaire a réussi et que la requête de
+     * mot de passe oublié a été traitée avec succès. Cela garantit que le message de confirmation ne
+     * s'affiche que lorsque les deux conditions sont remplies.
+     */
+    const isSubmitted = isSubmitSuccessful && isSuccess;
 
     if (isSubmitted) {
         return (
@@ -64,7 +77,7 @@ export const ForgotPasswordForm = () => {
     }
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <Fieldset.Root>
                 <Card.Root
                     borderColor="border.default"

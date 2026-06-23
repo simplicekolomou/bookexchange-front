@@ -7,6 +7,20 @@ import {z} from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useResetPasswordMutation} from "../../api/authApi.ts";
 
+const schema = (t: (key:string) =>string) => z.object({
+    password: z
+        .string()
+        .min(6, t("validation.passwordMinLength")),
+    confirmPassword: z
+        .string(),
+})
+    .refine((data) => data.password === data.confirmPassword, {
+        message: t("validation.passwordsMustMatch"),
+        path: ["confirmPassword"],
+    });
+
+type ResetPasswordForm = z.infer<ReturnType<typeof schema>>;
+
 export const useResetPasswordController = () => {
     const { t } = useTranslation("auth");
     const [resetPassword] = useResetPasswordMutation();
@@ -15,27 +29,13 @@ export const useResetPasswordController = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
-    const schema = z.object({
-        password: z
-            .string()
-            .min(6, t("validation.passwordMinLength")),
-        confirmPassword: z
-            .string(),
-        })
-        .refine((data) => data.password === data.confirmPassword, {
-            message: t("validation.passwordsMustMatch"),
-            path: ["confirmPassword"],
-        });
-
-    type ResetPasswordForm = z.infer<typeof schema>;
-
     const {
         register,
         handleSubmit,
         setError,
         formState: { errors, isSubmitting },
     } = useForm<ResetPasswordForm>({
-        resolver: zodResolver(schema),
+        resolver: zodResolver(schema(t)),
     });
 
     const onSubmit = async (data: ResetPasswordForm) => {

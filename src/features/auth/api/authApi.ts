@@ -79,7 +79,6 @@ export const authApi = baseApi.injectEndpoints({
             query: (email) => ({
                 url: `/forgot-password`,
                 method: 'PUT',
-                // body simple — RTK Query gère le Content-Type
                 body: { email },
             }),
         }),

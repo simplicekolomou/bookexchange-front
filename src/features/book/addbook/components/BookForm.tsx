@@ -26,13 +26,7 @@ import {tokens} from "../../../../theme/theme.ts";
 export const BookForm = ({ mode, initialData, onSubmitSuccess, bookId }: BookFormProps) => {
     const { t } = useTranslation(["common", "addBook"]);
     const {
-        control,
-        register,
-        handleSubmit,
-        errors,
-        isSubmitting,
-        setValue,
-        watch,
+        form,
         fields,
         append,
         remove,
@@ -42,6 +36,8 @@ export const BookForm = ({ mode, initialData, onSubmitSuccess, bookId }: BookFor
         handleReset,
         pickBestIsbn
     } = useAddbookController({ mode, initialData, bookId, onSubmitSuccess });
+
+    const { register, handleSubmit, control, setValue, watch, formState: { errors, isSubmitting } } = form;
 
     return (
         <>

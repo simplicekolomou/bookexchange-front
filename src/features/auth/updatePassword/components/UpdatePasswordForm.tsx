@@ -17,7 +17,7 @@ import { Lock } from "lucide-react";
 
 export const UpdatePasswordForm = () => {
     const { t } = useTranslation("auth");
-    const { form, onSubmit, isLoading } = useUpdatePasswordController();
+    const { form, onSubmit, isLoading, localError } = useUpdatePasswordController();
 
     const {
         register,
@@ -54,11 +54,11 @@ export const UpdatePasswordForm = () => {
                             {t("updatePassword.title")}
                         </Heading>
 
-                        {errors.root && (
+                        {localError && (
                             <Alert.Root status="error" mb={tokens.spacing.md}>
                                 <Alert.Indicator color="red.500" fontWeight="bold" />
                                 <Alert.Title color="red.500" fontWeight="bold">
-                                    {errors.root.message}
+                                    {localError}
                                 </Alert.Title>
                             </Alert.Root>
                         )}
