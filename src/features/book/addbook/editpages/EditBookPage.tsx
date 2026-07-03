@@ -53,7 +53,7 @@ export const EditBookPage = () => {
                         onSubmitSuccess={() => {
                             navigate(`/${bookCopyId}/details`, { state: { reload: true }})
                         }}
-                        bookId={Number(bookCopyId)}
+                        bookId={bookCopyId}
                     />
                 </Box>
             </Container>

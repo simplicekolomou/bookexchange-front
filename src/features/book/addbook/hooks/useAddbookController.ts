@@ -1,21 +1,21 @@
 import {useEffect, useMemo, useState} from "react";
-import { useForm, useFieldArray, type SubmitHandler } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import {useForm, useFieldArray, type SubmitHandler} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
 import {z} from "zod";
-import { useTranslation } from "react-i18next";
+import {useTranslation} from "react-i18next";
 import {createListCollection, useListCollection} from "@chakra-ui/react";
 import {
     useAddBookCopyMutation, useAddBookCopyToWishListMutation, useGetBookSuggestionsQuery,
     useUpdateBookCopyMutation,
 } from "../../api/bookApi.ts";
-import { toaster } from "../../../../components/ui/toasterInstance.tsx";
+import {toaster} from "../../../../components/ui/toasterInstance.tsx";
 import {Availability, BookStateLabel, type VolumeShort} from "../../types/book.types.ts";
-import type { isbns } from "../../types/book.types.ts";
+import type {isbns} from "../../types/book.types.ts";
 import {useDebouncedController} from "../../../../hooks/useDebouncedController.ts";
 
 const authorSchema = (t: (key: string) => string) =>
     z.object({
-    name: z.string().min(1, { message: t("validation.requiredAuthor") }),
+        name: z.string().min(1, {message: t("validation.requiredAuthor")}),
     });
 
 // -------------------------------------------------------------------
@@ -64,41 +64,44 @@ const availabilityEnum = Availability.map((item) => item.value) as [
 // Schéma de validation du formulaire
 const bookFormSchema = (t: (key: string) => string) =>
     z.object({
-    title: z
-        .string()
-        .min(1, { message: t("validation.requiredTitle") }),
-    authors: z
-        .array(authorSchema(t))
-        .min(1, { message: t("validation.requiredAuthor") }),
-    isbns: z
-        .string()
-        .refine(isValidISBN, { message: t("validation.invalidISBN") }),
-    bookState: z
-        .enum(conditionEnum, { message: t("validation.invalidBookState") }),
-    format: z
-        .string()
-        .min(1, { message: t("validation.invalidFormat") }),
-    edition: z
-        .string()
-        .min(1, { message: t("validation.invalidEdition") }),
-    coverImage: z
-        .httpUrl()
-        .optional(),
-    userCoverImage: z
-        .instanceof(File)
-        .nullable(),
-    description: z
-        .string()
-        .min(1, { message: t("validation.requiredDescription") }),
-    isAvailable: z
-        .boolean(),
-    availability: z
-        .enum(availabilityEnum, { message: t("validation.invalidAvailability") }),
-});
+        id: z
+            .string().optional(),
+        title: z
+            .string()
+            .min(1, {message: t("validation.requiredTitle")}),
+        authors: z
+            .array(authorSchema(t))
+            .min(1, {message: t("validation.requiredAuthor")}),
+        isbns: z
+            .string()
+            .refine(isValidISBN, {message: t("validation.invalidISBN")}),
+        bookState: z
+            .enum(conditionEnum, {message: t("validation.invalidBookState")}),
+        format: z
+            .string()
+            .min(1, {message: t("validation.invalidFormat")}),
+        edition: z
+            .string()
+            .min(1, {message: t("validation.invalidEdition")}),
+        coverImage: z
+            .httpUrl()
+            .optional(),
+        userCoverImage: z
+            .instanceof(File)
+            .nullable(),
+        description: z
+            .string()
+            .min(1, {message: t("validation.requiredDescription")}),
+        isAvailable: z
+            .boolean(),
+        availability: z
+            .enum(availabilityEnum, {message: t("validation.invalidAvailability")}),
+    });
 
 type BookForm = z.infer<ReturnType<typeof bookFormSchema>>;
 
 export interface BookFormType {
+    id?: string;
     title: string;
     authors: { name: string }[];
     isbns: string;
@@ -119,14 +122,14 @@ export interface BookFormProps {
     mode: "add" | "edit" | "wishList";
     initialData?: Partial<BookFormType>;
     onSubmitSuccess?: () => void;
-    bookId?: number; // requis en mode "edit"
+    bookId?: string; // requis en mode "edit"
 }
 
 // -------------------------------------------------------------------
 // Hook principal
 // -------------------------------------------------------------------
 export const useAddbookController = (props?: BookFormProps | null) => {
-    const { t } = useTranslation(["addBook"]);
+    const {t} = useTranslation(["addBook"]);
 
     const {
         mode = "add",
@@ -144,8 +147,9 @@ export const useAddbookController = (props?: BookFormProps | null) => {
     const form = useForm<BookForm>({
         resolver: zodResolver(bookFormSchema(t)),
         defaultValues: {
+            id: initialData?.id ?? "",
             title: initialData?.title ?? "",
-            authors: initialData?.authors ?? [{ name: "" }],
+            authors: initialData?.authors ?? [{name: ""}],
             isbns: initialData?.isbns ?? "",
             bookState: initialData?.bookState ?? conditionEnum[0],
             format: initialData?.format ?? "",
@@ -158,14 +162,14 @@ export const useAddbookController = (props?: BookFormProps | null) => {
         }
     });
 
-    const { control, reset } = form;
+    const {control, reset} = form;
 
     const [addBookCopy] = useAddBookCopyMutation();
     const [updateBookCopy] = useUpdateBookCopyMutation();
     const [addBookToWishlist] = useAddBookCopyToWishListMutation();
 
     // Champ dynamique pour les auteurs
-    const { fields, append, remove } = useFieldArray({
+    const {fields, append, remove} = useFieldArray({
         control,
         name: "authors",
     });
@@ -173,7 +177,7 @@ export const useAddbookController = (props?: BookFormProps | null) => {
     // Au moins un auteur obligatoire
     useEffect(() => {
         if (fields.length === 0) {
-            append({ name: "" });
+            append({name: ""});
         }
     }, [fields, append]);
 
@@ -197,9 +201,9 @@ export const useAddbookController = (props?: BookFormProps | null) => {
 
             if (mode === "add") {
                 await addBookCopy(bookData).unwrap();
-            } else if(mode === "edit" && bookId) {
+            } else if (mode === "edit" && bookId) {
                 await updateBookCopy(bookData).unwrap();
-            }else {
+            } else {
                 await addBookToWishlist(bookData).unwrap();
             }
 
@@ -207,15 +211,15 @@ export const useAddbookController = (props?: BookFormProps | null) => {
                 title: t("common:success"),
                 description:
                     mode === "add"
-                        ? t("addBook:success.add", { title: data.title })
-                        : t("addBook:success.edit", { title: data.title }),
+                        ? t("addBook:success.add", {title: data.title})
+                        : t("addBook:success.edit", {title: data.title}),
                 type: "success",
                 closable: true,
             });
 
             onSubmitSuccess?.();
             if (mode === "add") reset();
-        } catch{
+        } catch {
             toaster.create({
                 title: t("common:error"),
                 description:
@@ -256,7 +260,7 @@ export const useAddbookController = (props?: BookFormProps | null) => {
 
 
     // Chakra collection state
-    const { collection, set } = useListCollection<VolumeShort>({
+    const {collection, set} = useListCollection<VolumeShort>({
         initialItems: [],
         itemToString: (item) => item.title,
         itemToValue: (item) => item.id,
