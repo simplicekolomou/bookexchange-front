@@ -7,6 +7,7 @@ import {setCredentials} from "../../authSlice.ts";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {z} from "zod";
+import {baseApi} from "../../../../services/baseApi.ts";
 
 const schemaBuilder = (t: (key: string) => string) =>
     z.object({
@@ -37,6 +38,8 @@ export const useLoginController = () => {
         try {
             const result = await login(data).unwrap();
             dispatch(setCredentials(result));
+            // On vide tout le cache RTK QUERY une fois le login réussi
+            dispatch(baseApi.util.resetApiState());
 
             // Naviguer immédiatement avec l'ID renvoyé par l'API
             const userId = result?.id;

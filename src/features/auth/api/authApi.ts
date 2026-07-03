@@ -8,12 +8,6 @@ import type {
 } from '../types/auth.types.ts'
 import type { UserProfile } from "../profile/types/profile.types.ts"
 import type { PagedResponse } from "../../message/types/message.types.ts"
-import {
-    setCredentials,
-    userPictureUpdated,
-    userProfileUpdated,
-    logout,
-} from '../authSlice.ts'
 
 export const authApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
@@ -25,13 +19,8 @@ export const authApi = baseApi.injectEndpoints({
                 method: 'POST',
                 body: credentials,
             }),
-            invalidatesTags: ['Auth'],
-            async onQueryStarted(_, { dispatch, queryFulfilled }) {
-                try {
-                    const { data } = await queryFulfilled;
-                    dispatch(setCredentials(data)); // User directement, plus AuthResponse
-                } catch { /* empty */ }
-            },
+            invalidatesTags: (result) =>
+                result ? [{ type: 'Auth', id: result.id }] : ['Auth'],
         }),
 
         logout: builder.mutation<void, void>({
@@ -39,7 +28,6 @@ export const authApi = baseApi.injectEndpoints({
                 url: `/logout`,
                 method: 'POST',
             }),
-            invalidatesTags: ['Auth'],
         }),
 
         // Register
@@ -49,12 +37,8 @@ export const authApi = baseApi.injectEndpoints({
                 method: 'POST',
                 body: credentials,
             }),
-            async onQueryStarted(_, { dispatch, queryFulfilled }) {
-                try {
-                    const { data } = await queryFulfilled;
-                    dispatch(setCredentials(data));
-                } catch { /* empty */ }
-            },
+            invalidatesTags: (result) =>
+                result ? [{ type: 'Auth', id: result.id }] : ['Auth'],
         }),
 
         // GET /me — hydrate le store au refresh de page
@@ -63,15 +47,8 @@ export const authApi = baseApi.injectEndpoints({
                 url: `/me`,
                 method: 'GET',
             }),
-            providesTags: ['Auth'],
-            async onQueryStarted(_, { dispatch, queryFulfilled }) {
-                try {
-                    const { data } = await queryFulfilled;
-                    dispatch(setCredentials(data)); // réhydratation au refresh
-                } catch {
-                    dispatch(logout()); // cookie absent ou expiré
-                }
-            },
+            providesTags: (result) =>
+                    result ? [{ type: 'Auth', id: result.id }] : ['Auth'],
         }),
 
         // Mot de passe oublié
@@ -83,20 +60,13 @@ export const authApi = baseApi.injectEndpoints({
             }),
         }),
 
-        // Reset password — hydrate le store après reset
+        // Reset password
         resetPassword: builder.mutation<UserProfile, ResetPasswordRequest>({
             query: (body) => ({
                 url: `/reset-password`,
                 method: 'POST',
                 body,
             }),
-            invalidatesTags: ['Auth'],
-            async onQueryStarted(_, { dispatch, queryFulfilled }) {
-                try {
-                    const { data } = await queryFulfilled;
-                    dispatch(setCredentials(data));
-                } catch { /* empty */ }
-            },
         }),
 
         // Mise à jour du mot de passe
@@ -109,18 +79,14 @@ export const authApi = baseApi.injectEndpoints({
         }),
 
         // Mise à jour du profil
-        updateProfile: builder.mutation<void, UpdateProfileRequest>({
+        updateProfile: builder.mutation<UserProfile, UpdateProfileRequest>({
             query: (data) => ({
                 url: `/update-profile`,
                 method: 'PUT',
                 body: data,
             }),
-            async onQueryStarted(data, { dispatch, queryFulfilled }) {
-                try {
-                    await queryFulfilled;
-                    dispatch(userProfileUpdated(data));
-                } catch { /* empty */ }
-            },
+            invalidatesTags: (result) =>
+                result ? [{type: "Profile", id: result.id}] : ["Profile"]
         }),
 
         // Photo de profil
@@ -133,7 +99,8 @@ export const authApi = baseApi.injectEndpoints({
                     return URL.createObjectURL(blob);
                 },
             }),
-            providesTags: ['Picture'],
+            providesTags: (result) =>
+                result ? [{ type: 'Picture', id: result }] : ['Picture'],
         }),
 
         // Mise à jour de la photo
@@ -143,19 +110,15 @@ export const authApi = baseApi.injectEndpoints({
                 method: 'PUT',
                 body: formData,
             }),
-            invalidatesTags: ['Picture'],
-            async onQueryStarted(_, { dispatch, queryFulfilled }) {
-                try {
-                    const { data } = await queryFulfilled;
-                    dispatch(userPictureUpdated(data.profilePicture));
-                } catch { /* empty */ }
-            },
+            invalidatesTags: (result) =>
+                result ? [{ type: 'Picture', id: result.profilePicture }] : ['Picture'],
         }),
 
         // Profil d'un utilisateur par id
         getUser: builder.query<UserProfile, { userId?: string }>({
             query: ({ userId }) => `/users/${userId}`,
-            providesTags: ['Profile'],
+            providesTags: (result) =>
+                result ? [{type: 'Profile', id : result.id}]:['Profile'],
         }),
 
         // Recherche d'utilisateurs
@@ -175,7 +138,8 @@ export const authApi = baseApi.injectEndpoints({
                     size,
                 },
             }),
-            providesTags: ['Profile'],
+            providesTags: (result) =>
+                result ? result.content.map((user) => ({ type: 'User', id: user.id })) : ['User'],
         }),
 
         // Liste paginée de tous les utilisateurs
@@ -185,7 +149,8 @@ export const authApi = baseApi.injectEndpoints({
                 method: 'GET',
                 params: { page, size },
             }),
-            providesTags: ['Users'],
+            providesTags: (result) =>
+                    result ? result.content.map((user) => ({ type: 'User', id: user.id })) : ['User'],
         }),
 
         getWebsocketToken: builder.query<{ wsToken: string }, void>({
@@ -193,9 +158,14 @@ export const authApi = baseApi.injectEndpoints({
                 url: `/ws-token`,
                 method: 'GET',
             }),
-            providesTags: ['WsToken'],
+            providesTags: (result) =>
+                result ? [{ type: 'WsToken', id: result.wsToken }] : ['WsToken'],
         }),
     }),
+
+    // Pour contrôler le comportement lors d'un conflit de noms
+    // si tu essaies d'injecter un endpoint qui porte déjà le même
+    // nom qu'un endpoint existant, RTK Query lève une erreur et n'écrase pas l'ancien
     overrideExisting: false,
 });
 

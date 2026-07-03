@@ -14,8 +14,15 @@ export const booksApi = baseApi.injectEndpoints({
             providesTags: (result) =>
                 result
                     ? [...result.map((book) =>
-                        ({ type: 'Book' as const, id: book.id })), { type: 'Book' as const, id: 'LIST' as const }]
-                    : [{ type: 'Book' as const, id: 'LIST' as const }],
+                        (
+                            // Un tag par livre
+                            { type: 'Book' as const, id: book.id })),
+                            // Pour resté abonnée aux invalidations glogales du type Book
+                            { type: 'Book' as const, id: 'LIST' }]
+                    : [
+                        // En cas d'échec fournir LIST pour que la query reste abonnée
+                        { type: 'Book' as const, id: 'LIST' }
+                    ],
         }),
 
         getBookCopy: builder.query<BookCopy, { copyId: number }>({
@@ -162,6 +169,10 @@ export const booksApi = baseApi.injectEndpoints({
                             : [{ type: 'WishList', id: 'LIST' }],
         }),
     }),
+
+    // Pour contrôler le comportement lors d'un conflit de noms
+    // si tu essaies d'injecter un endpoint qui porte déjà le même
+    // nom qu'un endpoint existant, RTK Query lève une erreur et n'écrase pas l'ancien
     overrideExisting: false,
 });
 

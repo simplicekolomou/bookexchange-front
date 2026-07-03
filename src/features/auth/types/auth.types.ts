@@ -42,6 +42,7 @@ export interface UpdatePasswordRequest {
 }
 
 export interface UpdateProfileRequest {
+    id?: string
     firstName?: string;
     lastName?: string;
     bio?: string;
