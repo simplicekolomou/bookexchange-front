@@ -12,7 +12,6 @@ import {
     setCredentials,
     userPictureUpdated,
     userProfileUpdated,
-    logout,
 } from '../authSlice.ts'
 
 export const authApi = baseApi.injectEndpoints({
