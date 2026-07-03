@@ -80,6 +80,7 @@ export type isbns = {
  * Interface des bouquins de collection du backend
  */
 export interface AddBookRequest {
+    id?: string;
     physicalState: string;
     availabilityType: string;
     askingPrice: number;

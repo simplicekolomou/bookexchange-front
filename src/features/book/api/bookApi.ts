@@ -11,7 +11,10 @@ export const booksApi = baseApi.injectEndpoints({
                 url: `/book-copies/user/me`,
                 method: 'GET',
             }),
-            providesTags: ['Book'],
+            providesTags: (result) =>
+                result
+                    ? result.map((book) => ({ type: 'Book', id: book.id }))
+                    : [{ type: 'Book', id: 'LIST' }],
         }),
 
         getBookCopy: builder.query<BookCopy, { copyId: number }>({
@@ -19,7 +22,15 @@ export const booksApi = baseApi.injectEndpoints({
                 url: `/book-copies/${copyId}`,
                 method: 'GET',
             }),
-            providesTags: ['Book']
+            providesTags: (result, _error, { copyId }) =>
+                result
+                    // Cas normal : la requête a réussi, on tag avec l'id du livre reçu.
+                    // (on pourrait aussi utiliser "copyId" venant des arguments, voir remarque plus bas)
+                    ? [{ type: 'Book', id: result.id }]
+                    // Cas d'échec/absence de résultat : on tag quand même avec l'id demandé (copyId),
+                    // pour que si jamais ce livre est créé/modifié plus tard, le composant
+                    // qui a essayé de le charger soit notifié et puisse retenter le fetch.
+                    : [{ type: 'Book', id: copyId }],
         }),
 
         getBookOwner: builder.query<UserProfile, {userId: number}>({
@@ -27,6 +38,14 @@ export const booksApi = baseApi.injectEndpoints({
                 url: `/users/${userId}`,
                 method: 'GET',
             }),
+            // On tag cette query avec l'id de l'utilisateur demandé.
+            // But : si une mutation modifie ce même utilisateur (ex: updateProfile),
+            // et qu'elle invalide { type: 'User', id: userId }, alors CETTE query
+            // sera automatiquement refetch avec les données à jour.
+            providesTags: (result, _error, { userId }) =>
+                result
+                    ?[{ type: 'User', id: result.id }]
+                    : [{ type: 'User', id: userId }],
         }),
 
         getUserBooks: builder.query<BookCopy[], { userId: number }>({
@@ -34,7 +53,21 @@ export const booksApi = baseApi.injectEndpoints({
                 url: `/book-copies/user/${userId}`,
                 method: 'GET',
             }),
-            providesTags: ['Book'],
+            providesTags: (result) =>
+                result
+                    ? [
+                        // Un tag par livre : permet d'invalider UN SEUL livre
+                        // sans recharger toute la liste (ex: après une modif d'un livre précis)
+                        ...result.map((book) => ({
+                            type: 'Book' as const, // "as const" fige le type en littéral "Book"
+                            id: book.id,
+                        })),
+                        // Le tag "LIST" : représente la liste dans son ensemble.
+                        // C'est CE tag qu'on invalide quand on crée un nouveau livre,
+                        // puisqu'on ne connaît pas encore son id à l'avance.
+                        { type: 'Book' as const, id: 'LIST' as const },
+                    ]
+                    : [{ type: 'Book' as const, id: 'LIST' as const }],
         }),
 
         addBookCopy: builder.mutation<void, AddBookRequest>({
@@ -43,7 +76,7 @@ export const booksApi = baseApi.injectEndpoints({
                 method: 'POST',
                 body: bookData,
             }),
-            invalidatesTags: ['Book'], // This will refetch getUserBooks after adding
+            invalidatesTags: [{type: "Book", id: "LIST" }]
         }),
 
         updateBookCopy: builder.mutation<void, AddBookRequest>({
@@ -52,7 +85,8 @@ export const booksApi = baseApi.injectEndpoints({
                 method: 'PUT',
                 body: bookData,
             }),
-            invalidatesTags: ['Book'], // This will refetch getUserBooks after adding
+            invalidatesTags: (_result, _error, { id }) =>
+                [{ type: 'Book', id }],
         }),
 
         getBookSuggestions: builder.query<
@@ -86,7 +120,30 @@ export const booksApi = baseApi.injectEndpoints({
                     size,
                 },
             }),
-            providesTags: ['Book'],
+            // "result" ici est un PagedResponse<BookCopy>, donc un objet
+            // { content: BookCopy[], totalPage: number et last: boolean } et NON un tableau brut.
+            // Il faut donc piocher dans result.content pour récupérer la liste des livres.
+            providesTags: (result) =>
+                result
+                    ? [
+                        //    Un tag par livre RETOURNÉ DANS CETTE PAGE.
+                        //    Ça permet : si CE livre précis est modifié ailleurs (updateBook),
+                        //    seule cette query sera invalidée/refetch, pas toutes les recherches.
+                        ...result.content.map(
+                            (book) => ({ type: 'Book' as const, id: book.id })
+                        ),
+
+                        //    Le tag "LIST" générique, rattaché à la catégorie "Book".
+                        //    Sert pour les cas où on ne connaît pas l'id à l'avance,
+                        //    typiquement une CRÉATION de livre : on ne peut pas savoir
+                        //    si le nouveau livre "matchera" les filtres de recherche,
+                        //    donc on invalide LIST pour forcer un refetch de la recherche.
+                        { type: 'Book', id: 'LIST' },
+                    ]
+                    : // Si la query échoue ou n'a pas encore de résultat,
+                      // on retourne quand même le tag LIST pour que la query soit
+                      // "raccrochée" à la catégorie Book et se refetch si besoin.
+                    [{ type: 'Book', id: 'LIST' }],
         }),
 
         addBookCopyToWishList: builder.mutation<void, AddBookRequest>({
@@ -95,7 +152,7 @@ export const booksApi = baseApi.injectEndpoints({
                 method: 'POST',
                 body: bookData,
             }),
-             invalidatesTags: ['WishList'],
+             invalidatesTags: [{type: 'WishList', id: 'LIST'}],
         }),
 
         getMyWishList: builder.query<WishlistItem[], void>({
@@ -103,7 +160,13 @@ export const booksApi = baseApi.injectEndpoints({
                 url: `/book-wish/user/me`,
                 method: 'GET',
             }),
-            providesTags: ['WishList'],
+            providesTags: (result) =>
+                        result
+                            ? result.map((wish) => ({
+                                type: 'WishList' as const,
+                                id: wish.id,
+                            }))
+                            : [{ type: 'WishList', id: 'LIST' }],
         }),
     }),
     overrideExisting: false,

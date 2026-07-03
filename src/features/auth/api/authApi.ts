@@ -132,7 +132,6 @@ export const authApi = baseApi.injectEndpoints({
                     const blob = await response.blob();
                     return URL.createObjectURL(blob);
                 },
-                cache: 'no-cache',
             }),
             providesTags: ['Picture'],
         }),
