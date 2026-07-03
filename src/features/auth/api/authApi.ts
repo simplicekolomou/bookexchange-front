@@ -19,8 +19,6 @@ export const authApi = baseApi.injectEndpoints({
                 method: 'POST',
                 body: credentials,
             }),
-            invalidatesTags: (result) =>
-                result ? [{ type: 'Auth', id: result.id }] : ['Auth'],
         }),
 
         logout: builder.mutation<void, void>({
