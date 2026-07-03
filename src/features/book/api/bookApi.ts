@@ -13,8 +13,9 @@ export const booksApi = baseApi.injectEndpoints({
             }),
             providesTags: (result) =>
                 result
-                    ? result.map((book) => ({ type: 'Book', id: book.id }))
-                    : [{ type: 'Book', id: 'LIST' }],
+                    ? [...result.map((book) =>
+                        ({ type: 'Book' as const, id: book.id })), { type: 'Book' as const, id: 'LIST' as const }]
+                    : [{ type: 'Book' as const, id: 'LIST' as const }],
         }),
 
         getBookCopy: builder.query<BookCopy, { copyId: number }>({
