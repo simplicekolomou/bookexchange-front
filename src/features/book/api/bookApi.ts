@@ -124,21 +124,13 @@ export const booksApi = baseApi.injectEndpoints({
             // { content: BookCopy[], totalPage: number et last: boolean } et NON un tableau brut.
             // Il faut donc piocher dans result.content pour récupérer la liste des livres.
             providesTags: (result) =>
-                result
+                (result?.content ?? []).length > 0 || result
                     ? [
                         //    Un tag par livre RETOURNÉ DANS CETTE PAGE.
                         //    Ça permet : si CE livre précis est modifié ailleurs (updateBook),
                         //    seule cette query sera invalidée/refetch, pas toutes les recherches.
-                        ...result.content.map(
-                            (book) => ({ type: 'Book' as const, id: book.id })
-                        ),
-
-                        //    Le tag "LIST" générique, rattaché à la catégorie "Book".
-                        //    Sert pour les cas où on ne connaît pas l'id à l'avance,
-                        //    typiquement une CRÉATION de livre : on ne peut pas savoir
-                        //    si le nouveau livre "matchera" les filtres de recherche,
-                        //    donc on invalide LIST pour forcer un refetch de la recherche.
-                        { type: 'Book', id: 'LIST' },
+                        ...(result?.content ?? []).map((book) => ({ type: 'Book', id: book.id } as const)),
+                        { type: 'Book', id: 'LIST' } as const,
                     ]
                     : // Si la query échoue ou n'a pas encore de résultat,
                       // on retourne quand même le tag LIST pour que la query soit
