@@ -55,6 +55,6 @@ export default authSlice.reducer
 
 // Selectors
 export const selectCurrentUser     = (state: RootState) => state.auth.user
-export const selectIsAuthenticated = (state: RootState) => state.auth.user !== null // ✅ dérivé
+export const selectIsAuthenticated = (state: RootState) => state.auth.user !== null
 export const selectCurrentUserId   = (state: RootState) => state.auth.user?.id
 export const selectUserPicture     = (state: RootState) => state.auth.user?.profilePicture ?? null

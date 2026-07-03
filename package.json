@@ -26,7 +26,6 @@
     "react-i18next": "^16.2.3",
     "react-redux": "^9.2.0",
     "react-router-dom": "^6.30.1",
-    "redux-persist": "^6.0.0",
     "sockjs-client": "^1.6.1",
     "vite-plugin-static-copy": "^4.1.1",
     "zod": "^4.1.12"

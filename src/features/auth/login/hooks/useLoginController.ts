@@ -6,14 +6,11 @@ import { useState } from "react";
 import {setCredentials} from "../../authSlice.ts";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {email, z} from "zod";
+import {z} from "zod";
 
 const schemaBuilder = (t: (key: string) => string) =>
     z.object({
-        email: z
-            .string()
-            .nonempty(t("validation.requiredEmail"))
-            .pipe(email({ message: t("validation.invalidEmail") })),
+        email: z.email(t("validation.invalidEmail")),
         password: z.string().nonempty(t("validation.requiredPassword")),
     });
 

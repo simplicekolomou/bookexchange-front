@@ -1,13 +1,13 @@
 import {useTranslation} from "react-i18next";
 import {useForm} from "react-hook-form";
-import {email, z} from "zod";
+import {z} from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useForgotPasswordMutation} from "../../api/authApi.ts";
 import { useState } from "react";
 
 const schemaBuilder =(t: (key: string) => string) =>
     z.object({
-        email: z.string().pipe(email({ message: t("validation.invalidEmail") })),
+        email: z.email({ message: t("validation.invalidEmail") }),
     });
 
 type ForgotPasswordForm = z.infer<ReturnType<typeof schemaBuilder>>;

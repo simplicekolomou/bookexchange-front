@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {email, z} from "zod";
+import {z} from "zod";
 import { useTranslation } from "react-i18next";
 import { useAppDispatch } from "../../../../app/hooks.ts";
 import { setCredentials } from "../../authSlice.ts";
@@ -19,9 +19,7 @@ const schema = (t: (key: string) =>string) => z.object({
         .min(2, t("validation.lastNameMinLength"))
         .max(60, t("validation.lastNameMaxLength")),
     email: z
-        .string()
-        .min(2, t("validation.requiredEmail"))
-        .pipe(email(t("validation.invalidEmail"))),
+        .email(t("validation.invalidEmail")),
     password: z
         .string()
         .min(6, t("validation.passwordMinLength")),

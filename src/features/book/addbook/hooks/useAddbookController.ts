@@ -1,7 +1,7 @@
 import {useEffect, useMemo, useState} from "react";
 import { useForm, useFieldArray, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {url, z} from "zod";
+import {z} from "zod";
 import { useTranslation } from "react-i18next";
 import {createListCollection, useListCollection} from "@chakra-ui/react";
 import {
@@ -82,10 +82,8 @@ const bookFormSchema = (t: (key: string) => string) =>
         .string()
         .min(1, { message: t("validation.invalidEdition") }),
     coverImage: z
-        .string()
-        .pipe(url())
-        .optional()
-        .or(z.literal("")),
+        .httpUrl()
+        .optional(),
     userCoverImage: z
         .instanceof(File)
         .nullable(),
