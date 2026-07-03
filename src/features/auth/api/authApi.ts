@@ -12,6 +12,7 @@ import {
     setCredentials,
     userPictureUpdated,
     userProfileUpdated,
+    logout,
 } from '../authSlice.ts'
 
 export const authApi = baseApi.injectEndpoints({
@@ -24,6 +25,12 @@ export const authApi = baseApi.injectEndpoints({
                 method: 'POST',
                 body: credentials,
             }),
+            async onQueryStarted(_, { dispatch, queryFulfilled }) {
+                try {
+                    const { data } = await queryFulfilled;
+                    dispatch(setCredentials(data)); // User directement, plus AuthResponse
+                } catch { /* empty */ }
+            },
         }),
 
         logout: builder.mutation<void, void>({
@@ -31,6 +38,7 @@ export const authApi = baseApi.injectEndpoints({
                 url: `/logout`,
                 method: 'POST',
             }),
+            invalidatesTags: ['Auth'],
         }),
 
         // Register
@@ -40,6 +48,12 @@ export const authApi = baseApi.injectEndpoints({
                 method: 'POST',
                 body: credentials,
             }),
+            async onQueryStarted(_, { dispatch, queryFulfilled }) {
+                try {
+                    const { data } = await queryFulfilled;
+                    dispatch(setCredentials(data));
+                } catch { /* empty */ }
+            },
         }),
 
         // GET /me — hydrate le store au refresh de page
@@ -48,8 +62,15 @@ export const authApi = baseApi.injectEndpoints({
                 url: `/me`,
                 method: 'GET',
             }),
-            providesTags: (result) =>
-                    result ? [{ type: 'Auth', id: result.id }] : ['Auth'],
+            providesTags: ['Auth'],
+            async onQueryStarted(_, { dispatch, queryFulfilled }) {
+                try {
+                    const { data } = await queryFulfilled;
+                    dispatch(setCredentials(data)); // réhydratation au refresh
+                } catch {
+                    dispatch(logout()); // cookie absent ou expiré
+                }
+            },
         }),
 
         // Mot de passe oublié
