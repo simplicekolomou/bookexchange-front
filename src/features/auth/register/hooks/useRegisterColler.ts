@@ -4,8 +4,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {z} from "zod";
 import { useTranslation } from "react-i18next";
-import { useAppDispatch } from "../../../../app/hooks.ts";
-import { setCredentials } from "../../authSlice.ts";
 import {useRegisterMutation} from "../../api/authApi.ts";
 
 // Schéma Zod avec messages localisés (recréé si la langue change)
@@ -35,7 +33,6 @@ type RegisterForm = z.infer<ReturnType<typeof schema>>;
 
 export const useRegisterColler = () => {
     const navigate = useNavigate();
-    const dispatch = useAppDispatch();
     const { t } = useTranslation("auth");
     const [localError, setLocalError] = useState("");
     const [registerUser] = useRegisterMutation();
@@ -62,9 +59,12 @@ export const useRegisterColler = () => {
 
         try {
             const result = await registerUser(newUser).unwrap();
-            dispatch(setCredentials(result));
             const userId = result?.id;
-            navigate(`/user/${userId}/collection`, { replace: true });
+            if (userId) {
+                navigate(`/user/${userId}/collection`, { replace: true });
+            }else{
+                setLocalError(t("registration.serverError"));
+            }
         } catch (error) {
             const status = (error as { status?: number })?.status;
             if (status === 400 || status === 409) {

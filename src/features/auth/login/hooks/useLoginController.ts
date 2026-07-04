@@ -1,13 +1,10 @@
 import { useTranslation } from "react-i18next";
-import { useAppDispatch } from "../../../../app/hooks.ts";
 import { useNavigate } from "react-router-dom";
 import { useLoginMutation } from "../../api/authApi.ts";
 import { useState } from "react";
-import {setCredentials} from "../../authSlice.ts";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {z} from "zod";
-import {baseApi} from "../../../../services/baseApi.ts";
 
 const schemaBuilder = (t: (key: string) => string) =>
     z.object({
@@ -19,10 +16,8 @@ type LoginForm = z.infer<ReturnType<typeof schemaBuilder>>;
 
 export const useLoginController = () => {
     const { t } = useTranslation("auth");
-    const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const [login] = useLoginMutation();
-    //const userId: string | undefined = useSelector(selectCurrentUserId);
     const [localError, setLocalError] = useState("");
 
     const form = useForm<LoginForm>({
@@ -37,16 +32,12 @@ export const useLoginController = () => {
         setLocalError("");
         try {
             const result = await login(data).unwrap();
-            dispatch(setCredentials(result));
-            // On vide tout le cache RTK QUERY une fois le login réussi
-            dispatch(baseApi.util.resetApiState());
-
-            // Naviguer immédiatement avec l'ID renvoyé par l'API
             const userId = result?.id;
             if (userId) {
                 navigate(`/user/${userId}/collection`);
             } else {
-                // En cas d'absence d'ID, rester sur place ou gérer l'erreur
+                // Cas limite : le backend a répondu succès mais sans id
+                // (ne devrait normalement jamais arriver, mais on se protège)
                 setLocalError(t("login.serverError"));
             }
         } catch (error) {

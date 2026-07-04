@@ -12,7 +12,6 @@ import {
     setCredentials,
     userPictureUpdated,
     userProfileUpdated,
-    logout,
 } from '../authSlice.ts'
 
 export const authApi = baseApi.injectEndpoints({
@@ -27,9 +26,14 @@ export const authApi = baseApi.injectEndpoints({
             }),
             async onQueryStarted(_, { dispatch, queryFulfilled }) {
                 try {
+                    // On attend que la requête HTTP réussisse avant d'agir
                     const { data } = await queryFulfilled;
-                    dispatch(setCredentials(data)); // User directement, plus AuthResponse
-                } catch { /* empty */ }
+                    // On stocke l'utilisateur connecté dans le slice auth
+                    dispatch(setCredentials(data));
+                    // On vide tout le cache RTK Query pour repartir sur des
+                    // données fraîches liées à CE nouvel utilisateur
+                    dispatch(baseApi.util.resetApiState());
+                } catch { /* On gère l'erreur en cas d'échec dans le hook */ }
             },
         }),
 
@@ -38,7 +42,6 @@ export const authApi = baseApi.injectEndpoints({
                 url: `/logout`,
                 method: 'POST',
             }),
-            invalidatesTags: ['Auth'],
         }),
 
         // Register
@@ -52,6 +55,7 @@ export const authApi = baseApi.injectEndpoints({
                 try {
                     const { data } = await queryFulfilled;
                     dispatch(setCredentials(data));
+                    dispatch(baseApi.util.resetApiState());
                 } catch { /* empty */ }
             },
         }),
@@ -62,15 +66,8 @@ export const authApi = baseApi.injectEndpoints({
                 url: `/me`,
                 method: 'GET',
             }),
-            providesTags: ['Auth'],
-            async onQueryStarted(_, { dispatch, queryFulfilled }) {
-                try {
-                    const { data } = await queryFulfilled;
-                    dispatch(setCredentials(data)); // réhydratation au refresh
-                } catch {
-                    dispatch(logout()); // cookie absent ou expiré
-                }
-            },
+            providesTags: (result) =>
+                    result ? [{type: "User", id: result.id}] : [],
         }),
 
         // Mot de passe oublié
@@ -89,7 +86,6 @@ export const authApi = baseApi.injectEndpoints({
                 method: 'POST',
                 body,
             }),
-            invalidatesTags: ['Auth'],
             async onQueryStarted(_, { dispatch, queryFulfilled }) {
                 try {
                     const { data } = await queryFulfilled;
@@ -108,12 +104,14 @@ export const authApi = baseApi.injectEndpoints({
         }),
 
         // Mise à jour du profil
-        updateProfile: builder.mutation<void, UpdateProfileRequest>({
+        updateProfile: builder.mutation<UserProfile, UpdateProfileRequest>({
             query: (data) => ({
                 url: `/update-profile`,
                 method: 'PUT',
                 body: data,
             }),
+            invalidatesTags: (result) =>
+                result ? [{ type: 'User', id: result.id }] : [],
             async onQueryStarted(data, { dispatch, queryFulfilled }) {
                 try {
                     await queryFulfilled;
@@ -122,17 +120,106 @@ export const authApi = baseApi.injectEndpoints({
             },
         }),
 
-        // Photo de profil
+        // Chargement de la photo de profil
         getProfilePicture: builder.query<string, void>({
             query: () => ({
                 url: `/users/me/profile-picture`,
                 method: 'GET',
+                // "responseHandler" intercepte la réponse HTTP BRUTE (avant que
+                // RTK Query ne tente de la parser en JSON par défaut). On lui dit
+                // ici comment transformer nous-mêmes cette réponse.
                 responseHandler: async (response) => {
+                    // "response" est l'objet Response natif du navigateur (Fetch API).
+                    // ".blob()" lit le corps de la réponse et le transforme en objet Blob
+                    // (représentation binaire du fichier, ici l'image de profil)
                     const blob = await response.blob();
+
+                    // "URL.createObjectURL(blob)" demande au navigateur de créer une URL
+                    // temporaire (de la forme "blob:http://localhost:3000/xxxx-xxxx")
+                    // qui pointe vers ce blob EN MÉMOIRE. Cette URL est ensuite utilisable
+                    // directement dans un <img src="blob:...">
                     return URL.createObjectURL(blob);
                 },
             }),
             providesTags: ['Picture'],
+
+            // "onQueryStarted" se déclenche à CHAQUE nouvelle requête déclenchée
+            // par cette query — que ce soit le premier chargement, ou un refetch
+            // après invalidation du tag 'Picture'. C'est ici qu'on peut nettoyer
+            // l'ANCIENNE url blob avant que la nouvelle ne prenne sa place.
+            async onQueryStarted(_arg, { getState, queryFulfilled }) {
+                // On récupère l'URL actuellement en cache AVANT que la nouvelle
+                // requête ne remplace la donnée. On utilise "authApi.endpoints
+                // .getProfilePicture.select()(getState())" pour lire le cache
+                // actuel sans déclencher de nouvelle requête.
+                // Remplace "authApi" par le nom réel de ta variable createApi
+                const previousUrl = authApi.endpoints.getProfilePicture.select()(
+                    getState()
+                ).data;
+
+                try {
+                    // On attend que la NOUVELLE requête réussisse
+                    await queryFulfilled;
+
+                    // Maintenant que la nouvelle URL est bien en cache, on peut
+                    // libérer l'ANCIENNE en toute sécurité (elle n'est plus affichée,
+                    // remplacée par la nouvelle valeur de "data")
+                    if (previousUrl) {
+                        URL.revokeObjectURL(previousUrl);
+                    }
+                } catch {
+                    // Si le refetch échoue, on garde l'ancienne URL telle quelle
+                    // (pas de nettoyage, rien à changer)
+                }
+            },
+
+            // "onCacheEntryRemoved" est un callback fourni par RTK Query qui gère
+            // le CYCLE DE VIE COMPLET d'une entrée de cache, du chargement jusqu'à
+            // sa suppression définitive. Ses paramètres :
+            // - "arg" : les arguments passés à la query (ici "void", donc inutilisé)
+            // - "{ cacheDataLoaded, cacheEntryRemoved, getCacheEntry }" : des outils
+            //   fournis par RTK Query pour observer ces différentes étapes
+            async onCacheEntryAdded(
+                _arg,
+                { cacheDataLoaded, cacheEntryRemoved, getCacheEntry }
+            ) {
+                try {
+                    // "cacheDataLoaded" est une Promise qui se résout dès que
+                    // la première requête a réussi (donc dès qu'on a bien reçu
+                    // une URL blob valide dans le cache). On l'attend avant de
+                    // continuer, pour être sûr qu'il y a bien quelque chose à nettoyer.
+                    await cacheDataLoaded;
+                } catch {
+                    // Si la requête initiale a échoué (erreur réseau, 404, etc.),
+                    // il n'y a jamais eu d'URL blob créée : rien à nettoyer, on arrête ici.
+                    return;
+                }
+
+                // "cacheEntryRemoved" est une Promise qui NE SE RÉSOUT QUE quand
+                // RTK Query décide de supprimer VRAIMENT cette entrée de cache —
+                // c'est-à-dire quand PLUS AUCUN composant dans toute l'application
+                // n'utilise ce hook (après un court délai de grâce configurable,
+                // par défaut 60 secondes, au cas où un composant se remonte vite).
+                //
+                // C'est la différence clé avec un useEffect classique : ce useEffect
+                // se déclenche à CHAQUE démontage d'UN composant, alors qu'ici,
+                // on attend que TOUS les composants soient partis.
+                await cacheEntryRemoved;
+
+                // À ce stade, on est certain qu'aucun composant n'affiche plus
+                // cette image nulle part dans l'app. On peut donc libérer la
+                // mémoire du navigateur en toute sécurité, sans risquer de casser
+                // l'affichage d'un composant encore actif.
+                //
+                // "getCacheEntry()" permet de récupérer la donnée actuellement
+                // en cache pour CETTE entrée précise (ici, l'URL blob elle-même,
+                // qui est la valeur "data" de cette query).
+                const currentImageUrl = getCacheEntry().data;
+
+                if (currentImageUrl) {
+                    URL.revokeObjectURL(currentImageUrl);
+                }
+            },
         }),
 
         // Mise à jour de la photo
@@ -154,7 +241,9 @@ export const authApi = baseApi.injectEndpoints({
         // Profil d'un utilisateur par id
         getUser: builder.query<UserProfile, { userId?: string }>({
             query: ({ userId }) => `/users/${userId}`,
-            providesTags: ['Profile'],
+            providesTags: (result, _error, {userId}) =>
+                    result ? [{type: "User", id: result.id}]
+                        : [{type: "User", id: userId}],
         }),
 
         // Recherche d'utilisateurs
@@ -174,7 +263,15 @@ export const authApi = baseApi.injectEndpoints({
                     size,
                 },
             }),
-            providesTags: ['Profile'],
+            providesTags: (result) =>
+                result
+                    ? [
+                        ...result.content.map(
+                            (user) => ({ type: 'User' as const, id: user.id })
+                        ),
+                        { type: 'User', id: 'LIST' },
+                    ]
+                    : [{ type: 'User', id: 'LIST' }],
         }),
 
         // Liste paginée de tous les utilisateurs
@@ -184,7 +281,15 @@ export const authApi = baseApi.injectEndpoints({
                 method: 'GET',
                 params: { page, size },
             }),
-            providesTags: ['Users'],
+            providesTags: (result) =>
+                result
+                    ? [
+                        ...result.content.map(
+                            (user) => ({ type: 'User' as const, id: user.id })
+                        ),
+                        { type: 'User', id: 'LIST' },
+                    ]
+                    : [{ type: 'User', id: 'LIST' }],
         }),
 
         getWebsocketToken: builder.query<{ wsToken: string }, void>({

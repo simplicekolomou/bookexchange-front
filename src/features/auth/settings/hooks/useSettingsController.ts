@@ -121,7 +121,7 @@ export const useSettingsController = () => {
         };
 
         try {
-            // 1. Envoyer la photo si elle a changée
+            // Envoyer la photo si elle a changée
             if (profilePictureFile) {
                 const formData = new FormData();
                 formData.append("profilePicture", profilePictureFile);
@@ -141,7 +141,7 @@ export const useSettingsController = () => {
                 }
             }
 
-            // 2. Mettre à jour le profil
+            // Mettre à jour le profil
             await updateProfile(updateInfo).unwrap();
         } catch (error) {
             const status = (error as { status?: number })?.status;
