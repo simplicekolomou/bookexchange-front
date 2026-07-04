@@ -106,7 +106,7 @@ export const authApi = baseApi.injectEndpoints({
         // Mise à jour du profil
         updateProfile: builder.mutation<UserProfile, UpdateProfileRequest>({
             query: (data) => ({
-                url: `/update-profile`,
+                url: `/users/update-profile`,
                 method: 'PUT',
                 body: data,
             }),
@@ -223,11 +223,14 @@ export const authApi = baseApi.injectEndpoints({
         }),
 
         // Mise à jour de la photo
-        updateProfilePicture: builder.mutation<{ profilePicture: string }, FormData>({
-            query: (formData) => ({
-                url: `/update-profile-picture`,
+        updateProfilePicture: builder.mutation<{ profilePicture: string }, File>({
+            query: (file) => ({
+                url: `/users/profile-picture`,
                 method: 'PUT',
-                body: formData,
+                body: file,
+                headers: {
+                    'Content-Type': file.type,
+                },
             }),
             invalidatesTags: ['Picture'],
             async onQueryStarted(_, { dispatch, queryFulfilled }) {

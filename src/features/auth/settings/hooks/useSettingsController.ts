@@ -103,9 +103,11 @@ export const useSettingsController = () => {
     };
 
     // Soumission avec react-hook-form
-    const onSubmit = (async (data: SettingsFormData) => {
+    const onSubmit = async (data: SettingsFormData) => {
         setLocalError("");
 
+        // On construit l'objet attendu par updateProfile, en reprenant
+        // les champs du formulaire.
         const updateInfo: UpdateProfileRequest = {
             firstName: data.firstName,
             lastName: data.lastName,
@@ -123,25 +125,12 @@ export const useSettingsController = () => {
         try {
             // Envoyer la photo si elle a changée
             if (profilePictureFile) {
-                const formData = new FormData();
-                formData.append("profilePicture", profilePictureFile);
-                const result = await updateProfilePicture(formData).unwrap();
-                let newPicture: string | undefined;
-                const res = result as unknown;
-                if (typeof res === "string") {
-                    newPicture = res;
-                } else if (res && typeof res === "object" && "profilePicture" in res) {
-                    const resObj = res as { profilePicture?: unknown };
-                    if (typeof resObj.profilePicture === "string") {
-                        newPicture = resObj.profilePicture;
-                    }
-                }
-                if (newPicture) {
-                    setProfilePicture(newPicture);
-                }
+                const result = await updateProfilePicture(profilePictureFile).unwrap();
+                setProfilePicture(result.profilePicture);
             }
 
-            // Mettre à jour le profil
+            // Mise à jour du reste des infos du profil (nom, prénom, adresse...).
+            // Cette partie reste inchangée.
             await updateProfile(updateInfo).unwrap();
         } catch (error) {
             const status = (error as { status?: number })?.status;
@@ -151,7 +140,7 @@ export const useSettingsController = () => {
                 setLocalError(t("profile:serverError"));
             }
         }
-    });
+    }
 
     return {
         t,
