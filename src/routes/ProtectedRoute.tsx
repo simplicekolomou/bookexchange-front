@@ -13,7 +13,7 @@ export const ProtectedRoute = () => {
     // "isSuccess" est un booléen fourni par RTK Query, mis à jour EN MÊME
     // TEMPS que "data" et "isLoading" — donc il vaut "true" dès que la requête a réussi, dans le
     // MÊME rendu où "isLoading" passe à false.
-    const { data, isLoading, isSuccess } = useGetMeQuery();
+    const { data, isLoading, isSuccess, isUninitialized } = useGetMeQuery();
 
     // Il sert à remplir le slice Redux "authSlice", utile pour TOUT LE RESTE de l'app (navbar, autres
     // composants qui lisent "selectIsAuthenticated" ou les infos user).
@@ -42,7 +42,7 @@ export const ProtectedRoute = () => {
     // on considère l'utilisateur comme connecté.
     const isAuthenticated = isAuthenticatedFromStore || isSuccess;
 
-    if (isLoading) {
+    if (isLoading || isUninitialized) {
         return (
             <Flex justify="center" align="center" minH="100vh">
                 <Spinner size="lg" color="colorPalette.default" />

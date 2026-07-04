@@ -12,7 +12,7 @@ export const PublicOnlyRoute = () => {
     // On récupère "isSuccess" en plus de "data" et "isLoading", pour avoir une information
     // d'authentification disponible IMMÉDIATEMENT, sans attendre le
     // passage par Redux (qui prend un cycle de rendu supplémentaire).
-    const { data, isLoading, isSuccess } = useGetMeQuery();
+    const { data, isLoading, isSuccess, isUninitialized } = useGetMeQuery();
 
     // On dispatch setCretials pour mettre à jour le cache sinon
     // Redux "authSlice" ne serait jamais informé que l'utilisateur est
@@ -30,7 +30,7 @@ export const PublicOnlyRoute = () => {
     // On combine les deux sources pour éviter le décalage d'un cycle de rendu.
     const isAuthenticated = isAuthenticatedFromStore || isSuccess;
 
-    if (isLoading) {
+    if (isLoading || isUninitialized) {
         return (
             <Flex justify="center" align="center" minH="100vh">
                 <Spinner size="lg" color="colorPalette.default" />
