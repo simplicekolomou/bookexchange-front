@@ -9,80 +9,114 @@ export const messageApi = baseApi.injectEndpoints({
                 url: `/messages/chats/${chatId}`,
                 method: 'GET',
             }),
-            providesTags: ['Message'],
+
+            // On corrige le placement des accolades : le tag LIST doit être un
+            // ÉLÉMENT DU TABLEAU (donc après la fermeture de .map(...)),
+            // et non un argument passé À .map() lui-même.
+            providesTags: (result, _error, chatId) =>
+                result
+                    ? [
+                        // Un tag PAR MESSAGE reçu, pour permettre l'invalidation
+                        // ciblée d'un seul message précis (ex: si un message est
+                        // édité ou supprimé individuellement plus tard)
+                        ...result.map(
+                            (message) => ({ type: 'Message' as const, id: message.id })
+                        ),
+
+                        // Le tag LIST, ICI SCOPÉ PAR CHAT plutôt que générique.
+                        // Voir l'explication détaillée juste après ce bloc de code
+                        // sur POURQUOI on utilise `LIST-${chatId}` plutôt que
+                        // simplement 'LIST'.
+                        { type: 'Message' as const, id: `LIST-${chatId}` },
+                    ]
+                    : [{ type: 'Message' as const, id: `LIST-${chatId}` }],
         }),
 
         getMyChats: builder.query<Chat[], void>({
-            query: () => ({
-                url: `/chats/user/me`,
-                method: 'GET',
-            }),
-            providesTags: ['Chat'],
+            query: () => ({ url: `/chats/user/me`, method: 'GET' }),
+            providesTags: (result) =>
+                result
+                    ? [
+                        ...result.map((chat) => ({ type: 'Chat' as const, id: chat.id })),
+                        // Petit ajout de "as const" ici aussi, par cohérence et
+                        // sécurité de typage (même si dans ce cas précis, ça
+                        // fonctionnait déjà probablement grâce à l'inférence
+                        // du tableau entier — mais autant être explicite partout)
+                        { type: 'Chat' as const, id: 'LIST' },
+                    ]
+                    : [{ type: 'Chat' as const, id: 'LIST' }],
         }),
 
         addChat: builder.mutation<Chat, AddChatRequest>({
-            query: ({name, chatType, members }) => ({
+            query: ({ name, chatType, members }) => ({
                 url: '/chats',
                 method: 'POST',
                 body: { name, chatType, members },
             }),
-            invalidatesTags: ['Chat'],
+            invalidatesTags: [{ type: 'Chat', id: 'LIST' }],
         }),
 
-        deleteChat : builder.mutation<void, string>({
-            query: (chatId) => ({
-                url: `/chats/${chatId}`,
-                method: 'DELETE',
-            }),
-            invalidatesTags: ['Chat'],
+        deleteChat: builder.mutation<void, string>({
+            query: (chatId) => ({ url: `/chats/${chatId}`, method: 'DELETE' }),
+            invalidatesTags: (_result, _error, chatId) => [{ type: 'Chat', id: chatId }],
         }),
 
-        sendMessage: builder.mutation<void, { chatId: string, content: string }>({
+        sendMessage: builder.mutation<void, { chatId: string; content: string }>({
             query: ({ chatId, content }) => ({
                 url: `/messages/chats/${chatId}`,
                 method: 'POST',
                 body: { content },
             }),
-            invalidatesTags: ['Message'],
+
+            invalidatesTags: (_result, _error, { chatId }) => [
+                // "LIST-${chatId}" plutôt que "LIST" générique : seul le chat
+                // concerné par ce nouveau message sera rechargé, pas tous les
+                // autres chats de l'utilisateur.
+                { type: 'Message', id: `LIST-${chatId}` },
+                { type: 'UnreadCount', id: chatId },
+            ],
         }),
 
-        findChatByMembers: builder.query<Chat, {chatType: string, targetUserId?: string}>({
+        findChatByMembers: builder.query<Chat, { chatType: string; targetUserId?: string }>({
             query: ({ chatType, targetUserId }) => ({
                 url: `/chats/get-chat`,
-                method: "GET",
+                method: 'GET',
                 params: { chatType, targetUserId },
             }),
-            providesTags: ['Chat'],
+            providesTags: (result) =>
+                result
+                    ? [{ type: 'Chat', id: result.id }]
+                    : [{ type: 'Chat', id: 'LIST' }],
         }),
 
         // Marquer un message spécifique comme lu
-        markMessageAsRead: builder.mutation<void, { messageId: number }>({
+        markMessageAsRead: builder.mutation<{ chatId: string }, { messageId: number }>({
             query: ({ messageId }) => ({
                 url: `/messages/${messageId}/read`,
-                method: 'POST',
+                method: 'POST'
             }),
-            // Invalider les compteurs de non-lus pour ce chat
-            invalidatesTags: (_result, _error,
-                              { messageId }) => [{ type: 'UnreadCount', id: messageId }],
+            invalidatesTags: (result) =>
+                result ? [{ type: 'UnreadCount', id: result.chatId }] : [],
         }),
 
         // Marquer tous les messages d'une conversation comme lus
         markAllMessageOfChatAsRead: builder.mutation<void, { chatId: string }>({
             query: ({ chatId }) => ({
                 url: `/messages/chats/${chatId}/read`,
-                method: 'POST',
+                method: 'POST'
             }),
-            invalidatesTags: (_result, _error,
-                              { chatId }) => [{ type: 'UnreadCount', id: chatId }],
+            invalidatesTags: (_result, _error, { chatId }) =>
+                    [{ type: 'UnreadCount', id: chatId }],
         }),
 
-        // 3. Obtenir le compteur de non-lus pour une conversation spécifique
+        // Obtenir le compteur de non-lus pour une conversation spécifique
         getUnreadCountForChat: builder.query<number, { chatId: string }>({
             query: ({ chatId }) => ({
-              url: `/messages/chats/${chatId}/unread-count`,
-              method:  'GET',
+                url: `/messages/chats/${chatId}/unread-count`,
+                method: 'GET'
             }),
-            providesTags: (_result, _error, { chatId }) => [{ type: 'UnreadCount', id: chatId }],
+            providesTags: (_result, _error, { chatId }) =>
+                            [{ type: 'UnreadCount', id: chatId }],
         }),
 
     }),
