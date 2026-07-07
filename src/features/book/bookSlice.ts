@@ -20,7 +20,11 @@ const bookSlice= createSlice({
         setExchange(state, action) {
             state.exchanges = action.payload.exchanges;
         },
+
+        setAverage(state, action) {
+            state.averageRatings = action.payload.averageRatings;
+        }
     },
 });
-export const {setBooks, setWishlist, setExchange} = bookSlice.actions;
+export const {setBooks, setWishlist, setExchange, setAverage} = bookSlice.actions;
 export default bookSlice.reducer;
