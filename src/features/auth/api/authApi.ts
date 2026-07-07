@@ -10,8 +10,6 @@ import type { UserProfile } from "../profile/types/profile.types.ts"
 import type { PagedResponse } from "../../message/types/message.types.ts"
 import {
     setCredentials,
-    userPictureUpdated,
-    userProfileUpdated,
 } from '../authSlice.ts'
 
 export const authApi = baseApi.injectEndpoints({
@@ -112,12 +110,6 @@ export const authApi = baseApi.injectEndpoints({
             }),
             invalidatesTags: (result) =>
                 result ? [{ type: 'User', id: result.id }] : [],
-            async onQueryStarted(data, { dispatch, queryFulfilled }) {
-                try {
-                    await queryFulfilled;
-                    dispatch(userProfileUpdated(data));
-                } catch { /* empty */ }
-            },
         }),
 
         // Chargement de la photo de profil
@@ -228,17 +220,8 @@ export const authApi = baseApi.injectEndpoints({
                 url: `/users/profile-picture`,
                 method: 'PUT',
                 body: file,
-                headers: {
-                    'Content-Type': file.type,
-                },
+                headers: {'Content-Type': file.type},
             }),
-            invalidatesTags: ['Picture'],
-            async onQueryStarted(_, { dispatch, queryFulfilled }) {
-                try {
-                    const { data } = await queryFulfilled;
-                    dispatch(userPictureUpdated(data.profilePicture));
-                } catch { /* empty */ }
-            },
         }),
 
         // Profil d'un utilisateur par id

@@ -57,8 +57,12 @@ export const messageApi = baseApi.injectEndpoints({
         }),
 
         deleteChat: builder.mutation<void, string>({
-            query: (chatId) => ({ url: `/chats/${chatId}`, method: 'DELETE' }),
-            invalidatesTags: (_result, _error, chatId) => [{ type: 'Chat', id: chatId }],
+            query: (chatId) => ({
+                url: `/chats/${chatId}`,
+                method: 'DELETE'
+            }),
+            invalidatesTags: (_result, _error, chatId) =>
+                [{ type: 'Chat', id: chatId }],
         }),
 
         sendMessage: builder.mutation<void, { chatId: string; content: string }>({
