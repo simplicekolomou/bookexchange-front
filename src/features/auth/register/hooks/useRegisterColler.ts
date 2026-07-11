@@ -58,8 +58,8 @@ export const useRegisterColler = () => {
         };
 
         try {
-            const result = await registerUser(newUser).unwrap();
-            const userId = result?.id;
+            const registeredUser = await registerUser(newUser).unwrap();
+            const userId = registeredUser?.id;
             if (userId) {
                 navigate(`/user/${userId}/collection`, { replace: true });
             }else{

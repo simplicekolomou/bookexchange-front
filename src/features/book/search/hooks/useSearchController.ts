@@ -28,8 +28,6 @@ export const useSearchController = (onSelect?: (item: BookCopy | UserProfile)=> 
         return x !== null && typeof x === "object" && "email" in x && !("isbn" in x);
     };
 
-    console.log("C'est un user ? ", isUser(selected as BookCopy | UserProfile));
-
     return {
         searchType,
         selected,

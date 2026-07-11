@@ -40,8 +40,8 @@ export const useResetPasswordController = () => {
 
     const onSubmit = async (data: ResetPasswordForm) => {
         try {
-            const result = await resetPassword({ token, password: data.password }).unwrap();
-            dispatch(setCredentials(result));
+            const user = await resetPassword({ token, password: data.password }).unwrap();
+            dispatch(setCredentials(user));
             navigate("/login");
         } catch (error) {
             const status = (error as { status?: number })?.status;

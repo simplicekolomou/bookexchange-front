@@ -2,7 +2,8 @@ import { useParams } from "react-router-dom";
 import {
     useGetBookCopyQuery, useGetBookOwnerQuery,
 } from "../../api/bookApi.ts";
-import type {UserProfile} from "../../../auth/profile/types/profile.types.ts";
+import {useSelector} from "react-redux";
+import {selectCurrentUser} from "../../../auth/authSlice.ts";
 
 export const useBookDetailController = () => {
     const { bookCopyId } = useParams();
@@ -26,8 +27,8 @@ export const useBookDetailController = () => {
         { skip: !ownerId }
     );
 
-    const authUser: UserProfile = JSON.parse(localStorage.getItem("auth_user")!);
-    const isMyBook = Number(bookOwnerQuery.data?.id) == Number(authUser.id);
+    const authenticatedUser = useSelector(selectCurrentUser);
+    const isMyBook = Number(bookOwnerQuery.data?.id) == Number(authenticatedUser?.id);
 
     return {
         book: myBookQuery.data,

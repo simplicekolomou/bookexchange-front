@@ -66,8 +66,8 @@ export const useCreateDirectChatController = ({ onChatSelected, onClose }: Props
                     { notification: true, endUserId: Number(currentUser!.id) },
                 ],
             };
-            const result = await addChat(newChat).unwrap();
-            onChatSelected?.(result);
+            const chat = await addChat(newChat).unwrap();
+            onChatSelected?.(chat);
             onClose?.();
 
         } catch (error) {

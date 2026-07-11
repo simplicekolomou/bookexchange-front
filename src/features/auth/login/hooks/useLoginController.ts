@@ -31,8 +31,8 @@ export const useLoginController = () => {
     const onSubmit = async (data: LoginForm) => {
         setLocalError("");
         try {
-            const result = await login(data).unwrap();
-            const userId = result?.id;
+            const authenticatedUser = await login(data).unwrap();
+            const userId = authenticatedUser?.id;
             if (userId) {
                 navigate(`/user/${userId}/collection`);
             } else {

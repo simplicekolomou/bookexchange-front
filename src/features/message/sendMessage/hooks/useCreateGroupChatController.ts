@@ -52,10 +52,10 @@ export const useCreateGroupChatController = ({ onClose, onChatSelected }: Props)
                     endUserId: Number(id),
                 })),
             };
-            const result = await addChat(newChat).unwrap();
+            const chat = await addChat(newChat).unwrap();
             setChatName("");
             setSelectedUserIds([]);
-            onChatSelected(result);
+            onChatSelected(chat);
             onClose();
         } catch (error) {
             const status = (error as { status?: number })?.status;

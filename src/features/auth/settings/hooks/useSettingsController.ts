@@ -125,12 +125,11 @@ export const useSettingsController = () => {
         try {
             // Envoyer la photo si elle a changée
             if (profilePictureFile) {
-                const result = await updateProfilePicture(profilePictureFile).unwrap();
-                setProfilePicture(result.profilePicture);
+                const profilePictureUrl = await updateProfilePicture(profilePictureFile).unwrap();
+                setProfilePicture(profilePictureUrl.profilePicture);
             }
 
             // Mise à jour du reste des infos du profil (nom, prénom, adresse...).
-            // Cette partie reste inchangée.
             await updateProfile(updateInfo).unwrap();
         } catch (error) {
             const status = (error as { status?: number })?.status;
